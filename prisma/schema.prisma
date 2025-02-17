@@ -1,0 +1,24 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// 数据模型
+model Doc {
+  id         Int        @id @default(autoincrement())
+  title      String
+  content    String
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+}
+
+model User {
+  id            String    @id @default(cuid()) // @id 表示这个字段是模型的主键 @default(cuid()) 定义了该字段的默认值
+  name          String?
+  email         String?   @unique
+  emailVerified DateTime?
+}
