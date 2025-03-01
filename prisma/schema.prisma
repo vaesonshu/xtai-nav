@@ -7,18 +7,37 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// 数据模型
-model Doc {
-  id         Int        @id @default(autoincrement())
-  title      String
-  content    String
-  createdAt  DateTime   @default(now())
-  updatedAt  DateTime   @updatedAt
+// 网站表
+model Website {
+  id          String         @id @default(cuid()) // 唯一 ID
+  name        String         // 网站名称
+  url         String         @unique // 网站链接，确保唯一
+  iconUrl     String?        // 网站图标 URL，可选
+  description String?        // 网站描述，可选
+  categories  WebsiteCategory[] // 通过中间表关联多个分类
+  tags        String[]       // 网站标签，数组格式
+  likes       Int            @default(0) // 点赞数，默认 0
+  views       Int            @default(0) // 访问统计，默认 0
+  createdAt   DateTime       @default(now()) // 创建时间
+  updatedAt   DateTime       @updatedAt // 更新时间
 }
 
-model User {
-  id            String    @id @default(cuid()) // @id 表示这个字段是模型的主键 @default(cuid()) 定义了该字段的默认值
-  name          String?
-  email         String?   @unique
-  emailVerified DateTime?
+// 分类表
+model Category {
+  id        String            @id @default(cuid()) // 唯一 ID
+  name      String            @unique // 分类名称，如 "AI 编程"
+  slug      String            @unique // 友好的 URL 标识，如 "ai-programming"
+  websites  WebsiteCategory[] // 通过中间表关联多个网站
+  createdAt DateTime          @default(now()) // 创建时间
+  updatedAt DateTime          @updatedAt // 更新时间
+}
+
+// 中间表，用于关联网站和分类
+model WebsiteCategory {
+  websiteId String
+  categoryId String
+  website   Website @relation(fields: [websiteId], references: [id], onDelete: Cascade)
+  category  Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  @@id([websiteId, categoryId]) // 组合主键，确保唯一
 }
