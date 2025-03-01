@@ -1,6 +1,5 @@
 import type { Metadata } from 'next'
-import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar'
-import { AppSidebar } from '@/components/app-sidebar'
+import ClientWrapper from '@/components/client-wrapper'
 
 import './globals.css'
 
@@ -18,13 +17,7 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       {/* 这里的SEO的配置,是作用域所有的页面 className="prose" */}
       <body suppressHydrationWarning>
-        <SidebarProvider>
-          <AppSidebar />
-          <main>
-            <SidebarTrigger />
-            {children}
-          </main>
-        </SidebarProvider>
+        <ClientWrapper>{children}</ClientWrapper>
       </body>
     </html>
   )
