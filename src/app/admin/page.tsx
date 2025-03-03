@@ -4,9 +4,9 @@ import { WebsiteCreateButton } from '@/components/website-create-button'
 import { SearchForm } from '@/components/search-form'
 import { WebsitesLoading } from '@/components/websites-loading'
 
-export default function HomePage() {
+export default function AdminPage() {
   return (
-    <div className="container py-10">
+    <div className="p-10">
       <div className="flex flex-col gap-6">
         <div className="flex items-center justify-between">
           <h1 className="text-3xl font-bold tracking-tight">网站管理</h1>

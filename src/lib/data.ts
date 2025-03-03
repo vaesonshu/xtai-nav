@@ -1,26 +1,7 @@
 import { db } from '@/db/db'
 
-export async function getWebsites({ search = '', category = '' }) {
+export async function getWebsites() {
   const where = {}
-
-  if (search) {
-    where.OR = [
-      { name: { contains: search, mode: 'insensitive' } },
-      { description: { contains: search, mode: 'insensitive' } },
-      { tags: { has: search } },
-    ]
-  }
-
-  if (category) {
-    where.categories = {
-      some: {
-        category: {
-          name: category,
-        },
-      },
-    }
-  }
-
   return await db.website.findMany({
     where,
     orderBy: {
@@ -34,6 +15,18 @@ export async function getWebsites({ search = '', category = '' }) {
       },
     },
   })
+}
+
+export async function getAllTags() {
+  const websites = await db.website.findMany({
+    select: {
+      tags: true,
+    },
+  })
+
+  // 将所有标签合并为一个数组并去重
+  const uniqueTags = [...new Set(websites.flatMap((website) => website.tags))]
+  return uniqueTags.sort()
 }
 
 export async function getWebsiteById(id: string) {

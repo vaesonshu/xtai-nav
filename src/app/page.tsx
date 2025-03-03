@@ -1,8 +1,8 @@
-import NavMain from '@/components/nav-main'
+import NavShowcase from '@/components/nav-showcase'
 export default function Home() {
   return (
     <div>
-      <NavMain></NavMain>
+      <NavShowcase></NavShowcase>
     </div>
   )
 }

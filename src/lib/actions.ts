@@ -60,6 +60,7 @@ export async function incrementViews(id) {
   return website.views
 }
 
+// 给网站点赞
 export async function incrementLikes(id) {
   const website = await db.website.update({
     where: { id },

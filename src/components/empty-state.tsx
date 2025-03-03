@@ -8,7 +8,7 @@ export function EmptyState() {
         <FileQuestion className="h-10 w-10 text-muted-foreground" />
       </div>
       <h3 className="mt-4 text-lg font-semibold">没有找到网站</h3>
-      <p className="mb-4 mt-2 text-sm text-muted-foreground max-w-xs">
+      <p className="mb-4 mt-2 text-sm text-muted-foreground max-w-xl">
         您还没有添加任何网站，或者没有符合搜索条件的网站。
       </p>
       <WebsiteCreateButton />

@@ -21,6 +21,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { WebsiteEditDialog } from '@/components/website-edit-dialog'
 import { WebsiteDeleteDialog } from '@/components/website-delete-dialog'
 import { incrementViews, incrementLikes } from '@/lib/actions'
@@ -46,22 +47,12 @@ export function WebsiteCard({ website }) {
       <Card className="overflow-hidden transition-all hover:shadow-md">
         <CardHeader className="p-4 pb-0 flex flex-row items-start justify-between space-y-0">
           <div className="flex items-center space-x-3">
-            {website.iconUrl ? (
-              <div className="relative h-8 w-8 overflow-hidden rounded-md">
-                <Image
-                  src={website.iconUrl || '/placeholder.svg'}
-                  alt={website.name}
-                  fill
-                  className="object-cover"
-                />
-              </div>
-            ) : (
-              <div className="flex h-8 w-8 items-center justify-center rounded-md bg-muted">
-                <span className="text-lg font-semibold text-muted-foreground">
-                  {website.name.charAt(0)}
-                </span>
-              </div>
-            )}
+            <Avatar>
+              <AvatarImage src={website.iconUrl} />
+              <AvatarFallback className="text-lg font-semibold text-muted-foreground">
+                {website.name.charAt(0)}
+              </AvatarFallback>
+            </Avatar>
             <div>
               <h3 className="font-semibold leading-none">{website.name}</h3>
               <p className="text-xs text-muted-foreground">

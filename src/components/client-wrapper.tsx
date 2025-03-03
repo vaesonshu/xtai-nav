@@ -15,10 +15,10 @@ export default function ClientWrapper({
   return !isAdminPage ? (
     <SidebarProvider>
       <AppSidebar />
-      <main>
+      <div className="w-full">
         <SidebarTrigger />
         {children}
-      </main>
+      </div>
     </SidebarProvider>
   ) : (
     <main>{children}</main>
