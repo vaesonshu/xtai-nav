@@ -13,13 +13,14 @@ model Website {
   name        String         // 网站名称
   url         String         @unique // 网站链接，确保唯一
   iconUrl     String?        // 网站图标 URL，可选
-  description String?        // 网站描述，可选
+  description String        // 网站描述
   categories  WebsiteCategory[] // 通过中间表关联多个分类
   tags        String[]       // 网站标签，数组格式
   likes       Int            @default(0) // 点赞数，默认 0
   views       Int            @default(0) // 访问统计，默认 0
   createdAt   DateTime       @default(now()) // 创建时间
   updatedAt   DateTime       @updatedAt // 更新时间
+  @@index([tags]) // 添加 GIN 索引以加速标签搜索
 }
 
 // 分类表

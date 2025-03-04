@@ -7,7 +7,7 @@ export default async function NavShowcase({}: {
   search?: string
   tag?: string
 }) {
-  const websites = await getWebsites()
+  const { websites } = await getWebsites()
   console.log('1111111', websites)
 
   // todo: 后续优化UI
