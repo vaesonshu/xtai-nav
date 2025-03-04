@@ -11,6 +11,7 @@ import {
   MoreHorizontal,
   Edit,
   Trash2,
+  Tag,
 } from 'lucide-react'
 import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -41,6 +42,11 @@ export function WebsiteCard({ website }) {
     const newLikes = await incrementLikes(website.id)
     setLikes(newLikes)
   }
+
+  // 获取网站分类名称
+  const categoryNames = website.categories
+    ? website.categories.map((wc) => wc.category?.name).filter(Boolean)
+    : []
 
   return (
     <>
@@ -85,6 +91,14 @@ export function WebsiteCard({ website }) {
           <p className="text-sm text-muted-foreground line-clamp-2">
             {website.description || '暂无描述'}
           </p>
+          {categoryNames.length > 0 && (
+            <div className="mt-3 flex items-center gap-1">
+              <Tag className="h-3 w-3 text-muted-foreground" />
+              <span className="text-xs text-muted-foreground">
+                {categoryNames.join(', ')}
+              </span>
+            </div>
+          )}
           <div className="mt-3 flex flex-wrap gap-1">
             {website.tags.slice(0, 3).map((tag) => (
               <Badge key={tag} variant="secondary" className="text-xs">

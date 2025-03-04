@@ -7,7 +7,7 @@ import { Badge } from '@/components/ui/badge'
 import { Search } from 'lucide-react'
 import { NavCardProps } from '@/types/nav-list'
 
-export default function NavMain(websites: NavCardProps[]) {
+export default function NavMain({ websites }: { websites: NavCardProps[] }) {
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedTag, setSelectedTag] = useState<string | null>(null)
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null)

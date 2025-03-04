@@ -5,7 +5,12 @@ export interface NavCardProps {
   description: string
   tags: string[]
   url: string
-  category: string
+  categories: string[]
   likes?: number
   views: number
+}
+
+export interface webCategory {
+  id: number
+  name: string
 }

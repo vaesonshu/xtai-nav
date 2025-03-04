@@ -73,3 +73,37 @@ export async function incrementLikes(id) {
 
   return website.likes
 }
+
+// 获取分类
+export async function getCategories() {
+  return await db.category.findMany({
+    orderBy: {
+      name: 'asc',
+    },
+  })
+}
+
+// 创建分类
+export async function createCategory(data) {
+  const { name, slug } = data
+
+  const category = await db.category.create({
+    data: {
+      name,
+      slug,
+    },
+  })
+
+  revalidatePath('/')
+  return category
+}
+
+// 删除分类
+export async function deleteCategory(id) {
+  await db.category.delete({
+    where: { id },
+  })
+
+  revalidatePath('/')
+  return { success: true }
+}

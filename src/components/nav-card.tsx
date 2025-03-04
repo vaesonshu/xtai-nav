@@ -12,7 +12,7 @@ import Link from 'next/link'
 import { incrementLikes } from '@/lib/actions'
 import { NavCardProps } from '@/types/nav-list'
 
-export function NavCard(website: NavCardProps) {
+export function NavCard({ website }: { website: NavCardProps }) {
   const [likes, setLikes] = useState(website.likes || 0)
   const [isLiking, setIsLiking] = useState(false)
 
