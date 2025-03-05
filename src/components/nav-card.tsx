@@ -10,9 +10,9 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import * as LucideIcons from 'lucide-react'
 import Link from 'next/link'
 import { incrementLikes } from '@/lib/actions'
-import { NavCardProps } from '@/types/nav-list'
+import { WebsiteProps } from '@/types/nav-list'
 
-export function NavCard({ website }: { website: NavCardProps }) {
+export function NavCard({ website }: { website: WebsiteProps }) {
   const [likes, setLikes] = useState(website.likes || 0)
   const [isLiking, setIsLiking] = useState(false)
 

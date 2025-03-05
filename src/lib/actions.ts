@@ -4,7 +4,7 @@ import { revalidatePath } from 'next/cache'
 import { db } from '@/db/db'
 
 export async function createWebsite(data) {
-  const { name, url, iconUrl, description, tags } = data
+  const { name, url, iconUrl, description, tags, categoryIds } = data
 
   const website = await db.website.create({
     data: {
@@ -13,8 +13,26 @@ export async function createWebsite(data) {
       iconUrl: iconUrl || null,
       description: description || null,
       tags: tags || [],
+      categories: {
+        create: categoryIds.map((categoryId) => ({
+          category: {
+            connect: {
+              id: categoryId,
+            },
+          },
+        })),
+      },
+    },
+    include: {
+      categories: {
+        include: {
+          category: true, // ✅ 这样可以在返回结果里直接包含 Category 信息
+        },
+      },
     },
   })
+
+  console.log('创建website', website)
 
   revalidatePath('/')
   return website

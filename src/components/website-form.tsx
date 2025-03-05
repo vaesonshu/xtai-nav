@@ -20,7 +20,7 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { createWebsite, updateWebsite, getCategories } from '@/lib/actions'
-import { NavCardProps, webCategory } from '@/types/nav-list'
+import { WebsiteProps, WebCategory } from '@/types/nav-list'
 
 const websiteSchema = z.object({
   name: z.string().min(1, '网站名称不能为空'),
@@ -35,13 +35,13 @@ export function WebsiteForm({
   website,
   onSuccess,
 }: {
-  website?: NavCardProps
+  website?: WebsiteProps
   onSuccess?: () => void
 }) {
   const router = useRouter()
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [tagInput, setTagInput] = useState('')
-  const [categories, setCategories] = useState<webCategory[]>([])
+  const [categories, setCategories] = useState<WebCategory[]>([])
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {

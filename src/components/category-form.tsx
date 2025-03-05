@@ -18,7 +18,7 @@ import {
 } from '@/components/ui/form'
 import { createCategory, deleteCategory, getCategories } from '@/lib/actions'
 import { ScrollArea } from '@/components/ui/scroll-area'
-import { type webCategory } from '@/types/nav-list'
+import { type WebCategory } from '@/types/nav-list'
 
 const categorySchema = z.object({
   name: z.string().min(1, '分类名称不能为空'),
@@ -32,7 +32,7 @@ export function CategoryForm({ onSuccess }: { onSuccess: () => void }) {
   const router = useRouter()
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isDeleting, setIsDeleting] = useState(false)
-  const [categories, setCategories] = useState<webCategory[]>([])
+  const [categories, setCategories] = useState<WebCategory[]>([])
   const [isLoading, setIsLoading] = useState(true)
 
   const form = useForm({

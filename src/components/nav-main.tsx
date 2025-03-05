@@ -5,9 +5,9 @@ import { Input } from '@/components/ui/input'
 import { NavCard } from '@/components/nav-card'
 import { Badge } from '@/components/ui/badge'
 import { Search } from 'lucide-react'
-import { NavCardProps } from '@/types/nav-list'
+import { WebsiteProps } from '@/types/nav-list'
 
-export default function NavMain({ websites }: { websites: NavCardProps[] }) {
+export default function NavMain({ websites }: { websites: WebsiteProps[] }) {
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedTag, setSelectedTag] = useState<string | null>(null)
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
@@ -15,9 +15,9 @@ export default function NavMain({ websites }: { websites: NavCardProps[] }) {
   // 获取所有标签
   const allTags = Array.from(new Set(websites.flatMap((site) => site.tags)))
 
-  // 获取所有分类
+  // 获取所有分类（需要遍历所有网站的 categories 数组）
   const allCategories = Array.from(
-    new Set(websites.map((site) => site.category))
+    new Set(websites.flatMap((site) => site.categories.map((c) => c.name)))
   )
 
   // 过滤网站
@@ -27,7 +27,7 @@ export default function NavMain({ websites }: { websites: NavCardProps[] }) {
       website.description.toLowerCase().includes(searchTerm.toLowerCase())
     const matchesTag = selectedTag ? website.tags.includes(selectedTag) : true
     const matchesCategory = selectedCategory
-      ? website.category === selectedCategory
+      ? website.categories.some((c) => c.name === selectedCategory) // 这里修改为检查 categories 数组
       : true
     return matchesSearch && matchesTag && matchesCategory
   })
@@ -35,7 +35,7 @@ export default function NavMain({ websites }: { websites: NavCardProps[] }) {
   return (
     <div className="container mx-auto py-8 px-4">
       <div className="text-center mb-8">
-        <h1 className="text-3xl font-bold mb-2">星途 AI 工具导航</h1>
+        <h1 className="text-3xl font-bold mb-2">星途 AI 导航</h1>
         <p className="text-muted-foreground">发现优质 AI 应用网站资源</p>
       </div>
 

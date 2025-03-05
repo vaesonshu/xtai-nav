@@ -9,7 +9,8 @@ export async function WebsiteList({
   search?: string
   category?: string
 }) {
-  const websites = await getWebsites({ search, category })
+  const { websites } = await getWebsites()
+  console.log('获取', websites)
 
   if (websites.length === 0) {
     return <EmptyState />

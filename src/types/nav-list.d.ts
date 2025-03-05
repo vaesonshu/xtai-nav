@@ -1,16 +1,16 @@
-export interface NavCardProps {
+export interface WebsiteProps {
   id: number
   name: string
   iconUrl?: string
   description: string
   tags: string[]
   url: string
-  categories: string[]
+  categories: WebCategory[]
   likes?: number
   views: number
 }
 
-export interface webCategory {
+export interface WebCategory {
   id: number
   name: string
 }

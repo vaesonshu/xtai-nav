@@ -45,14 +45,19 @@ export async function getWebsites(
           include: { category: true },
         },
       },
-      skip,
-      take,
+      // skip,
+      // take,
     }),
     db.website.count({ where }),
   ])
 
   return {
-    websites,
+    // 转换数据结构
+    websites: websites.map((website) => ({
+      ...website,
+      categories: website.categories.map((wc) => wc.category), // 提取 category
+    })),
+    // 返回分页信息
     pagination: {
       total,
       page,
@@ -60,6 +65,22 @@ export async function getWebsites(
       totalPages: Math.ceil(total / pageSize),
     },
   }
+
+  // return websites.map((website) => ({
+  //   ...website,
+  //   categories: website.categories.map((wc) => wc.category),
+  // }))
+
+  // todo 分页
+  // return {
+  //   websites,
+  //   pagination: {
+  //     total,
+  //     page,
+  //     pageSize,
+  //     totalPages: Math.ceil(total / pageSize),
+  //   },
+  // }
 }
 
 export async function getAllTags() {
