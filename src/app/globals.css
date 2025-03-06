@@ -1,6 +1,8 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* 基础样式 */
 @layer base {
   :root {
     --background: 0 0% 100%;
@@ -79,4 +81,106 @@
   body {
     @apply bg-background text-foreground;
   }
+}
+
+/* 关键帧动画 */
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(var(--primary), 0.7);
+  }
+
+  70% {
+    transform: scale(1.05);
+    box-shadow: 0 0 0 10px rgba(var(--primary), 0);
+  }
+
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(var(--primary), 0);
+  }
+}
+
+.animate-pulse {
+  animation: pulse 2s infinite;
+}
+
+@keyframes bounce {
+  0%,
+  20%,
+  50%,
+  80%,
+  100% {
+    transform: translateY(0);
+  }
+  40% {
+    transform: translateY(-10px);
+  }
+  60% {
+    transform: translateY(-5px);
+  }
+}
+
+.animate-bounce {
+  animation: bounce 2s ease;
+}
+
+@keyframes pulse-subtle {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 15px 0 rgba(99, 102, 241, 0.6);
+  }
+
+  50% {
+    transform: scale(1.05);
+    box-shadow: 0 0 20px 5px rgba(99, 102, 241, 0.7);
+  }
+
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 15px 0 rgba(99, 102, 241, 0.6);
+  }
+}
+
+.animate-pulse-subtle {
+  animation: pulse-subtle 2s infinite;
+}
+
+@keyframes float {
+  0% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+  100% {
+    transform: translateY(0px);
+  }
+}
+
+.animate-float {
+  animation: float 2.5s ease-in-out;
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.3s ease-out forwards;
+}
+
+.shadow-glow {
+  box-shadow: 0 0 15px 0 rgba(99, 102, 241, 0.6);
+}
+
+.shadow-glow-intense {
+  box-shadow: 0 0 25px 5px rgba(99, 102, 241, 0.7);
 }
