@@ -37,6 +37,7 @@ import { CategoryForm } from '@/components/category-form'
 import { ThemeToggle } from '@/components/theme-toggle'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Separator } from '@/components/ui/separator'
+import { NavUser } from '@/components/nav-user'
 
 import Logo from '@/images/logo2.png'
 
@@ -86,17 +87,17 @@ export function AppSidebar() {
 
   return (
     <Sidebar className="border-r bg-background">
-      <SidebarHeader className="py-4">
-        <div className="flex justify-center items-center gap-5 px-4">
+      <SidebarHeader className="py-2">
+        <div className="flex justify-start items-center gap-2 px-2">
           <Image
             src={Logo}
             alt="Logo"
-            width={40}
-            height={40}
+            width={35}
+            height={35}
             className="rounded-md"
           />
           <div className="flex flex-col">
-            <h2 className="text-lg font-bold tracking-tight">星途 AI 导航</h2>
+            <h2 className="text-sm font-bold tracking-tight">星途 AI 导航</h2>
             <p className="text-xs text-muted-foreground">AI 应用一站式导航</p>
           </div>
         </div>
@@ -178,26 +179,13 @@ export function AppSidebar() {
       <div className="mt-auto">
         <Separator />
         <SidebarFooter className="py-4">
-          <div className="flex items-center justify-between px-4">
-            <div className="flex items-center gap-3">
-              <Avatar>
-                <AvatarImage src="/avatar-placeholder.png" alt="用户头像" />
-                <AvatarFallback>用户</AvatarFallback>
-              </Avatar>
-              <div className="flex flex-col">
-                <p className="text-sm font-medium">管理员</p>
-                <p className="text-xs text-muted-foreground">
-                  admin@example.com
-                </p>
-              </div>
-            </div>
-            <div className="flex items-center gap-1">
-              <ThemeToggle />
-              <Button variant="ghost" size="icon" title="退出登录">
-                <LogOut className="h-4 w-4" />
-              </Button>
-            </div>
-          </div>
+          <NavUser
+            user={{
+              name: 'vaeian',
+              email: 'w857669126@gmail.com',
+              avatar: 'https://avatars.githubusercontent.com/u/78685759?v=4',
+            }}
+          />
         </SidebarFooter>
       </div>
 
