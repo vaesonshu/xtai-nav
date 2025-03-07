@@ -3,7 +3,7 @@
 import { revalidatePath } from 'next/cache'
 import { db } from '@/db/db'
 
-export async function createWebsite(data) {
+export async function createWebsite(data: any) {
   const { name, url, iconUrl, description, tags, categoryIds } = data
 
   const website = await db.website.create({
@@ -14,7 +14,7 @@ export async function createWebsite(data) {
       description: description || null,
       tags: tags || [],
       categories: {
-        create: categoryIds.map((categoryId) => ({
+        create: categoryIds.map((categoryId: any) => ({
           category: {
             connect: {
               id: categoryId,
@@ -38,7 +38,7 @@ export async function createWebsite(data) {
   return website
 }
 
-export async function updateWebsite(id, data) {
+export async function updateWebsite(id: string, data: any) {
   const { name, url, iconUrl, description, tags } = data
 
   const website = await db.website.update({
@@ -56,7 +56,7 @@ export async function updateWebsite(id, data) {
   return website
 }
 
-export async function deleteWebsite(id) {
+export async function deleteWebsite(id: string) {
   await db.website.delete({
     where: { id },
   })
@@ -65,7 +65,7 @@ export async function deleteWebsite(id) {
   return { success: true }
 }
 
-export async function incrementViews(id) {
+export async function incrementViews(id: string) {
   const website = await db.website.update({
     where: { id },
     data: {
@@ -79,7 +79,7 @@ export async function incrementViews(id) {
 }
 
 // 给网站点赞
-export async function incrementLikes(id) {
+export async function incrementLikes(id: string) {
   const website = await db.website.update({
     where: { id },
     data: {
@@ -102,7 +102,7 @@ export async function getCategories() {
 }
 
 // 创建分类
-export async function createCategory(data) {
+export async function createCategory(data: any) {
   const { name, slug } = data
 
   const category = await db.category.create({
@@ -117,7 +117,7 @@ export async function createCategory(data) {
 }
 
 // 删除分类
-export async function deleteCategory(id) {
+export async function deleteCategory(id: string) {
   await db.category.delete({
     where: { id },
   })

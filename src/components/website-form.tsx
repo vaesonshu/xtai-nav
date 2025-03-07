@@ -25,8 +25,8 @@ import { WebsiteProps, WebCategory } from '@/types/nav-list'
 const websiteSchema = z.object({
   name: z.string().min(1, '网站名称不能为空'),
   url: z.string().url('请输入有效的URL'),
-  iconUrl: z.string().url('请输入有效的URL').optional().or(z.literal('')),
-  description: z.string().optional(),
+  iconUrl: z.string().url('请输入有效的URL'),
+  description: z.string(),
   tags: z.array(z.string()),
   categoryIds: z.array(z.string()),
 })
@@ -77,7 +77,7 @@ export function WebsiteForm({
       }
 
   const form = useForm({
-    resolver: zodResolver(websiteSchema),
+    resolver: zodResolver(websiteSchema) as any,
     defaultValues,
   })
 
@@ -91,14 +91,14 @@ export function WebsiteForm({
     }
   }
 
-  const removeTag = (tag) => {
+  const removeTag = (tag: any) => {
     form.setValue(
       'tags',
       tags.filter((t) => t !== tag)
     )
   }
 
-  const onSubmit = async (data) => {
+  const onSubmit = async (data: any) => {
     try {
       setIsSubmitting(true)
       if (website) {

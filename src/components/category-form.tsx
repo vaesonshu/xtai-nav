@@ -58,7 +58,7 @@ export function CategoryForm({ onSuccess }: { onSuccess: () => void }) {
     loadCategories()
   }, [])
 
-  const onSubmit = async (data) => {
+  const onSubmit = async (data: any) => {
     try {
       setIsSubmitting(true)
       await createCategory(data)
@@ -84,7 +84,7 @@ export function CategoryForm({ onSuccess }: { onSuccess: () => void }) {
       .replace(/-+$/, '')
   }
 
-  const handleDelete = async (id: number) => {
+  const handleDelete = async (id: string) => {
     if (!confirm('确定要删除这个分类吗？相关的网站分类关联也会被删除。')) return
 
     try {

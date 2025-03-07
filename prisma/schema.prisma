@@ -12,7 +12,7 @@ model Website {
   id          String         @id @default(cuid()) // 唯一 ID
   name        String         // 网站名称
   url         String         @unique // 网站链接，确保唯一
-  iconUrl     String?        // 网站图标 URL，可选
+  iconUrl     String        // 网站图标 URL
   description String        // 网站描述
   categories  WebsiteCategory[] // 通过中间表关联多个分类
   tags        String[]       // 网站标签，数组格式

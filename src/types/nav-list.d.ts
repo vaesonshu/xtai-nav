@@ -1,18 +1,21 @@
 export interface WebsiteProps {
-  id: number
+  id: string
   name: string
-  iconUrl?: string
+  iconUrl: string
   description: string
   tags: string[]
   url: string
   categories: WebCategory[]
   likes?: number
   views: number
+  createdAt: Date
 }
 
 export interface WebCategory {
-  id: number
+  [x: string]: any
+  id: string
   name: string
+  slug: string
 }
 
 export interface GetWebsitesParams {

@@ -14,8 +14,17 @@ import {
 } from '@/components/ui/alert-dialog'
 import { Button } from '@/components/ui/button'
 import { deleteWebsite } from '@/lib/actions'
+import { WebsiteProps } from '@/types/nav-list'
 
-export function WebsiteDeleteDialog({ website, open, onOpenChange }) {
+export function WebsiteDeleteDialog({
+  website,
+  open,
+  onOpenChange,
+}: {
+  website: WebsiteProps
+  open: boolean
+  onOpenChange: (open: boolean) => void
+}) {
   const router = useRouter()
   const [isDeleting, setIsDeleting] = useState(false)
 

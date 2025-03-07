@@ -103,13 +103,13 @@ export function AIChat() {
                       : 'bg-gray-100 dark:bg-gray-800'
                   )}
                 >
-                  {message.reasoning && (
+                  {/* {message.reasoning && (
                     <div className="mb-2 rounded bg-gray-200/50 p-2 text-xs font-mono dark:bg-gray-700/50">
                       <p className="whitespace-pre-wrap text-gray-700 dark:text-gray-300">
                         {message.reasoning}
                       </p>
                     </div>
-                  )}
+                  )} */}
                   <p className="whitespace-pre-wrap leading-relaxed">
                     {message.content}
                   </p>

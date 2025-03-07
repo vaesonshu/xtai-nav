@@ -20,7 +20,11 @@ export default function AdminPage() {
           <p className="text-muted-foreground">
             管理您收藏的网站，添加分类和标签，跟踪访问量和点赞数。
           </p>
-          <SearchForm />
+          <Suspense
+            fallback={<div className="text-gray-500">加载搜索框中...</div>}
+          >
+            <SearchForm />
+          </Suspense>
         </div>
         <Suspense fallback={<WebsitesLoading />}>
           <WebsiteList />

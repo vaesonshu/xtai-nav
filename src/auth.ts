@@ -17,13 +17,7 @@ export const config = {
     logo: 'https://next-auth.js.org/img/logo/logo-sm.png',
   },
   adapter: PrismaAdapter(prisma) as Adapter,
-  providers: [
-    GitHub,
-    Email({
-      server: process.env.EMAIL_SERVER,
-      from: process.env.EMAIL_FROM,
-    }),
-  ],
+  providers: [GitHub],
   basePath: '/auth',
   callbacks: {
     jwt({ token, trigger, session }) {

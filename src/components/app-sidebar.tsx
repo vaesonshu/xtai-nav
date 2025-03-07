@@ -38,13 +38,13 @@ import { ThemeToggle } from '@/components/theme-toggle'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Separator } from '@/components/ui/separator'
 import { NavUser } from '@/components/nav-user'
-
+import { WebCategory } from '@/types/nav-list'
 import Logo from '@/images/logo2.png'
 
 export function AppSidebar() {
   const pathname = usePathname()
   const router = useRouter()
-  const [categories, setCategories] = useState([])
+  const [categories, setCategories] = useState<WebCategory[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [openDialog, setOpenDialog] = useState(false)
 
@@ -110,10 +110,7 @@ export function AppSidebar() {
             <SidebarMenu>
               {navItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton
-                    asChild
-                    active={pathname === item.url ? 'true' : undefined}
-                  >
+                  <SidebarMenuButton asChild isActive={pathname === item.url}>
                     <Link href={item.url} className="flex items-center">
                       <item.icon className="h-4 w-4 mr-2" />
                       <span>{item.title}</span>
@@ -153,11 +150,7 @@ export function AppSidebar() {
                   <SidebarMenuItem key={category.id}>
                     <SidebarMenuButton
                       asChild
-                      active={
-                        pathname === `/category/${category.slug}`
-                          ? 'true'
-                          : undefined
-                      }
+                      isActive={pathname === `/category/${category.slug}`}
                     >
                       <Link
                         href={`/category/${category.slug}`}

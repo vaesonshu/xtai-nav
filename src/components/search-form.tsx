@@ -10,7 +10,7 @@ export function SearchForm() {
   const searchParams = useSearchParams()
   const [isPending, startTransition] = useTransition()
 
-  const handleSearch = (term) => {
+  const handleSearch = (term: any) => {
     const params = new URLSearchParams(searchParams)
 
     if (term) {

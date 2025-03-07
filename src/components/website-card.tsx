@@ -26,8 +26,9 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { WebsiteEditDialog } from '@/components/website-edit-dialog'
 import { WebsiteDeleteDialog } from '@/components/website-delete-dialog'
 import { incrementViews, incrementLikes } from '@/lib/actions'
+import { WebsiteProps } from '@/types/nav-list'
 
-export function WebsiteCard({ website }) {
+export function WebsiteCard({ website }: { website: WebsiteProps }) {
   const [showEditDialog, setShowEditDialog] = useState(false)
   const [showDeleteDialog, setShowDeleteDialog] = useState(false)
   const [likes, setLikes] = useState(website.likes)

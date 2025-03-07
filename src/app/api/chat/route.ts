@@ -16,7 +16,7 @@ export async function POST(req: Request) {
 
     // 将结果转换为数据流响应，并包含推理过程
     return result.toDataStreamResponse({
-      sendReasoning: true,
+      // sendReasoning: true,
     })
   } catch (error) {
     console.error('Chat API error:', error)
