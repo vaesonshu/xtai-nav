@@ -36,10 +36,10 @@ model Category {
 
 // 中间表，用于关联网站和分类
 model WebsiteCategory {
-  websiteId String
-  categoryId String
-  website   Website @relation(fields: [websiteId], references: [id], onDelete: Cascade)
-  category  Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  websiteId    String
+  categoryId   String
+  website      Website  @relation(fields: [websiteId], references: [id], onDelete: Cascade)
+  category     Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
 
   @@id([websiteId, categoryId]) // 组合主键，确保唯一
 }
@@ -47,23 +47,23 @@ model WebsiteCategory {
 // 网站统计
 model Visit {
   id        String   @id @default(cuid())
-  createdAt DateTime @default(now())
+  createdAt String   
   ip        String
   userAgent String?
   path      String   @default("/")
 }
 
 model UniqueVisitor {
-  id        String   @id @default(cuid())
-  ip        String   @unique
-  firstVisit DateTime @default(now())
-  lastVisit  DateTime @default(now())
-  visitCount Int     @default(1)
+  id         String   @id @default(cuid())
+  ip         String   @unique
+  firstVisit String   
+  lastVisit  String 
+  visitCount Int      @default(1)
 }
 
 model VisitStats {
-  id        String   @id @default("singleton")
-  count     Int      @default(0)
-  uniqueCount Int    @default(0)
-  updatedAt DateTime @updatedAt
+  id          String   @id @default("singleton")
+  count       Int      @default(0)
+  uniqueCount Int      @default(0)
+  updatedAt   String 
 }

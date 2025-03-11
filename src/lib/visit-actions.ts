@@ -2,6 +2,7 @@
 
 import { db } from '@/db/db'
 import { headers } from 'next/headers'
+import { currentDate } from '@/lib/utils'
 
 export async function incrementVisitCount() {
   const headersList = await headers()
@@ -17,6 +18,7 @@ export async function incrementVisitCount() {
       ip,
       userAgent,
       path,
+      createdAt: currentDate(),
     },
   })
 
@@ -32,7 +34,7 @@ export async function incrementVisitCount() {
     await db.uniqueVisitor.update({
       where: { ip },
       data: {
-        lastVisit: new Date(),
+        lastVisit: currentDate(),
         visitCount: { increment: 1 },
       },
     })
@@ -41,8 +43,8 @@ export async function incrementVisitCount() {
     await db.uniqueVisitor.create({
       data: {
         ip,
-        firstVisit: new Date(),
-        lastVisit: new Date(),
+        firstVisit: currentDate(),
+        lastVisit: currentDate(),
         visitCount: 1,
       },
     })
@@ -60,6 +62,7 @@ export async function incrementVisitCount() {
       id: 'singleton',
       count: 1,
       uniqueCount: 1,
+      updatedAt: currentDate(),
     },
   })
 
