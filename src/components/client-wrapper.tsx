@@ -10,7 +10,8 @@ export default function ClientWrapper({
   children: React.ReactNode
 }) {
   const pathname = usePathname()
-  const isAdminPage = pathname.startsWith('/admin')
+  const isAdminPage =
+    pathname.startsWith('/admin') || pathname.startsWith('/danmu')
 
   return !isAdminPage ? (
     <SidebarProvider>

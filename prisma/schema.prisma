@@ -67,3 +67,17 @@ model VisitStats {
   uniqueCount Int      @default(0)
   updatedAt   String 
 }
+
+// 弹幕留言
+model Message {
+  id        String   @id @default(cuid())
+  content   String
+  author    String
+  isAdmin   Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
+
+model UserCount {
+  id    String @id @default("singleton")
+  count Int    @default(0)
+}

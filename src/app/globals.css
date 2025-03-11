@@ -184,3 +184,24 @@
 .shadow-glow-intense {
   box-shadow: 0 0 25px 5px rgba(99, 102, 241, 0.7);
 }
+
+/* 完全重写弹幕动画定义 */
+@keyframes danmaku-scroll {
+  from {
+    transform: translateX(100vw);
+  }
+  to {
+    transform: translateX(-100%);
+  }
+}
+
+/* 弹幕项样式 */
+.danmaku-item {
+  position: absolute;
+  white-space: nowrap;
+  will-change: transform;
+  animation-name: danmaku-scroll;
+  animation-timing-function: linear;
+  animation-fill-mode: forwards;
+  left: 0; /* 使用left而不是right */
+}
