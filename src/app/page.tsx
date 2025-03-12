@@ -1,7 +1,6 @@
 import NavShowcase from '@/components/nav-showcase'
 import { AIAssistantButton } from '@/components/ai-assistant/ai-assistant-button'
 import Footer from '@/components/footer'
-
 export default function Home() {
   return (
     <>

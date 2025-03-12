@@ -17,6 +17,8 @@ model User {
   imageUrl  String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  likes     Like[]
+  favorites Favorite[]
 }
 
 
@@ -29,11 +31,33 @@ model Website {
   description String        // 网站描述
   categories  WebsiteCategory[] // 通过中间表关联多个分类
   tags        String[]       // 网站标签，数组格式
-  likes       Int            @default(0) // 点赞数，默认 0
   views       Int            @default(0) // 访问统计，默认 0
   createdAt   DateTime       @default(now()) // 创建时间
   updatedAt   DateTime       @updatedAt // 更新时间
   @@index([tags]) // 添加 GIN 索引以加速标签搜索
+  likes       Like[]
+  favorites   Favorite[]
+}
+
+// 点赞与收藏
+model Like {
+  id        String   @id @default(cuid())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String
+  website   Website  @relation(fields: [websiteId], references: [id], onDelete: Cascade)
+  websiteId String
+  createdAt DateTime @default(now())
+  @@unique([userId, websiteId])
+}
+
+model Favorite {
+  id        String   @id @default(cuid())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String
+  website   Website  @relation(fields: [websiteId], references: [id], onDelete: Cascade)
+  websiteId String
+  createdAt DateTime @default(now())
+  @@unique([userId, websiteId])
 }
 
 // 分类表

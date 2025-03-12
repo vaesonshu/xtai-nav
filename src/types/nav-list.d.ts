@@ -6,7 +6,8 @@ export interface WebsiteProps {
   tags: string[]
   url: string
   categories: WebCategory[]
-  likes?: number
+  likes: any[]
+  favorites: any[]
   views: number
   createdAt: Date
 }

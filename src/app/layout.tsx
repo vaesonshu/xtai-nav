@@ -1,13 +1,7 @@
 import type { Metadata } from 'next'
+import { Toaster } from 'sonner'
 import ClientWrapper from '@/components/client-wrapper'
-import {
-  ClerkProvider,
-  SignInButton,
-  SignUpButton,
-  SignedIn,
-  SignedOut,
-  UserButton,
-} from '@clerk/nextjs'
+import { ClerkProvider } from '@clerk/nextjs'
 import './globals.css'
 
 export const metadata: Metadata = {
@@ -29,6 +23,8 @@ export default function RootLayout({
         {/* 这里的SEO的配置,是作用域所有的页面 className="prose" */}
         <body suppressHydrationWarning>
           <ClientWrapper>{children}</ClientWrapper>
+          {/* 提示框 */}
+          <Toaster position="top-center" richColors />
         </body>
       </html>
     </ClerkProvider>

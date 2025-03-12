@@ -32,6 +32,8 @@ export default function NavMain({ websites }: { websites: WebsiteProps[] }) {
     return matchesSearch && matchesTag && matchesCategory
   })
 
+  console.log('filteredWebsites', filteredWebsites)
+
   return (
     <div className="container mx-auto py-8 px-4">
       <div className="text-center mb-8">

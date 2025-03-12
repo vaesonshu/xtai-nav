@@ -8,10 +8,6 @@ export default async function NavShowcase({}: {
   tag?: string
 }) {
   const { websites } = await getWebsites()
-  console.log(
-    '获取web',
-    websites.forEach((w) => console.log(w))
-  )
 
   // todo: 后续优化UI
   if (websites.length === 0) {

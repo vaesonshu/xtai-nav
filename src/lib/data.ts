@@ -1,6 +1,8 @@
 import { db } from '@/db/db'
 import { GetWebsitesParams } from '@/types/nav-list'
+import { auth } from '@clerk/nextjs/server'
 
+// 获取网站列表
 export async function getWebsites(
   { search, category, tag, page, pageSize }: GetWebsitesParams = {
     page: 1,
@@ -44,6 +46,8 @@ export async function getWebsites(
         categories: {
           include: { category: true },
         },
+        likes: true,
+        favorites: true,
       },
       // skip,
       // take,
@@ -83,6 +87,7 @@ export async function getWebsites(
   // }
 }
 
+// 获取所有标签
 export async function getAllTags() {
   const websites = await db.website.findMany({
     select: {
@@ -95,6 +100,7 @@ export async function getAllTags() {
   return uniqueTags.sort()
 }
 
+// 获取网站详情
 export async function getWebsiteById(id: string) {
   return await db.website.findUnique({
     where: { id },
@@ -106,4 +112,19 @@ export async function getWebsiteById(id: string) {
       },
     },
   })
+}
+
+// 获取当前用户信息
+export async function getCurrentUser() {
+  const { userId } = await auth()
+
+  if (!userId) {
+    return null
+  }
+
+  const user = await db.user.findUnique({
+    where: { clerkId: userId },
+  })
+
+  return user
 }

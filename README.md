@@ -17,6 +17,7 @@ bun dev
 ## 组件库
 
 - [shadcn/ui](https://ui.shadcn.com/)
+- [sonner](https://sonner.emilkowal.ski/)
 
 ## 图标库
 
