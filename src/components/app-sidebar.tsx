@@ -40,6 +40,16 @@ import { Separator } from '@/components/ui/separator'
 import { NavUser } from '@/components/nav-user'
 import { WebCategory } from '@/types/nav-list'
 import Logo from '@/images/logo2.png'
+import NavUserInfo from '@/components/nav-user-info'
+
+import {
+  ClerkProvider,
+  SignInButton,
+  SignUpButton,
+  SignedIn,
+  SignedOut,
+  UserButton,
+} from '@clerk/nextjs'
 
 export function AppSidebar() {
   const pathname = usePathname()
@@ -172,13 +182,23 @@ export function AppSidebar() {
       <div className="mt-auto">
         <Separator />
         <SidebarFooter className="py-4">
-          <NavUser
+          {/* <NavUser
             user={{
               name: 'vaeian',
               email: 'w857669126@gmail.com',
               avatar: 'https://avatars.githubusercontent.com/u/78685759?v=4',
             }}
-          />
+          /> */}
+          <SignedOut>
+            <SignInButton mode="modal" forceRedirectUrl={'/user-info'}>
+              <button className="rounded-full border border-black bg-black px-4 py-1.5 text-sm text-white transition-colors hover:bg-white hover:text-black">
+                Sign In
+              </button>
+            </SignInButton>
+          </SignedOut>
+          <SignedIn>
+            <UserButton />
+          </SignedIn>
         </SidebarFooter>
       </div>
 

@@ -16,6 +16,7 @@
     "@ai-sdk/deepseek": "^0.0.6",
     "@ai-sdk/openai": "^1.0.20",
     "@auth/prisma-adapter": "^2.1.0",
+    "@clerk/nextjs": "^6.12.4",
     "@hookform/resolvers": "^4.1.2",
     "@next/bundle-analyzer": "15.1.4",
     "@prisma/client": "^5.14.0",
