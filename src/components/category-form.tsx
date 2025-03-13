@@ -73,17 +73,6 @@ export function CategoryForm({ onSuccess }: { onSuccess: () => void }) {
     }
   }
 
-  // 生成slug的辅助函数
-  const generateSlug = (name: string) => {
-    return name
-      .toLowerCase()
-      .replace(/\s+/g, '-')
-      .replace(/[^\w-]+/g, '')
-      .replace(/--+/g, '-')
-      .replace(/^-+/, '')
-      .replace(/-+$/, '')
-  }
-
   const handleDelete = async (id: string) => {
     if (!confirm('确定要删除这个分类吗？相关的网站分类关联也会被删除。')) return
 
@@ -114,13 +103,6 @@ export function CategoryForm({ onSuccess }: { onSuccess: () => void }) {
                   <FormControl>
                     <Input placeholder="输入分类名称" {...field} />
                   </FormControl>
-                  <Button type="submit" disabled={isSubmitting}>
-                    {isSubmitting ? (
-                      <Loader2 className="h-4 w-4 animate-spin" />
-                    ) : (
-                      <Plus className="h-4 w-4" />
-                    )}
-                  </Button>
                 </div>
                 <FormMessage />
               </FormItem>
@@ -142,17 +124,12 @@ export function CategoryForm({ onSuccess }: { onSuccess: () => void }) {
                       }}
                     />
                   </FormControl>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={() => {
-                      const name = form.getValues('name')
-                      if (name) {
-                        form.setValue('slug', generateSlug(name))
-                      }
-                    }}
-                  >
-                    自动生成
+                  <Button type="submit" disabled={isSubmitting}>
+                    {isSubmitting ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : (
+                      <Plus className="h-4 w-4" />
+                    )}
                   </Button>
                 </div>
                 <p className="text-xs text-muted-foreground">

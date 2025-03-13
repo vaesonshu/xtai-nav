@@ -31,7 +31,7 @@ import { WebsiteProps } from '@/types/nav-list'
 export function WebsiteCard({ website }: { website: WebsiteProps }) {
   const [showEditDialog, setShowEditDialog] = useState(false)
   const [showDeleteDialog, setShowDeleteDialog] = useState(false)
-  const [likes, setLikes] = useState(website.likes)
+  const [likes, setLikes] = useState(website.likes.length)
   const [views, setViews] = useState(website.views)
 
   const handleVisit = async () => {

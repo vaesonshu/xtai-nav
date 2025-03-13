@@ -12,6 +12,7 @@ import {
   Loader2,
   RocketIcon,
   LogOut,
+  NotepadText,
 } from 'lucide-react'
 import {
   Sidebar,
@@ -92,6 +93,14 @@ export function AppSidebar() {
       title: '我的收藏',
       url: '/favorites',
       icon: Globe,
+    },
+  ]
+
+  const footItems = [
+    {
+      title: '弹幕留言板',
+      url: '/danmu',
+      icon: NotepadText,
     },
   ]
 
@@ -179,28 +188,34 @@ export function AppSidebar() {
       </SidebarContent>
 
       {/* User profile and theme toggle at the bottom */}
-      <div className="mt-auto">
-        <Separator />
-        <SidebarFooter className="py-4">
-          {/* <NavUser
-            user={{
-              name: 'vaeian',
-              email: 'w857669126@gmail.com',
-              avatar: 'https://avatars.githubusercontent.com/u/78685759?v=4',
-            }}
-          /> */}
-          <SignedOut>
-            <SignInButton mode="modal" forceRedirectUrl={'/user-info'}>
-              <button className="rounded-full border border-black bg-black px-4 py-1.5 text-sm text-white transition-colors hover:bg-white hover:text-black">
-                Sign In
-              </button>
-            </SignInButton>
-          </SignedOut>
-          <SignedIn>
-            <UserButton />
-          </SignedIn>
-        </SidebarFooter>
+      <div className="mt-auto p-2">
+        <SidebarMenu>
+          {footItems.map((item) => (
+            <SidebarMenuItem key={item.title}>
+              <SidebarMenuButton asChild isActive={pathname === item.url}>
+                <Link href={item.url} className="flex items-center">
+                  <item.icon className="h-4 w-4 mr-2" />
+                  <span>{item.title}</span>
+                </Link>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          ))}
+        </SidebarMenu>
       </div>
+
+      <Separator />
+      <SidebarFooter className="py-2">
+        <SignedOut>
+          <SignInButton mode="modal" forceRedirectUrl={'/user-info'}>
+            <button className="rounded-full border border-black bg-black px-4 py-1.5 text-sm text-white transition-colors hover:bg-white hover:text-black">
+              登录
+            </button>
+          </SignInButton>
+        </SignedOut>
+        <SignedIn>
+          <UserButton />
+        </SignedIn>
+      </SidebarFooter>
 
       {/* Category Dialog */}
       <Dialog open={openDialog} onOpenChange={setOpenDialog}>
