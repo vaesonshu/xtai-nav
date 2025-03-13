@@ -2,11 +2,11 @@
 
 import type React from 'react'
 
-import { useEffect, useState, useRef } from 'react'
+import { useEffect, useState, useRef, useCallback } from 'react'
 import { generateRandomColor, adminColor } from '@/lib/utils'
 
 interface DanmakuProps {
-  containerRef: React.RefObject<HTMLDivElement>
+  containerRef: React.RefObject<HTMLDivElement | null>
 }
 
 interface DanmakuItemData {
@@ -25,6 +25,59 @@ export default function Danmaku({ containerRef }: DanmakuProps) {
   const [danmakuItems, setDanmakuItems] = useState<DanmakuItemData[]>([])
   const [error, setError] = useState(false)
   const processedMessagesRef = useRef<Set<string>>(new Set())
+
+  // 添加弹幕项
+  const addDanmakuItem = useCallback(
+    (message: any) => {
+      if (!containerRef.current || !message) return
+
+      const containerHeight = containerRef.current.clientHeight - 50
+
+      // 随机生成弹幕位置和样式
+      const top = Math.floor(Math.random() * containerHeight)
+      const duration = Math.floor(Math.random() * 8) + 12 // 12-20秒
+      const fontSize = Math.floor(Math.random() * 4) + 16 // 16-20px
+
+      // 为站长和用户设置不同样式
+      let color, backgroundColor
+
+      if (message.isAdmin) {
+        // 站长使用固定颜色
+        color = adminColor.textColor
+        backgroundColor = adminColor.backgroundColor
+      } else {
+        // 用户使用随机颜色
+        const randomColor = generateRandomColor()
+        color = randomColor.textColor
+        backgroundColor = randomColor.backgroundColor
+      }
+
+      const newItem: DanmakuItemData = {
+        id: message.id,
+        content: message.content || '',
+        author: message.author || '匿名',
+        isAdmin: Boolean(message.isAdmin),
+        top,
+        duration,
+        color,
+        backgroundColor,
+        fontSize,
+      }
+
+      setDanmakuItems((prev) => [...prev, newItem])
+
+      // 弹幕播放完毕后移除
+      setTimeout(
+        () => {
+          setDanmakuItems((prev) =>
+            prev.filter((item) => item.id !== newItem.id)
+          )
+        },
+        duration * 1000 + 2000
+      ) // 额外添加2秒确保完全移出
+    },
+    [containerRef]
+  )
 
   // 初始化加载历史消息
   useEffect(() => {
@@ -60,7 +113,7 @@ export default function Danmaku({ containerRef }: DanmakuProps) {
     }
 
     fetchMessages()
-  }, [containerRef])
+  }, [containerRef, addDanmakuItem])
 
   // 监听实时消息
   useEffect(() => {
@@ -117,55 +170,7 @@ export default function Danmaku({ containerRef }: DanmakuProps) {
         eventSource.close()
       }
     }
-  }, [])
-
-  // 添加弹幕项
-  const addDanmakuItem = (message: any) => {
-    if (!containerRef.current || !message) return
-
-    const containerHeight = containerRef.current.clientHeight - 50
-
-    // 随机生成弹幕位置和样式
-    const top = Math.floor(Math.random() * containerHeight)
-    const duration = Math.floor(Math.random() * 8) + 12 // 12-20秒
-    const fontSize = Math.floor(Math.random() * 4) + 16 // 16-20px
-
-    // 为站长和用户设置不同样式
-    let color, backgroundColor
-
-    if (message.isAdmin) {
-      // 站长使用固定颜色
-      color = adminColor.textColor
-      backgroundColor = adminColor.backgroundColor
-    } else {
-      // 用户使用随机颜色
-      const randomColor = generateRandomColor()
-      color = randomColor.textColor
-      backgroundColor = randomColor.backgroundColor
-    }
-
-    const newItem: DanmakuItemData = {
-      id: message.id,
-      content: message.content || '',
-      author: message.author || '匿名',
-      isAdmin: Boolean(message.isAdmin),
-      top,
-      duration,
-      color,
-      backgroundColor,
-      fontSize,
-    }
-
-    setDanmakuItems((prev) => [...prev, newItem])
-
-    // 弹幕播放完毕后移除
-    setTimeout(
-      () => {
-        setDanmakuItems((prev) => prev.filter((item) => item.id !== newItem.id))
-      },
-      duration * 1000 + 2000
-    ) // 额外添加2秒确保完全移出
-  }
+  }, [addDanmakuItem])
 
   // 显示错误提示
   if (error) {

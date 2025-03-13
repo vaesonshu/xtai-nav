@@ -18,6 +18,7 @@ import {
 } from '@/lib/actions'
 import { useAuth } from '@clerk/nextjs'
 import { useToast } from '@/hooks/use-toast'
+import { TooltipWrapper } from '@/components/ui/tooltip-wrapper'
 
 export function NavCard({ website }: { website: WebsiteProps }) {
   console.log('---website---', website)
@@ -52,7 +53,7 @@ export function NavCard({ website }: { website: WebsiteProps }) {
   }
 
   const HeartIcon = LucideIcons.Heart
-  const Bookmark = LucideIcons.Bookmark
+  const Star = LucideIcons.Star
   const Eye = LucideIcons.Eye
 
   const handleLike = async (e: React.MouseEvent) => {
@@ -122,53 +123,73 @@ export function NavCard({ website }: { website: WebsiteProps }) {
         </div>
         <div className="flex items-center gap-2">
           {/* 点赞 */}
-          <Button
-            variant="ghost"
-            size="sm"
-            className={`h-8 px-2 ${isLiked ? 'text-primary' : 'text-muted-foreground'}`}
-            onClick={handleLike}
-            disabled={isLoading}
+          <TooltipWrapper
+            content={isLiked ? '取消点赞' : '点赞'}
+            side="top"
+            delayDuration={200}
           >
-            <HeartIcon
-              className={`mr-1 h-4 w-4 ${isLiked ? 'fill-primary' : ''}`}
-            />
-            {likes}
-          </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              className={`h-8 px-2 ${isLiked ? 'text-primary' : 'text-muted-foreground'}`}
+              onClick={handleLike}
+              disabled={isLoading}
+            >
+              <HeartIcon
+                className={`mr-1 h-4 w-4 ${isLiked ? 'fill-primary' : ''}`}
+              />
+              {likes}
+            </Button>
+          </TooltipWrapper>
+
           {/* 收藏 */}
-          <Button
-            variant="ghost"
-            size="sm"
-            className={`h-8 px-2 ${isFavorited ? 'text-primary' : 'text-muted-foreground'}`}
-            onClick={handleFavorite}
-            disabled={isLoading}
+          <TooltipWrapper
+            content={isLiked ? '取消收藏' : '收藏'}
+            side="top"
+            delayDuration={200}
           >
-            <Bookmark
-              className={`mr-1 h-4 w-4 ${isFavorited ? 'fill-primary' : ''}`}
-            />
-          </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              className={`h-8 px-2 ${isFavorited ? 'text-primary' : 'text-muted-foreground'}`}
+              onClick={handleFavorite}
+              disabled={isLoading}
+            >
+              <Star
+                className={`mr-1 h-4 w-4 ${isFavorited ? 'fill-primary' : ''}`}
+              />
+            </Button>
+          </TooltipWrapper>
+
           {/* 查看次数 */}
           {/* <div className="flex items-center">
             <Eye className="mr-1 h-4 w-4" />
             {views}
           </div> */}
           {/* 访问 */}
-          <Button
-            variant="outline"
-            size="sm"
-            className="h-8"
-            onClick={handleVisit}
-            asChild
+          <TooltipWrapper
+            content={'访问' + website.name}
+            side="top"
+            delayDuration={200}
           >
-            <Link
-              href={website.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-xs text-muted-foreground hover:text-primary"
-              onClick={(e) => e.stopPropagation()}
+            <Button
+              variant="outline"
+              size="sm"
+              className="h-8"
+              onClick={handleVisit}
+              asChild
             >
-              <LucideIcons.ExternalLink className="h-4 w-4" />
-            </Link>
-          </Button>
+              <Link
+                href={website.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-xs text-muted-foreground hover:text-primary"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <LucideIcons.ExternalLink className="h-4 w-4" />
+              </Link>
+            </Button>
+          </TooltipWrapper>
         </div>
       </CardFooter>
     </Card>

@@ -84,13 +84,13 @@ export function AppSidebar() {
   // Static navigation items
   const navItems = [
     {
-      title: '所有网站',
+      title: '应用广场',
       url: '/',
       icon: Home,
     },
     {
-      title: '网站展示',
-      url: '/showcase',
+      title: '我的收藏',
+      url: '/favorites',
       icon: Globe,
     },
   ]

@@ -13,7 +13,7 @@ export default function Home() {
       </div>
 
       {/* 添加 AI 助手按钮 */}
-      <AIAssistantButton />
+      {false && <AIAssistantButton />}
     </>
   )
 }
