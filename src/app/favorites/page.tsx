@@ -8,7 +8,7 @@ export default async function FavoritesPage() {
   const { userId } = await auth()
 
   if (!userId) {
-    redirect('/sign-in')
+    return <p className="flex justify-center">登陆后查看</p>
   }
 
   return (

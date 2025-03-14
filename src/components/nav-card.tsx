@@ -81,6 +81,7 @@ export function NavCard({ website }: { website: WebsiteProps }) {
   const handleFavorite = async () => {
     if (!isSignedIn) {
       // Redirect to sign in or show a message
+      warning('请先登录')
       return
     }
 
@@ -113,83 +114,86 @@ export function NavCard({ website }: { website: WebsiteProps }) {
           {website.description}
         </p>
       </CardContent>
-      <CardFooter className="flex justify-between items-center">
-        <div className="flex flex-wrap gap-1">
+      <CardFooter className="flex flex-col items-start">
+        <div className="flex flex-wrap gap-1 pb-3">
           {website.tags.map((tag) => (
             <Badge key={tag} variant="secondary" className="text-xs">
               {tag}
             </Badge>
           ))}
         </div>
-        <div className="flex items-center gap-2">
-          {/* 点赞 */}
-          <TooltipWrapper
-            content={isLiked ? '取消点赞' : '点赞'}
-            side="top"
-            delayDuration={200}
-          >
-            <Button
-              variant="ghost"
-              size="sm"
-              className={`h-8 px-2 ${isLiked ? 'text-primary' : 'text-muted-foreground'}`}
-              onClick={handleLike}
-              disabled={isLoading}
+        <div className="flex justify-between w-full">
+          <div>
+            {/* 点赞 */}
+            <TooltipWrapper
+              content={isLiked ? '取消点赞' : '点赞'}
+              side="top"
+              delayDuration={200}
             >
-              <HeartIcon
-                className={`mr-1 h-4 w-4 ${isLiked ? 'fill-primary' : ''}`}
-              />
-              {likes}
-            </Button>
-          </TooltipWrapper>
+              <Button
+                variant="ghost"
+                size="sm"
+                className={`h-8 px-2 ${isLiked ? 'text-primary' : 'text-muted-foreground'}`}
+                onClick={handleLike}
+                disabled={isLoading}
+              >
+                <HeartIcon
+                  className={`mr-1 h-4 w-4 ${isLiked ? 'fill-primary' : ''}`}
+                />
+                {likes}
+              </Button>
+            </TooltipWrapper>
 
-          {/* 收藏 */}
-          <TooltipWrapper
-            content={isLiked ? '取消收藏' : '收藏'}
-            side="top"
-            delayDuration={200}
-          >
-            <Button
-              variant="ghost"
-              size="sm"
-              className={`h-8 px-2 ${isFavorited ? 'text-primary' : 'text-muted-foreground'}`}
-              onClick={handleFavorite}
-              disabled={isLoading}
+            {/* 收藏 */}
+            <TooltipWrapper
+              content={isLiked ? '取消收藏' : '收藏'}
+              side="top"
+              delayDuration={200}
             >
-              <Star
-                className={`mr-1 h-4 w-4 ${isFavorited ? 'fill-primary' : ''}`}
-              />
-            </Button>
-          </TooltipWrapper>
-
-          {/* 查看次数 */}
-          {/* <div className="flex items-center">
+              <Button
+                variant="ghost"
+                size="sm"
+                className={`h-8 px-2 ${isFavorited ? 'text-primary' : 'text-muted-foreground'}`}
+                onClick={handleFavorite}
+                disabled={isLoading}
+              >
+                <Star
+                  className={`mr-1 h-4 w-4 ${isFavorited ? 'fill-primary' : ''}`}
+                />
+              </Button>
+            </TooltipWrapper>
+          </div>
+          <div className="">
+            {/* 查看次数 */}
+            {/* <div className="flex items-center">
             <Eye className="mr-1 h-4 w-4" />
             {views}
           </div> */}
-          {/* 访问 */}
-          <TooltipWrapper
-            content={'访问' + website.name}
-            side="top"
-            delayDuration={200}
-          >
-            <Button
-              variant="outline"
-              size="sm"
-              className="h-8"
-              onClick={handleVisit}
-              asChild
+            {/* 访问 */}
+            <TooltipWrapper
+              content={'访问' + website.name}
+              side="top"
+              delayDuration={200}
             >
-              <Link
-                href={website.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-xs text-muted-foreground hover:text-primary"
-                onClick={(e) => e.stopPropagation()}
+              <Button
+                variant="outline"
+                size="sm"
+                className="h-8"
+                onClick={handleVisit}
+                asChild
               >
-                <LucideIcons.ExternalLink className="h-4 w-4" />
-              </Link>
-            </Button>
-          </TooltipWrapper>
+                <Link
+                  href={website.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-xs text-muted-foreground hover:text-primary"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <LucideIcons.ExternalLink className="h-4 w-4" />
+                </Link>
+              </Button>
+            </TooltipWrapper>
+          </div>
         </div>
       </CardFooter>
     </Card>
