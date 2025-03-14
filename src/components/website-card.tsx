@@ -25,7 +25,7 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { WebsiteEditDialog } from '@/components/website-edit-dialog'
 import { WebsiteDeleteDialog } from '@/components/website-delete-dialog'
-import { incrementViews, incrementLikes } from '@/lib/actions'
+import { incrementViews } from '@/lib/actions'
 import { WebsiteProps } from '@/types/nav-list'
 
 export function WebsiteCard({ website }: { website: WebsiteProps }) {
@@ -37,11 +37,6 @@ export function WebsiteCard({ website }: { website: WebsiteProps }) {
   const handleVisit = async () => {
     const newViews = await incrementViews(website.id)
     setViews(newViews)
-  }
-
-  const handleLike = async () => {
-    const newLikes = await incrementLikes(website.id)
-    setLikes(newLikes)
   }
 
   // 获取网站分类名称
@@ -116,12 +111,12 @@ export function WebsiteCard({ website }: { website: WebsiteProps }) {
         <CardFooter className="p-4 pt-0 flex justify-between">
           <div className="flex items-center space-x-4 text-sm text-muted-foreground">
             <Button
+              disabled={true}
               variant="ghost"
               size="sm"
-              className="h-8 px-2 text-muted-foreground"
-              onClick={handleLike}
+              className="h-8 px-2"
             >
-              <Heart className="mr-1 h-4 w-4" />
+              <Heart className="mr-1 h-4 w-4 fill-primary" />
               {likes}
             </Button>
             <div className="flex items-center">

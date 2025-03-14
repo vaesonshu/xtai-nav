@@ -17,7 +17,8 @@ export async function WebsiteList({
   }
 
   return (
-    <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+    // className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3"
+    <div className="">
       {websites.map((website) => (
         <WebsiteCard key={website.id} website={website} />
       ))}

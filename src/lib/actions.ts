@@ -84,18 +84,18 @@ export async function incrementViews(id: string) {
 }
 
 // 给网站点赞
-export async function incrementLikes(id: string) {
-  const website = await db.website.update({
-    where: { id },
-    data: {
-      likes: {
-        increment: 1,
-      },
-    },
-  })
+// export async function incrementLikes(id: string) {
+//   const website = await db.website.update({
+//     where: { id },
+//     data: {
+//       likes: {
+//         increment: 1,
+//       },
+//     },
+//   })
 
-  return website.likes
-}
+//   return website.likes
+// }
 
 // 获取分类
 export async function getCategories() {
@@ -152,7 +152,7 @@ async function getOrCreateUser() {
 }
 
 // Updated like function to be user-specific
-export async function toggleLike(websiteId) {
+export async function toggleLike(websiteId: string) {
   try {
     const user = await getOrCreateUser()
 
@@ -207,7 +207,7 @@ export async function toggleLike(websiteId) {
 }
 
 // New function to toggle favorite status
-export async function toggleFavorite(websiteId) {
+export async function toggleFavorite(websiteId: string) {
   try {
     const user = await getOrCreateUser()
 
@@ -250,7 +250,7 @@ export async function toggleFavorite(websiteId) {
 }
 
 // Function to check if a user has liked a website
-export async function hasUserLikedWebsite(websiteId) {
+export async function hasUserLikedWebsite(websiteId: string) {
   try {
     const { userId } = await auth()
 
@@ -283,7 +283,7 @@ export async function hasUserLikedWebsite(websiteId) {
 }
 
 // Function to check if a user has favorited a website
-export async function hasUserFavoritedWebsite(websiteId) {
+export async function hasUserFavoritedWebsite(websiteId: string) {
   try {
     const { userId } = await auth()
 
@@ -332,6 +332,8 @@ export async function getUserFavorites() {
                 category: true,
               },
             },
+            likes: true,
+            favorites: true,
           },
         },
       },

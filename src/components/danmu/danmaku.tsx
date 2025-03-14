@@ -64,17 +64,25 @@ export default function Danmaku({ containerRef }: DanmakuProps) {
         fontSize,
       }
 
-      setDanmakuItems((prev) => [...prev, newItem])
+      // old
+      // setDanmakuItems((prev) => [...prev, newItem])
 
-      // 弹幕播放完毕后移除
-      setTimeout(
-        () => {
-          setDanmakuItems((prev) =>
-            prev.filter((item) => item.id !== newItem.id)
-          )
-        },
-        duration * 1000 + 2000
-      ) // 额外添加2秒确保完全移出
+      // // 弹幕播放完毕后移除
+      // setTimeout(
+      //   () => {
+      //     setDanmakuItems((prev) =>
+      //       prev.filter((item) => item.id !== newItem.id)
+      //     )
+      //   },
+      //   duration * 1000 + 2000
+      // ) // 额外添加2秒确保完全移出
+
+      // new
+      // 更新状态时过滤重复 id
+      setDanmakuItems((prev) => {
+        const filtered = prev.filter((item) => item.id !== newItem.id)
+        return [...filtered, newItem]
+      })
     },
     [containerRef]
   )
