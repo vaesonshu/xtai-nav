@@ -28,7 +28,7 @@ import { WebsiteDeleteDialog } from '@/components/website-delete-dialog'
 import { incrementViews } from '@/lib/actions'
 import { WebsiteProps } from '@/types/nav-list'
 
-export function WebsiteCard({ website }: { website: WebsiteProps }) {
+export function WebsiteCard({ website }: { website: any }) {
   const [showEditDialog, setShowEditDialog] = useState(false)
   const [showDeleteDialog, setShowDeleteDialog] = useState(false)
   const [likes, setLikes] = useState(website.likes.length)
@@ -41,7 +41,7 @@ export function WebsiteCard({ website }: { website: WebsiteProps }) {
 
   // 获取网站分类名称
   const categoryNames = website.categories
-    ? website.categories.map((wc) => wc.category?.name).filter(Boolean)
+    ? website.categories.map((wc: any) => wc.category?.name).filter(Boolean)
     : []
 
   return (
@@ -96,7 +96,7 @@ export function WebsiteCard({ website }: { website: WebsiteProps }) {
             </div>
           )}
           <div className="mt-3 flex flex-wrap gap-1">
-            {website.tags.slice(0, 3).map((tag) => (
+            {website.tags.slice(0, 3).map((tag: any) => (
               <Badge key={tag} variant="secondary" className="text-xs">
                 {tag}
               </Badge>

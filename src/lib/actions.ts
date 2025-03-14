@@ -4,19 +4,28 @@ import { revalidatePath } from 'next/cache'
 import { db } from '@/db/db'
 import { auth, clerkClient } from '@clerk/nextjs/server'
 
+interface WebsiteType {
+  name: string
+  url: string
+  iconUrl: string
+  description: string
+  tags: string[]
+  categoryIds: string[]
+}
+
 // 新增网站
-export async function createWebsite(data: any) {
+export async function createWebsite(data: WebsiteType) {
   const { name, url, iconUrl, description, tags, categoryIds } = data
 
   const website = await db.website.create({
     data: {
       name,
       url,
-      iconUrl: iconUrl || null,
-      description: description || null,
+      iconUrl: iconUrl,
+      description: description,
       tags: tags || [],
       categories: {
-        create: categoryIds.map((categoryId: any) => ({
+        create: categoryIds.map((categoryId: string) => ({
           category: {
             connect: {
               id: categoryId,
@@ -28,34 +37,39 @@ export async function createWebsite(data: any) {
     include: {
       categories: {
         include: {
-          category: true, // ✅ 这样可以在返回结果里直接包含 Category 信息
+          category: true, // 这样可以在返回结果里直接包含 Category 信息
         },
       },
     },
   })
 
   console.log('创建website', website)
-
-  revalidatePath('/')
   return website
 }
 
 // 更新网站
-export async function updateWebsite(id: string, data: any) {
-  const { name, url, iconUrl, description, tags } = data
-
+export async function updateWebsite(id: string, data: WebsiteType) {
+  const { name, url, iconUrl, description, tags, categoryIds } = data
   const website = await db.website.update({
     where: { id },
     data: {
       name,
       url,
-      iconUrl: iconUrl || null,
-      description: description || null,
-      tags: tags || [],
+      iconUrl: iconUrl,
+      description: description,
+      tags: tags,
+      categories: {
+        deleteMany: {}, // 删除所有旧关联
+        create: categoryIds.map((categoryId: string) => ({
+          category: { connect: { id: categoryId } },
+        })),
+      },
+    },
+    include: {
+      categories: { include: { category: true } }, // 返回更新后的分类
     },
   })
 
-  revalidatePath('/')
   return website
 }
 

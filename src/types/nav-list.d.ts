@@ -26,3 +26,10 @@ export interface GetWebsitesParams {
   page: number
   pageSize: number
 }
+
+// 通过分类获取网站
+export interface GetWebsitesByCategory {
+  slug: string
+  page?: number
+  pageSize?: number
+}

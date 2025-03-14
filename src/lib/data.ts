@@ -1,6 +1,26 @@
 import { db } from '@/db/db'
 import { GetWebsitesParams } from '@/types/nav-list'
 import { auth } from '@clerk/nextjs/server'
+import { type GetWebsitesByCategory } from '@/types/nav-list'
+
+export interface WebsiteWithCategories {
+  id: string
+  name: string
+  url: string
+  iconUrl: string
+  description: string
+  tags: string[]
+  views: number
+  createdAt: Date
+  updatedAt: Date
+  likes: any[]
+  favorites: any[]
+  categories: {
+    id: string
+    name: string
+    slug: string
+  }[] // 只包含 category 对象
+}
 
 // 获取网站列表
 export async function getWebsites(
@@ -69,22 +89,92 @@ export async function getWebsites(
       totalPages: Math.ceil(total / pageSize),
     },
   }
+}
 
-  // return websites.map((website) => ({
-  //   ...website,
-  //   categories: website.categories.map((wc) => wc.category),
-  // }))
+// 通过分类获取网站
+export async function getWebsitesByCategory({
+  slug,
+  page = 1,
+  pageSize = 10,
+}: GetWebsitesByCategory): Promise<{
+  websites: WebsiteWithCategories[]
+  categoryName: string
+  pagination: {
+    total: number
+    page: number
+    pageSize: number
+    totalPages: number
+  }
+}> {
+  if (!slug) throw new Error('Slug is required')
+  if (page < 1 || pageSize < 1)
+    throw new Error('Page and pageSize must be positive')
 
-  // todo 分页
-  // return {
-  //   websites,
-  //   pagination: {
-  //     total,
-  //     page,
-  //     pageSize,
-  //     totalPages: Math.ceil(total / pageSize),
-  //   },
-  // }
+  try {
+    // 1. 查询分类
+    const category = await db.category.findUnique({
+      where: { slug },
+      select: { id: true, name: true },
+    })
+
+    if (!category) {
+      throw new Error(`Category with slug "${slug}" not found`)
+    }
+
+    // 2. 分页参数
+    const skip = (page - 1) * pageSize
+    const take = pageSize
+
+    // 3. 获取总数
+    const total = await db.websiteCategory.count({
+      where: { categoryId: category.id },
+    })
+
+    // 4. 查询网站
+    const websites = await db.website.findMany({
+      where: {
+        categories: {
+          some: { categoryId: category.id }, // 筛选属于该分类的网站
+        },
+      },
+      skip,
+      take,
+      include: {
+        categories: {
+          include: { category: true },
+        },
+        likes: true,
+        favorites: true,
+      },
+      orderBy: { createdAt: 'desc' },
+    })
+
+    // 5. 格式化数据，只保留 category 对象
+    const formattedWebsites = websites.map((website) => ({
+      ...website,
+      categories: website.categories.map((wc) => wc.category), // 提取 category
+    }))
+
+    // 6. 计算总页数
+    const totalPages = Math.ceil(total / pageSize)
+
+    // 7. 刷新缓存
+    // revalidatePath(`/category/${slug}`)
+
+    return {
+      websites: formattedWebsites,
+      categoryName: category.name,
+      pagination: {
+        total,
+        page,
+        pageSize,
+        totalPages: Math.ceil(total / pageSize),
+      },
+    }
+  } catch (error) {
+    console.error('Failed to get websites by category:', error)
+    throw error
+  }
 }
 
 // 获取所有标签
