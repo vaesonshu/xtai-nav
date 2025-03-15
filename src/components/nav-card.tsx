@@ -138,7 +138,7 @@ export function NavCard({ website }: { website: WebsiteProps }) {
                 disabled={isLoading}
               >
                 <HeartIcon
-                  className={`mr-1 h-4 w-4 ${isLiked ? 'fill-primary' : ''}`}
+                  className={`mr-1 h-4 w-4 ${isLiked ? 'fill-red-500 text-red-500' : ''}`}
                 />
                 {likes}
               </Button>
@@ -158,7 +158,7 @@ export function NavCard({ website }: { website: WebsiteProps }) {
                 disabled={isLoading}
               >
                 <Star
-                  className={`mr-1 h-4 w-4 ${isFavorited ? 'fill-primary' : ''}`}
+                  className={`mr-1 h-4 w-4 ${isFavorited ? ' fill-yellow-500 text-yellow-500' : ''}`}
                 />
               </Button>
             </TooltipWrapper>

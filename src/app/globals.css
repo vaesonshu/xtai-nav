@@ -205,3 +205,92 @@
   animation-fill-mode: forwards;
   left: 0; /* 使用left而不是right */
 }
+
+/* 渐变主题色 */
+@layer utilities {
+  .animated-title1 {
+    background: linear-gradient(
+      90deg,
+      #1e40af,
+      #7e22ce,
+      #ec4899,
+      #7e22ce,
+      #1e40af
+    );
+    background-size: 300% 100%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    animation: gradientFlow 8s ease infinite;
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.4); /* 增强光晕 */
+  }
+
+  /* 渐变流动动画 */
+  @keyframes gradientFlow {
+    0% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+    100% {
+      background-position: 0% 50%;
+    }
+  }
+
+  /* 流星渐变文字 */
+  .animated-title {
+    position: relative;
+    color: #1e40af; /* 默认深蓝 */
+    background: linear-gradient(
+      to bottom,
+      transparent,
+      #1e40af 20%,
+      /* 深蓝 */ #7e22ce 40%,
+      /* 紫色 */ #ec4899 60%,
+      /* 粉红 */ #ffa500 80%,
+      /* 金色 */ transparent
+    );
+    background-size: 300% 100%; /* 更大范围，柔和过渡 */
+    -webkit-background-clip: text;
+    background-clip: text;
+    animation: meteorGradient 6s linear infinite; /* 柔和 */
+    text-shadow:
+      0 0 12px rgba(255, 255, 255, 0.5),
+      0 0 20px rgba(236, 72, 153, 0.3); /* 多层光晕 */
+  }
+
+  /* 柔和且不规律的流星动画 */
+  @keyframes meteorGradient {
+    0% {
+      background-position: -400% 0; /* 更左侧外 */
+      color: #1e40af;
+      opacity: 0.6; /* 淡入 */
+    }
+    20% {
+      background-position: -200% 0; /* 缓慢进入 */
+      color: #1e40af;
+      opacity: 0.8;
+    }
+    40% {
+      background-position: 0% 0; /* 柔和划入 */
+      color: transparent;
+      opacity: 1;
+    }
+    60% {
+      background-position: 200% 0; /* 稍快划过 */
+      color: transparent;
+      opacity: 1;
+    }
+    85% {
+      background-position: 400% 0; /* 慢速划出 */
+      color: transparent;
+      opacity: 0.7;
+    }
+    100% {
+      background-position: 500% 0; /* 完全划出 */
+      color: #1e40af;
+      opacity: 0.6;
+    }
+  }
+}
