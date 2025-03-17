@@ -3,7 +3,8 @@ import { headers } from 'next/headers'
 import { db } from '@/db/db'
 
 // 从user-count路由导入activeIPs
-import { activeIPs } from '../user-count/route'
+// import { activeIPs } from '../user-count/route'
+import { activeIPs } from '../activeIp'
 
 export async function GET(request: NextRequest) {
   const headersList = headers()

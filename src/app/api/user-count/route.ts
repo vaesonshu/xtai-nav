@@ -1,7 +1,8 @@
 import { type NextRequest, NextResponse } from 'next/server'
 
 // 存储IP地址的Set，导出以便其他模块使用
-export const activeIPs = new Set<string>()
+// export const activeIPs = new Set<string>()
+import { activeIPs } from '../activeIp'
 
 // 获取当前用户数
 export async function GET() {
