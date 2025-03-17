@@ -206,7 +206,11 @@ export function AppSidebar() {
       <Separator />
       <SidebarFooter className="py-2 h-[60px] flex flex-col items-start justify-center">
         <SignedOut>
-          <SignInButton mode="modal" forceRedirectUrl={'/user-info'}>
+          <SignInButton
+            mode="modal"
+            forceRedirectUrl={'/user-info'}
+            signUpForceRedirectUrl={'/user-info'}
+          >
             <button className="w-full rounded-full border border-black bg-black px-4 py-1.5 text-sm text-white transition-colors hover:bg-white hover:text-black">
               登录
             </button>

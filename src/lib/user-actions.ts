@@ -6,7 +6,6 @@ import { db } from '@/db/db'
 export async function createOrUpdateUser() {
   const { userId } = await auth()
   const user = await currentUser()
-  console.log('userIduserId', userId)
 
   if (!userId || !user) {
     return {
@@ -29,9 +28,7 @@ export async function createOrUpdateUser() {
           clerkId: userId,
         },
         data: {
-          name: user.firstName
-            ? `${user.firstName} ${user.lastName || ''}`.trim()
-            : null,
+          name: user.username ? user.username : user.firstName || null,
           imageUrl: user.imageUrl,
           email: user.emailAddresses[0]?.emailAddress || '',
         },
@@ -41,9 +38,7 @@ export async function createOrUpdateUser() {
       await db.user.create({
         data: {
           clerkId: userId,
-          name: user.firstName
-            ? `${user.firstName} ${user.lastName || ''}`.trim()
-            : null,
+          name: user.username ? user.username : user.firstName || null,
           imageUrl: user.imageUrl,
           email: user.emailAddresses[0]?.emailAddress || '',
         },

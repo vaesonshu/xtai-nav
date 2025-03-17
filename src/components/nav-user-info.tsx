@@ -90,7 +90,7 @@ export default function DashboardPage() {
       <Card className="w-full max-w-lg shadow-lg bg-white/95 backdrop-blur-md">
         <CardHeader className="text-center">
           <CardTitle className="text-3xl font-bold text-gray-800">
-            欢迎, {user?.firstName || user?.username || 'User'}!
+            欢迎, {user?.username || user?.firstName || 'User'}!
           </CardTitle>
           <CardDescription className="text-gray-600">
             您已登录成功！开启您的精彩 AI 旅程吧！
@@ -111,7 +111,7 @@ export default function DashboardPage() {
             )}
             <div>
               <p className="font-semibold text-xl text-gray-800">
-                {user?.firstName || user?.username || 'User'}
+                {user?.username || user?.firstName || 'User'}
               </p>
               <p className="text-sm text-gray-500">
                 {user?.emailAddresses[0]?.emailAddress}
