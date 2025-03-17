@@ -3,6 +3,8 @@ import { Toaster } from 'sonner'
 import ClientWrapper from '@/components/client-wrapper'
 import { ClerkProvider } from '@clerk/nextjs'
 import './globals.css'
+import { zhCN } from '@clerk/localizations'
+import { dark, neobrutalism } from '@clerk/themes'
 
 export const metadata: Metadata = {
   title: '星途 AI 导航',
@@ -18,7 +20,18 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <ClerkProvider>
+    <ClerkProvider
+      localization={zhCN}
+      appearance={{
+        // baseTheme: [neobrutalism],
+        signIn: {
+          baseTheme: neobrutalism,
+        },
+        signUp: {
+          baseTheme: neobrutalism,
+        },
+      }}
+    >
       <html lang="en" suppressHydrationWarning>
         {/* 这里的SEO的配置,是作用域所有的页面 className="prose" */}
         <body suppressHydrationWarning>
