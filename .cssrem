@@ -1,0 +1,4 @@
+{
+  "$schema": "https://raw.githubusercontent.com/cipchk/vscode-cssrem/master/schema.json",
+  "rootFontSize": 16
+}

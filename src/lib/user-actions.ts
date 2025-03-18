@@ -7,6 +7,8 @@ export async function createOrUpdateUser() {
   const { userId } = await auth()
   const user = await currentUser()
 
+  console.log('user', user)
+
   if (!userId || !user) {
     return {
       error: 'Unauthorized',

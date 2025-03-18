@@ -21,7 +21,7 @@ import { useToast } from '@/hooks/use-toast'
 import { TooltipWrapper } from '@/components/ui/tooltip-wrapper'
 
 export function NavCard({ website }: { website: WebsiteProps }) {
-  console.log('---website---', website)
+  // console.log('---website---', website)
   const { isSignedIn } = useAuth()
   const [likes, setLikes] = useState(website.likes?.length || 0)
   const [views, setViews] = useState(website.views)

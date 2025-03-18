@@ -13,6 +13,10 @@ import {
   RocketIcon,
   LogOut,
   NotepadText,
+  Star,
+  ImagePlay,
+  Bookmark,
+  PanelLeft,
 } from 'lucide-react'
 import {
   Sidebar,
@@ -34,6 +38,11 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
+import {
+  SidebarProvider,
+  SidebarTrigger,
+  useSidebar,
+} from '@/components/ui/sidebar'
 import { CategoryForm } from '@/components/category-form'
 import { ThemeToggle } from '@/components/theme-toggle'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
@@ -54,7 +63,6 @@ import {
 
 export function AppSidebar() {
   const pathname = usePathname()
-  const router = useRouter()
   const [categories, setCategories] = useState<WebCategory[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [openDialog, setOpenDialog] = useState(false)
@@ -92,7 +100,7 @@ export function AppSidebar() {
     {
       title: '我的收藏',
       url: '/favorites',
-      icon: Globe,
+      icon: Star,
     },
   ]
 
@@ -106,7 +114,7 @@ export function AppSidebar() {
 
   return (
     <Sidebar className="border-r bg-background">
-      <SidebarHeader className="py-2">
+      <SidebarHeader className="flex flex-row justify-between items-center h-14">
         <div className="flex justify-start items-center gap-2 px-2">
           <Image
             src={Logo}
@@ -120,6 +128,7 @@ export function AppSidebar() {
             <p className="text-xs text-muted-foreground">AI 应用一站式导航</p>
           </div>
         </div>
+        <SidebarTrigger className="w-8 h-8" />
       </SidebarHeader>
       <Separator />
       <SidebarContent className="pb-0">
