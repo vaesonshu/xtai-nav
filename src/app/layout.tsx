@@ -3,7 +3,6 @@ import { cookies } from 'next/headers'
 import { Toaster } from 'sonner'
 import ClientWrapper from '@/components/client-wrapper'
 import { ClerkProvider } from '@clerk/nextjs'
-import './globals.css'
 import { zhCN } from '@clerk/localizations'
 import { dark, neobrutalism } from '@clerk/themes'
 import {
@@ -11,6 +10,9 @@ import {
   SidebarTrigger,
   useSidebar,
 } from '@/components/ui/sidebar'
+import { ThemeProvider } from '@/components/theme-provider'
+import './globals.css'
+
 export const metadata: Metadata = {
   title: '星途 AI 导航',
   description: 'AI 工具导航，AI 爱好者一站式导航网站，让选择 AI 工具不再迷茫！',
@@ -45,9 +47,16 @@ export default async function RootLayout({
       <html lang="en" suppressHydrationWarning>
         {/* 这里的SEO的配置,是作用域所有的页面 className="prose" */}
         <body suppressHydrationWarning>
-          <SidebarProvider defaultOpen={defaultOpen}>
-            <ClientWrapper>{children}</ClientWrapper>
-          </SidebarProvider>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
+            <SidebarProvider defaultOpen={defaultOpen}>
+              <ClientWrapper>{children}</ClientWrapper>
+            </SidebarProvider>
+          </ThemeProvider>
           {/* 提示框 */}
           <Toaster position="top-center" richColors />
         </body>

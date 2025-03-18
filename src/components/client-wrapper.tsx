@@ -1,7 +1,6 @@
 'use client'
 
 import { usePathname } from 'next/navigation'
-import { PanelLeft } from 'lucide-react'
 import {
   SidebarProvider,
   SidebarTrigger,
@@ -9,6 +8,7 @@ import {
   SidebarHeader,
 } from '@/components/ui/sidebar'
 import { AppSidebar } from '@/components/app-sidebar'
+import { ThemeToggle } from '@/components/theme-toggle'
 
 export default function ClientWrapper({
   children,
@@ -21,24 +21,19 @@ export default function ClientWrapper({
     pathname.startsWith('/danmu') ||
     pathname.startsWith('/user-info')
 
-  const {
-    state,
-    open,
-    setOpen,
-    openMobile,
-    setOpenMobile,
-    isMobile,
-    toggleSidebar,
-  } = useSidebar()
-
-  console.log('state', state)
+  const { open } = useSidebar()
 
   return !isAdminPage ? (
     <>
       <AppSidebar />
       <div className="w-full">
-        <SidebarHeader className="h-14 flex flex-row items-center bg-background">
+        <SidebarHeader
+          className={`h-14 flex flex-row items-center bg-background ${open ? 'justify-end' : 'justify-between'} `}
+        >
           {!open && <SidebarTrigger className="w-8 h-8" />}
+          <div className="self-end">
+            <ThemeToggle />
+          </div>
         </SidebarHeader>
         {children}
       </div>
