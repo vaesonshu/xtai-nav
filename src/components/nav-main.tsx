@@ -32,10 +32,8 @@ export default function NavMain({ websites }: { websites: WebsiteProps[] }) {
     return matchesSearch && matchesTag && matchesCategory
   })
 
-  console.log('filteredWebsites', filteredWebsites)
-
   return (
-    <div className="container mx-auto py-8 px-4">
+    <div className="container mx-auto py-2 px-2">
       <div className="text-center mb-8">
         <h1 className="text-3xl font-bold mb-2 animated-title">星途 AI 导航</h1>
         <p className="text-muted-foreground">发现优质 AI 应用网站资源</p>

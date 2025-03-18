@@ -1,9 +1,10 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
-import { useUser } from '@clerk/nextjs'
+import { UserCircle } from 'lucide-react'
 import Image from 'next/image'
+import { Fireworks } from 'fireworks-js'
 import {
   Card,
   CardContent,
@@ -11,16 +12,19 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
-import { UserCircle } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { useUser } from '@clerk/nextjs'
 import { createOrUpdateUser } from '@/lib/user-actions'
 
 export default function DashboardPage() {
   const { user, isLoaded, isSignedIn } = useUser()
-  console.log('user', user)
   const router = useRouter()
   const [progress, setProgress] = useState(100)
-  const totalTime = 3000
+  const totalTime = 300000
+
+  // 明确指定 fireworksRef 的类型为 Fireworks | null
+  const fireworksRef = useRef<Fireworks | null>(null)
+  const containerRef = useRef<HTMLDivElement | null>(null) // 为容器指定 HTMLDivElement 类型
 
   useEffect(() => {
     if (!isLoaded) return
@@ -35,6 +39,43 @@ export default function DashboardPage() {
       console.error('Failed to create/update user:', err)
     )
 
+    // 初始化礼花效果
+    if (containerRef.current && !fireworksRef.current) {
+      fireworksRef.current = new Fireworks(containerRef.current, {
+        // autoresize: true,
+        // opacity: 0.5,
+        // acceleration: 1.05,
+        // friction: 0.97,
+        // gravity: 1.5,
+        // particles: 50,
+        // explosion: 5,
+
+        autoresize: true,
+        opacity: 1.0, // 提高透明度到最大，确保粒子在浅色背景上清晰
+        acceleration: 1.05, // 略微增加加速度，增强动态感
+        friction: 0.95,
+        gravity: 1.7, // 增加重力，让粒子下落更自然
+        particles: 100, // 增加粒子数量，营造密集效果
+        traceLength: 4, // 延长尾迹，增强视觉冲击
+        traceSpeed: 12,
+        explosion: 10, // 增强爆炸强度，适合浅色背景
+        mouse: { click: false, move: false, max: 1 },
+        delay: { min: 25, max: 50 }, // 缩短延迟，增加频率
+        hue: { min: 0, max: 360 }, // 全色调范围，保持多彩
+        brightness: { min: 60, max: 90 }, // 调整亮度范围，适配浅色背景
+        decay: { min: 0.02, max: 0.04 }, // 加快衰减，粒子消失更快
+      })
+      // 确保 fireworksRef.current 已赋值后再调用 start
+      if (fireworksRef.current) {
+        fireworksRef.current.start()
+        setTimeout(() => {
+          if (fireworksRef.current) {
+            fireworksRef.current.stop()
+          }
+        }, 50000)
+      }
+    }
+
     const startTime = Date.now()
     const interval = setInterval(() => {
       const elapsed = Date.now() - startTime
@@ -47,7 +88,12 @@ export default function DashboardPage() {
       }
     }, 50)
 
-    return () => clearInterval(interval)
+    return () => {
+      clearInterval(interval)
+      if (fireworksRef.current) {
+        fireworksRef.current.stop()
+      }
+    }
   }, [isLoaded, isSignedIn, user, router])
 
   // 计算动态颜色
@@ -86,7 +132,13 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-gray-50 via-teal-50 to-blue-100">
+    <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-orange-50 via-pink-100 to-blue-100">
+      {/* 礼花容器 */}
+      <div
+        ref={containerRef}
+        className="absolute inset-0 z-0"
+        style={{ pointerEvents: 'none' }} // 防止礼花层拦截点击事件
+      />
       <Card className="w-full max-w-lg shadow-lg bg-white/95 backdrop-blur-md">
         <CardHeader className="text-center">
           <CardTitle className="text-3xl font-bold text-gray-800">

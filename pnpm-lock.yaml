@@ -85,6 +85,9 @@ importers:
       dayjs:
         specifier: ^1.11.13
         version: 1.11.13
+      fireworks-js:
+        specifier: ^2.10.8
+        version: 2.10.8
       lucide-react:
         specifier: ^0.471.1
         version: 0.471.1(react@19.0.0)
@@ -3007,6 +3010,12 @@ packages:
         integrity: sha512-YyZM99iHrqLKjmt4LJDj58KI+fYyufRLBSYcqycxf//KpBk9FoewoGX0450m9nB44qrZnovzC2oeP5hUibxc/g==,
       }
     engines: { node: '>=18' }
+
+  fireworks-js@2.10.8:
+    resolution:
+      {
+        integrity: sha512-UZNxeJvRmQzLisN4iriWXqKojG9TDJqc0dPmkUw0/+AEQQ3w8z1Jx2YdFSiBGSVb/u4dPTQXU109GMVblzhfpg==,
+      }
 
   flat-cache@4.0.1:
     resolution:
@@ -7122,6 +7131,8 @@ snapshots:
       locate-path: 7.2.0
       path-exists: 5.0.0
       unicorn-magic: 0.1.0
+
+  fireworks-js@2.10.8: {}
 
   flat-cache@4.0.1:
     dependencies:

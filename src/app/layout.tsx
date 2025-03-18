@@ -53,9 +53,7 @@ export default async function RootLayout({
             enableSystem
             disableTransitionOnChange
           >
-            <SidebarProvider defaultOpen={defaultOpen}>
-              <ClientWrapper>{children}</ClientWrapper>
-            </SidebarProvider>
+            <ClientWrapper defaultOpen={defaultOpen}>{children}</ClientWrapper>
           </ThemeProvider>
           {/* 提示框 */}
           <Toaster position="top-center" richColors />
