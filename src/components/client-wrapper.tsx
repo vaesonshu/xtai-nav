@@ -9,6 +9,7 @@ import {
 } from '@/components/ui/sidebar'
 import { AppSidebar } from '@/components/app-sidebar'
 import { ThemeToggle } from '@/components/theme-toggle'
+import SocialTab from '@/components/socal-tab'
 
 const ChildWrapper = ({
   children,
@@ -27,8 +28,12 @@ const ChildWrapper = ({
           className={`h-14 flex flex-row items-center bg-background ${open ? 'justify-end' : 'justify-between'} `}
         >
           {!open && <SidebarTrigger className="w-8 h-8" />}
-          <ThemeToggle />
+          <div className="flex items-center">
+            <SocialTab />
+            <ThemeToggle />
+          </div>
         </SidebarHeader>
+
         {children}
       </div>
     </SidebarProvider>

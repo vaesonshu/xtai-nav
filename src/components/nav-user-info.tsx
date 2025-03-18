@@ -20,7 +20,7 @@ export default function DashboardPage() {
   const { user, isLoaded, isSignedIn } = useUser()
   const router = useRouter()
   const [progress, setProgress] = useState(100)
-  const totalTime = 300000
+  const totalTime = 3000
 
   // 明确指定 fireworksRef 的类型为 Fireworks | null
   const fireworksRef = useRef<Fireworks | null>(null)
@@ -72,7 +72,7 @@ export default function DashboardPage() {
           if (fireworksRef.current) {
             fireworksRef.current.stop()
           }
-        }, 50000)
+        }, 5000)
       }
     }
 
