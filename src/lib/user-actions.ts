@@ -53,3 +53,13 @@ export async function createOrUpdateUser() {
     return { error: 'Failed to save user information' }
   }
 }
+
+export async function getUserInfo(clerkId: string) {
+  const userInfo = await db.user.findUnique({
+    where: {
+      clerkId,
+    },
+  })
+
+  return userInfo
+}

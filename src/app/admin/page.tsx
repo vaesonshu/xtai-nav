@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { Suspense } from 'react'
+import { redirect } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { WebsiteList } from '@/components/website-list'
 import { WebsiteCreateButton } from '@/components/website-create-button'
@@ -7,8 +8,18 @@ import { CategoryCreateButton } from '@/components/category-create-button'
 import { SearchForm } from '@/components/search-form'
 import { WebsitesLoading } from '@/components/websites-loading'
 import { House } from 'lucide-react'
+import { auth } from '@clerk/nextjs/server'
+import { isAdmin } from '@/lib/utils'
+import NotAuthorized from '@/components/not-authorized'
 
-export default function AdminPage() {
+export default async function AdminPage() {
+  const { userId } = await auth()
+  const userInfo = await isAdmin(userId!)
+
+  if (!userInfo) {
+    return <NotAuthorized />
+  }
+
   return (
     <div className="p-10">
       <div className="flex flex-col gap-6">

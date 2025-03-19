@@ -1,6 +1,7 @@
 import { clsx, type ClassValue } from 'clsx'
 import { twMerge } from 'tailwind-merge'
 import dayjs from 'dayjs'
+import { getUserInfo } from '@/lib/user-actions'
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -41,4 +42,10 @@ export function generateRandomColor(): {
 export const adminColor = {
   textColor: '#9c4221',
   backgroundColor: 'rgba(254, 243, 199, 0.85)',
+}
+
+// 判断是否是管理员
+export async function isAdmin(userId: string) {
+  const userInfo = await getUserInfo(userId)
+  return userInfo!.role === 'ADMIN'
 }

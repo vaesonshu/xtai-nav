@@ -4,7 +4,14 @@ import { useState, useEffect, useCallback } from 'react'
 import { usePathname, useRouter } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
-import { Home, FolderOpenDot, Loader2, NotepadText, Star } from 'lucide-react'
+import {
+  Home,
+  FolderOpenDot,
+  Loader2,
+  NotepadText,
+  Star,
+  Settings,
+} from 'lucide-react'
 import {
   Sidebar,
   SidebarContent,
@@ -22,14 +29,15 @@ import { Separator } from '@/components/ui/separator'
 import { WebCategory } from '@/types/nav-list'
 import Logo from '@/images/logo2.png'
 import { useToast } from '@/hooks/use-toast'
-
 import { SignInButton, SignedIn, SignedOut, UserButton } from '@clerk/nextjs'
+import { auth } from '@clerk/nextjs/server'
+import { isAdmin } from '@/lib/utils'
 
 export function AppSidebar() {
   const pathname = usePathname()
   const [categories, setCategories] = useState<WebCategory[]>([])
   const [isLoading, setIsLoading] = useState(true)
-
+  const [ifAdmin, setIfAdmin] = useState(false)
   const { errorToast } = useToast()
 
   const loadCategories = useCallback(async () => {
@@ -63,6 +71,11 @@ export function AppSidebar() {
       title: '我的收藏',
       url: '/favorites',
       icon: Star,
+    },
+    {
+      title: '网站管理',
+      url: '/admin',
+      icon: Settings,
     },
   ]
 
