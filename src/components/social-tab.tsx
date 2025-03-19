@@ -7,24 +7,27 @@ import {
   HoverCardTrigger,
 } from '@/components/ui/hover-card'
 import { Icon } from '@iconify/react'
-// import weixin from '@/images/weixin.jpg'
+import weixin from '@/images/weixin.jpg'
 
 export default function socalTab() {
   return (
     <div className="">
       <HoverCard>
         <HoverCardTrigger asChild>
-          <Button variant="ghost">
+          <Button variant="ghost" size="icon">
             <Icon icon="simple-icons:wechat" />
           </Button>
         </HoverCardTrigger>
-        <HoverCardContent className="">
-          <div className="">
-            <Image src={''} alt="" width={100} height={100}></Image>
-          </div>
+        <HoverCardContent className="w-[120px]">
+          <Image
+            src={weixin}
+            alt="微信联系方式"
+            width={120}
+            height={120}
+          ></Image>
         </HoverCardContent>
       </HoverCard>
-      <Button variant="ghost">
+      <Button variant="ghost" size="icon">
         <Link href="https://github.com/vaesonshu/xtai-nav" target="_black">
           <Icon icon="logos:github-icon" />
         </Link>

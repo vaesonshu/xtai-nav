@@ -1,6 +1,6 @@
 'use client'
 import Link from 'next/link'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import type React from 'react'
 import * as LucideIcons from 'lucide-react'
 
@@ -28,7 +28,6 @@ export function NavCard({ website }: { website: WebsiteProps }) {
   const [isLoading, setIsLoading] = useState(false)
   const [isLiked, setIsLiked] = useState(false)
   const [isFavorited, setIsFavorited] = useState(false)
-
   const { warning } = useToast()
 
   // 初始化获取点赞量和收藏量
