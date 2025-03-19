@@ -4,20 +4,7 @@ import { useState, useEffect, useCallback } from 'react'
 import { usePathname, useRouter } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
-import {
-  Home,
-  FolderOpenDot,
-  Globe,
-  Plus,
-  Loader2,
-  RocketIcon,
-  LogOut,
-  NotepadText,
-  Star,
-  ImagePlay,
-  Bookmark,
-  PanelLeft,
-} from 'lucide-react'
+import { Home, FolderOpenDot, Loader2, NotepadText, Star } from 'lucide-react'
 import {
   Sidebar,
   SidebarContent,
@@ -30,37 +17,13 @@ import {
   SidebarHeader,
   SidebarFooter,
 } from '@/components/ui/sidebar'
-import { getCategories } from '@/lib/actions'
-import { Button } from '@/components/ui/button'
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog'
-import {
-  SidebarProvider,
-  SidebarTrigger,
-  useSidebar,
-} from '@/components/ui/sidebar'
-import { CategoryForm } from '@/components/category-form'
-import { ThemeToggle } from '@/components/theme-toggle'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { SidebarTrigger } from '@/components/ui/sidebar'
 import { Separator } from '@/components/ui/separator'
-import { NavUser } from '@/components/nav-user'
 import { WebCategory } from '@/types/nav-list'
 import Logo from '@/images/logo2.png'
-import NavUserInfo from '@/components/nav-user-info'
 import { useToast } from '@/hooks/use-toast'
 
-import {
-  ClerkProvider,
-  SignInButton,
-  SignUpButton,
-  SignedIn,
-  SignedOut,
-  UserButton,
-} from '@clerk/nextjs'
+import { SignInButton, SignedIn, SignedOut, UserButton } from '@clerk/nextjs'
 
 export function AppSidebar() {
   const pathname = usePathname()

@@ -31,13 +31,10 @@ export default async function RootLayout({
   const defaultOpen =
     sidebarState !== undefined ? sidebarState === 'true' : true
 
-  console.log('defaultOpen', defaultOpen)
-
   return (
     <ClerkProvider
       localization={zhCN}
       appearance={{
-        // baseTheme: [neobrutalism],
         signIn: {
           baseTheme: neobrutalism,
         },

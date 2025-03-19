@@ -1,11 +1,12 @@
 'use client'
-
+import React from 'react'
 import { usePathname } from 'next/navigation'
 import { useTheme } from 'next-themes'
 import {
   SidebarTrigger,
   SidebarHeader,
   SidebarProvider,
+  useSidebar,
 } from '@/components/ui/sidebar'
 import { AppSidebar } from '@/components/app-sidebar'
 import { ThemeToggle } from '@/components/theme-toggle'
@@ -19,15 +20,20 @@ const ChildWrapper = ({
   defaultOpen: boolean
 }) => {
   const { theme } = useTheme()
+  const [open, setOpen] = React.useState(defaultOpen)
 
   return (
-    <SidebarProvider defaultOpen={defaultOpen}>
+    <SidebarProvider
+      defaultOpen={defaultOpen}
+      open={open}
+      onOpenChange={setOpen}
+    >
       <AppSidebar />
       <div className="w-full">
         <SidebarHeader
-          className={`h-14 flex flex-row items-center bg-background ${defaultOpen ? 'justify-end' : 'justify-between'} `}
+          className={`h-14 flex flex-row items-center bg-background ${open ? 'justify-end' : 'justify-between'} `}
         >
-          {!defaultOpen && <SidebarTrigger className="w-8 h-8" />}
+          {!open && <SidebarTrigger className="w-8 h-8" />}
           <div className="flex items-center">
             <SocialTab theme={theme} />
             <ThemeToggle />
