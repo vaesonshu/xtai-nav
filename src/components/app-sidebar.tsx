@@ -1,10 +1,23 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
-import { usePathname } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
-import { Home, FolderOpenDot, Loader2, NotepadText, Star } from 'lucide-react'
+import {
+  Home,
+  FolderOpenDot,
+  Globe,
+  Plus,
+  Loader2,
+  RocketIcon,
+  LogOut,
+  NotepadText,
+  Star,
+  ImagePlay,
+  Bookmark,
+  PanelLeft,
+} from 'lucide-react'
 import {
   Sidebar,
   SidebarContent,
@@ -18,25 +31,52 @@ import {
   SidebarFooter,
 } from '@/components/ui/sidebar'
 import { getCategories } from '@/lib/actions'
-import { SidebarTrigger } from '@/components/ui/sidebar'
+import { Button } from '@/components/ui/button'
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog'
+import {
+  SidebarProvider,
+  SidebarTrigger,
+  useSidebar,
+} from '@/components/ui/sidebar'
+import { CategoryForm } from '@/components/category-form'
+import { ThemeToggle } from '@/components/theme-toggle'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Separator } from '@/components/ui/separator'
+import { NavUser } from '@/components/nav-user'
 import { WebCategory } from '@/types/nav-list'
 import Logo from '@/images/logo2.png'
+import NavUserInfo from '@/components/nav-user-info'
 import { useToast } from '@/hooks/use-toast'
 
-import { SignInButton, SignedIn, SignedOut, UserButton } from '@clerk/nextjs'
+import {
+  ClerkProvider,
+  SignInButton,
+  SignUpButton,
+  SignedIn,
+  SignedOut,
+  UserButton,
+} from '@clerk/nextjs'
 
 export function AppSidebar() {
   const pathname = usePathname()
   const [categories, setCategories] = useState<WebCategory[]>([])
   const [isLoading, setIsLoading] = useState(true)
+
   const { errorToast } = useToast()
 
   const loadCategories = useCallback(async () => {
     try {
-      const data = await getCategories()
+      // const data = await getCategories()
+      const response = await fetch('/api/categories')
+      const data = await response.json()
       setCategories(data)
     } catch (error) {
+      console.error('加载分类失败:', error)
       errorToast('分类加载失败', {
         description: error as string,
       })

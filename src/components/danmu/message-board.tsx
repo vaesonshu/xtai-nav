@@ -4,7 +4,6 @@ import { useState, useRef } from 'react'
 import MessageForm from './message-form'
 import Danmaku from './danmaku'
 import UserCounter from './user-counter'
-import TestDanmaku from './test-danmaku'
 import type { Message } from '@/types/message'
 
 export default function MessageBoard() {
@@ -39,17 +38,10 @@ export default function MessageBoard() {
         style={{ minHeight: 'calc(100vh - 220px)' }}
       >
         <Danmaku containerRef={displayAreaRef} />
-        {/* {showTestDanmaku && <TestDanmaku />} */}
 
         {/* 提示文字和测试按钮 */}
         <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
           <p className="text-slate-400 text-lg opacity-30 mb-4">弹幕显示区域</p>
-          {/* <button
-            onClick={() => setShowTestDanmaku(true)}
-            className="bg-indigo-600 text-white px-4 py-2 rounded pointer-events-auto"
-          >
-            发送测试弹幕
-          </button> */}
         </div>
       </div>
 

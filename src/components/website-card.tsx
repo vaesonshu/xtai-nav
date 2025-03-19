@@ -57,11 +57,11 @@ export function WebsiteCard({ website }: { website: any }) {
             </Avatar>
             <div>
               <h3 className="font-semibold leading-none">{website.name}</h3>
-              <p className="text-xs text-muted-foreground">
+              {/* <p className="text-xs text-muted-foreground">
                 {formatDistanceToNow(new Date(website.createdAt), {
                   addSuffix: true,
                 })}
-              </p>
+              </p> */}
             </div>
           </div>
           <DropdownMenu>

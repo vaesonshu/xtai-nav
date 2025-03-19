@@ -1,5 +1,5 @@
 import { getUserFavorites } from '@/lib/actions'
-import { WebsiteCard } from '@/components/website-card'
+import { WebsiteCard } from '@/components/favorite-card'
 import { EmptyFavorites } from '@/components/favorites/empty-favorites'
 
 export async function FavoritesList() {

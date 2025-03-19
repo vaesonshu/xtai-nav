@@ -2,7 +2,6 @@ import { Suspense } from 'react'
 import { FavoritesList } from '@/components/favorites/favorites-list'
 import { WebsitesLoading } from '@/components/websites-loading'
 import { auth } from '@clerk/nextjs/server'
-import { redirect } from 'next/navigation'
 
 export default async function FavoritesPage() {
   const { userId } = await auth()

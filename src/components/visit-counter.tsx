@@ -20,7 +20,9 @@ export default function VisitCounter() {
       try {
         setLoading(true)
         // Only increment on first load
-        const visitStats = await incrementVisitCount()
+        // const visitStats = await incrementVisitCount()
+        const response = await fetch('/api/visit', { method: 'POST' })
+        const visitStats = await response.json()
         setStats(visitStats)
       } catch (error) {
         console.error('Failed to track visit:', error)
