@@ -1,6 +1,7 @@
 'use client'
 
 import { usePathname } from 'next/navigation'
+import { useTheme } from 'next-themes'
 import {
   SidebarTrigger,
   SidebarHeader,
@@ -17,6 +18,8 @@ const ChildWrapper = ({
   children: React.ReactNode
   defaultOpen: boolean
 }) => {
+  const { theme } = useTheme()
+
   return (
     <SidebarProvider defaultOpen={defaultOpen}>
       <AppSidebar />
@@ -26,7 +29,7 @@ const ChildWrapper = ({
         >
           {!defaultOpen && <SidebarTrigger className="w-8 h-8" />}
           <div className="flex items-center">
-            <SocialTab />
+            <SocialTab theme={theme} />
             <ThemeToggle />
           </div>
         </SidebarHeader>

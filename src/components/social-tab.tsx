@@ -9,7 +9,7 @@ import {
 import { Icon } from '@iconify/react'
 import weixin from '@/images/weixin.jpg'
 
-export default function socalTab() {
+export default function socalTab({ theme }: { theme: string | undefined }) {
   return (
     <div className="">
       <HoverCard>
@@ -29,7 +29,7 @@ export default function socalTab() {
       </HoverCard>
       <Button variant="ghost" size="icon">
         <Link href="https://github.com/vaesonshu/xtai-nav" target="_black">
-          <Icon icon="logos:github-icon" />
+          <Icon icon="simple-icons:github" />
         </Link>
       </Button>
     </div>
