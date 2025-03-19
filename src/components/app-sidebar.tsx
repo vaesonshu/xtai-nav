@@ -1,23 +1,10 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { usePathname, useRouter } from 'next/navigation'
+import { useState, useEffect, useCallback } from 'react'
+import { usePathname } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
-import {
-  Home,
-  FolderOpenDot,
-  Globe,
-  Plus,
-  Loader2,
-  RocketIcon,
-  LogOut,
-  NotepadText,
-  Star,
-  ImagePlay,
-  Bookmark,
-  PanelLeft,
-} from 'lucide-react'
+import { Home, FolderOpenDot, Loader2, NotepadText, Star } from 'lucide-react'
 import {
   Sidebar,
   SidebarContent,
@@ -31,64 +18,36 @@ import {
   SidebarFooter,
 } from '@/components/ui/sidebar'
 import { getCategories } from '@/lib/actions'
-import { Button } from '@/components/ui/button'
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog'
-import {
-  SidebarProvider,
-  SidebarTrigger,
-  useSidebar,
-} from '@/components/ui/sidebar'
-import { CategoryForm } from '@/components/category-form'
-import { ThemeToggle } from '@/components/theme-toggle'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { SidebarTrigger } from '@/components/ui/sidebar'
 import { Separator } from '@/components/ui/separator'
-import { NavUser } from '@/components/nav-user'
 import { WebCategory } from '@/types/nav-list'
 import Logo from '@/images/logo2.png'
-import NavUserInfo from '@/components/nav-user-info'
+import { useToast } from '@/hooks/use-toast'
 
-import {
-  ClerkProvider,
-  SignInButton,
-  SignUpButton,
-  SignedIn,
-  SignedOut,
-  UserButton,
-} from '@clerk/nextjs'
+import { SignInButton, SignedIn, SignedOut, UserButton } from '@clerk/nextjs'
 
 export function AppSidebar() {
   const pathname = usePathname()
   const [categories, setCategories] = useState<WebCategory[]>([])
   const [isLoading, setIsLoading] = useState(true)
-  const [openDialog, setOpenDialog] = useState(false)
+  const { errorToast } = useToast()
 
-  useEffect(() => {
-    const loadCategories = async () => {
-      try {
-        const data = await getCategories()
-        setCategories(data)
-      } catch (error) {
-        console.error('加载分类失败:', error)
-      } finally {
-        setIsLoading(false)
-      }
+  const loadCategories = useCallback(async () => {
+    try {
+      const data = await getCategories()
+      setCategories(data)
+    } catch (error) {
+      errorToast('分类加载失败', {
+        description: error as string,
+      })
+    } finally {
+      setIsLoading(false)
     }
-
-    loadCategories()
   }, [])
 
-  const handleCategoryAdded = async () => {
-    setOpenDialog(false)
-    setIsLoading(true)
-    const updatedCategories = await getCategories()
-    setCategories(updatedCategories)
-    setIsLoading(false)
-  }
+  useEffect(() => {
+    loadCategories()
+  }, [loadCategories])
 
   // Static navigation items
   const navItems = [
@@ -153,15 +112,6 @@ export function AppSidebar() {
         <SidebarGroup>
           <div className="flex items-center justify-between mb-2 px-2">
             <SidebarGroupLabel className="mb-0">网站分类</SidebarGroupLabel>
-            <Button
-              variant="ghost"
-              size="sm"
-              className="h-8 w-8 p-0"
-              onClick={() => setOpenDialog(true)}
-            >
-              <Plus className="h-4 w-4" />
-              <span className="sr-only">添加分类</span>
-            </Button>
           </div>
           <SidebarGroupContent>
             {isLoading ? (
@@ -229,16 +179,6 @@ export function AppSidebar() {
           <UserButton />
         </SignedIn>
       </SidebarFooter>
-
-      {/* Category Dialog */}
-      <Dialog open={openDialog} onOpenChange={setOpenDialog}>
-        <DialogContent className="sm:max-w-[500px]">
-          <DialogHeader>
-            <DialogTitle>网站分类管理</DialogTitle>
-          </DialogHeader>
-          <CategoryForm onSuccess={handleCategoryAdded} />
-        </DialogContent>
-      </Dialog>
     </Sidebar>
   )
 }

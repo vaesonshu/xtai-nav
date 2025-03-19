@@ -10,6 +10,8 @@ export interface WebsiteProps {
   favorites: any[]
   views: number
   createdAt: Date
+  hasFavorited: boolean
+  hasLiked: boolean
 }
 
 export interface WebCategory {

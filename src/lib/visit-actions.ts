@@ -71,14 +71,3 @@ export async function incrementVisitCount() {
     uniqueVisitors: stats.uniqueCount,
   }
 }
-
-export async function getVisitStats() {
-  const stats = await db.visitStats.findUnique({
-    where: { id: 'singleton' },
-  })
-
-  return {
-    totalVisits: stats?.count || 0,
-    uniqueVisitors: stats?.uniqueCount || 0,
-  }
-}

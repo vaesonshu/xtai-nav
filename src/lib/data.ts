@@ -31,14 +31,16 @@ export async function getWebsites(
 ) {
   const where: any = {}
 
+  // todo: 分页
   const skip = (page - 1) * pageSize
   const take = pageSize
 
+  // 构建查询条件
   if (search) {
     where.OR = [
       { name: { contains: search, mode: 'insensitive' } },
       { description: { contains: search, mode: 'insensitive' } },
-      { tags: { array_contains: search } }, // 使用 array_contains 而不是 has
+      { tags: { has: search } }, // 修改为 has，Prisma 推荐
     ]
   }
 
@@ -54,8 +56,20 @@ export async function getWebsites(
 
   if (tag) {
     where.tags = {
-      array_contains: tag, // 使用 array_contains 而不是 has
+      has: tag, // 修改为 has
     }
+  }
+
+  // 获取当前用户
+  const { userId: clerkId } = await auth()
+  let currentUserId: string | undefined
+
+  if (clerkId) {
+    const user = await db.user.findUnique({
+      where: { clerkId },
+      select: { id: true },
+    })
+    currentUserId = user?.id
   }
 
   const [websites, total] = await Promise.all([
@@ -80,6 +94,14 @@ export async function getWebsites(
     websites: websites.map((website) => ({
       ...website,
       categories: website.categories.map((wc) => wc.category), // 提取 category
+      hasLiked: currentUserId
+        ? website.likes.some((like) => like.userId === currentUserId)
+        : false,
+      hasFavorited: currentUserId
+        ? website.favorites.some(
+            (favorite) => favorite.userId === currentUserId
+          )
+        : false,
     })),
     // 返回分页信息
     pagination: {

@@ -24,7 +24,7 @@ export function useToast() {
   }
 
   // 错误通知
-  const error = (message: string, options: ToastOptions = {}) => {
+  const errorToast = (message: string, options: ToastOptions = {}) => {
     toast.error(message, {
       description: options.description,
       action: options.action,
@@ -50,7 +50,7 @@ export function useToast() {
 
   return {
     success,
-    error,
+    errorToast,
     warning,
     custom,
   }

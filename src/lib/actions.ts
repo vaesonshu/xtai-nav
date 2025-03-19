@@ -97,7 +97,7 @@ export async function incrementViews(id: string) {
   return website.views
 }
 
-// 给网站点赞
+// 获取分类
 // export async function incrementLikes(id: string) {
 //   const website = await db.website.update({
 //     where: { id },
@@ -145,7 +145,7 @@ export async function deleteCategory(id: string) {
   return { success: true }
 }
 
-// Helper function to get or create a user
+// 获取用户或创建用户
 async function getOrCreateUser() {
   const { userId } = await auth()
 
@@ -165,12 +165,11 @@ async function getOrCreateUser() {
   return user
 }
 
-// Updated like function to be user-specific
+// 点赞网站
 export async function toggleLike(websiteId: string) {
   try {
     const user = await getOrCreateUser()
 
-    // Check if the user has already liked this website
     const existingLike = await db.like.findUnique({
       where: {
         userId_websiteId: {
@@ -181,14 +180,12 @@ export async function toggleLike(websiteId: string) {
     })
 
     if (existingLike) {
-      // If like exists, remove it
       await db.like.delete({
         where: {
           id: existingLike.id,
         },
       })
 
-      // Return the updated like count and liked status
       const likeCount = await db.like.count({
         where: {
           websiteId,
@@ -205,7 +202,6 @@ export async function toggleLike(websiteId: string) {
         },
       })
 
-      // Return the updated like count and liked status
       const likeCount = await db.like.count({
         where: {
           websiteId,
@@ -220,7 +216,7 @@ export async function toggleLike(websiteId: string) {
   }
 }
 
-// New function to toggle favorite status
+// 收藏网站
 export async function toggleFavorite(websiteId: string) {
   try {
     const user = await getOrCreateUser()
@@ -263,73 +259,7 @@ export async function toggleFavorite(websiteId: string) {
   }
 }
 
-// Function to check if a user has liked a website
-export async function hasUserLikedWebsite(websiteId: string) {
-  try {
-    const { userId } = await auth()
-
-    if (!userId) {
-      return false
-    }
-
-    const user = await db.user.findUnique({
-      where: { clerkId: userId },
-    })
-
-    if (!user) {
-      return false
-    }
-
-    const like = await db.like.findUnique({
-      where: {
-        userId_websiteId: {
-          userId: user.id,
-          websiteId,
-        },
-      },
-    })
-
-    return !!like
-  } catch (error) {
-    console.error('检查点赞状态失败:', error)
-    return false
-  }
-}
-
-// Function to check if a user has favorited a website
-export async function hasUserFavoritedWebsite(websiteId: string) {
-  try {
-    const { userId } = await auth()
-
-    if (!userId) {
-      return false
-    }
-
-    const user = await db.user.findUnique({
-      where: { clerkId: userId },
-    })
-
-    if (!user) {
-      return false
-    }
-
-    const favorite = await db.favorite.findUnique({
-      where: {
-        userId_websiteId: {
-          userId: user.id,
-          websiteId,
-        },
-      },
-    })
-
-    return !!favorite
-  } catch (error) {
-    console.error('检查收藏状态失败:', error)
-    return false
-  }
-}
-
-// Function to get user's favorite websites
+// 获取用户收藏列表
 export async function getUserFavorites() {
   try {
     const user = await getOrCreateUser()

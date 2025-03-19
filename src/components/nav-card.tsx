@@ -1,6 +1,7 @@
 'use client'
+
 import Link from 'next/link'
-import { useState, useEffect, useRef } from 'react'
+import { useState } from 'react'
 import type React from 'react'
 import * as LucideIcons from 'lucide-react'
 
@@ -9,41 +10,19 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { WebsiteProps } from '@/types/nav-list'
-import {
-  incrementViews,
-  toggleLike,
-  toggleFavorite,
-  hasUserLikedWebsite,
-  hasUserFavoritedWebsite,
-} from '@/lib/actions'
+import { incrementViews, toggleLike, toggleFavorite } from '@/lib/actions'
 import { useAuth } from '@clerk/nextjs'
 import { useToast } from '@/hooks/use-toast'
 import { TooltipWrapper } from '@/components/ui/tooltip-wrapper'
 
 export function NavCard({ website }: { website: WebsiteProps }) {
-  // console.log('---website---', website)
   const { isSignedIn } = useAuth()
   const [likes, setLikes] = useState(website.likes?.length || 0)
   const [views, setViews] = useState(website.views)
   const [isLoading, setIsLoading] = useState(false)
-  const [isLiked, setIsLiked] = useState(false)
-  const [isFavorited, setIsFavorited] = useState(false)
-  const { warning } = useToast()
-
-  // 初始化获取点赞量和收藏量
-  useEffect(() => {
-    // Check if the user has liked or favorited this website
-    async function checkUserInteractions() {
-      if (isSignedIn) {
-        const liked = await hasUserLikedWebsite(website.id)
-        const favorited = await hasUserFavoritedWebsite(website.id)
-        setIsLiked(liked)
-        setIsFavorited(favorited)
-      }
-    }
-
-    checkUserInteractions()
-  }, [website.id, isSignedIn])
+  const [isLiked, setIsLiked] = useState(website.hasLiked)
+  const [isFavorited, setIsFavorited] = useState(website.hasFavorited)
+  const { success, warning, errorToast } = useToast()
 
   // 访问函数
   const handleVisit = async () => {
@@ -61,8 +40,7 @@ export function NavCard({ website }: { website: WebsiteProps }) {
     e.stopPropagation()
 
     if (!isSignedIn) {
-      // Redirect to sign in or show a message
-      warning('请先登录')
+      warning('请先登录哈！')
       return
     }
     try {
@@ -70,8 +48,11 @@ export function NavCard({ website }: { website: WebsiteProps }) {
       const result = await toggleLike(website.id)
       setLikes(result.count)
       setIsLiked(result.liked)
+      success(result.liked ? '点赞成功！' : '取消点赞成功！')
     } catch (error) {
-      console.error('点赞失败:', error)
+      errorToast('点赞失败咯！', {
+        description: error as string,
+      })
     } finally {
       setIsLoading(false)
     }
@@ -79,8 +60,7 @@ export function NavCard({ website }: { website: WebsiteProps }) {
 
   const handleFavorite = async () => {
     if (!isSignedIn) {
-      // Redirect to sign in or show a message
-      warning('请先登录')
+      warning('请先登录哈！')
       return
     }
 
@@ -88,8 +68,11 @@ export function NavCard({ website }: { website: WebsiteProps }) {
       setIsLoading(true)
       const result = await toggleFavorite(website.id)
       setIsFavorited(result.favorited)
+      success(result.favorited ? '收藏成功！' : '取消收藏成功！')
     } catch (error) {
-      console.error('收藏失败:', error)
+      errorToast('收藏失败咯！', {
+        description: error as string,
+      })
     } finally {
       setIsLoading(false)
     }
