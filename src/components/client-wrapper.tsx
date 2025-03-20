@@ -31,7 +31,7 @@ const ChildWrapper = ({
       <AppSidebar />
       <div className="w-full">
         <SidebarHeader
-          className={`h-14 flex flex-row items-center bg-background ${open ? 'justify-end' : 'justify-between'} `}
+          className={`h-14 flex flex-row items-center ${open ? 'justify-end' : 'justify-between'} `}
         >
           {!open && <SidebarTrigger className="w-8 h-8" />}
           <div className="flex items-center">
