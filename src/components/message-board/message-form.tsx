@@ -3,21 +3,31 @@
 import { useState, useRef } from 'react'
 import { createMessage } from '@/lib/message-actions'
 import { Button } from '@/components/ui/button'
-import { Textarea } from '@/components/ui/textarea'
 import { Input } from '@/components/ui/input'
 import { useToast } from '@/hooks/use-toast'
-import { AlertCircle, Send, User, ShieldAlert } from 'lucide-react'
+import { AlertCircle, Send, User, ShieldAlert, X } from 'lucide-react'
+import RichTextEditor from './rich-text-editor'
 
 interface MessageFormProps {
   isLoggedIn: boolean
   isAdmin: boolean
   userName: string
+  parentId?: string | null
+  parentAuthor?: string
+  onSuccess?: () => void
+  onCancel?: () => void
+  isReply?: boolean
 }
 
 export default function MessageForm({
   isLoggedIn,
   isAdmin,
   userName,
+  parentId = null,
+  parentAuthor,
+  onSuccess,
+  onCancel,
+  isReply = false,
 }: MessageFormProps) {
   const [content, setContent] = useState('')
   const [author, setAuthor] = useState(userName || '')
@@ -32,19 +42,23 @@ export default function MessageForm({
       const result = await createMessage(formData)
 
       if (result.success) {
-        success('留言成功！', {
-          description: '感谢您的留言！',
+        success(isReply ? '回复成功' : '留言成功', {
+          description: isReply ? '您的回复已发送！' : '感谢您的留言！',
         })
         setContent('')
         formRef.current?.reset()
+
+        if (onSuccess) {
+          onSuccess()
+        }
       } else {
-        errorToast('留言失败', {
-          description: result.error || '发送留言时出现错误',
+        errorToast(isReply ? '回复失败' : '留言失败', {
+          description: result.error || '发送时出现错误',
         })
       }
     } catch (error) {
-      errorToast('留言失败', {
-        description: '发送留言时出现错误',
+      errorToast(isReply ? '回复失败' : '留言失败', {
+        description: '发送时出现错误',
       })
     } finally {
       setIsSubmitting(false)
@@ -53,6 +67,28 @@ export default function MessageForm({
 
   return (
     <form ref={formRef} action={handleSubmit} className="space-y-4">
+      {parentId && <input type="hidden" name="parentId" value={parentId} />}
+
+      {isReply && parentAuthor && (
+        <div className="bg-gray-50 p-3 rounded-md text-sm text-gray-600 flex items-center justify-between">
+          <span>
+            回复给: <span className="font-medium">{parentAuthor}</span>
+          </span>
+          {onCancel && (
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              onClick={onCancel}
+              className="h-8 px-2 text-gray-500"
+            >
+              <X className="h-4 w-4 mr-1" />
+              取消回复
+            </Button>
+          )}
+        </div>
+      )}
+
       <div className="space-y-2">
         <div className="flex items-center gap-2">
           {isAdmin ? (
@@ -82,24 +118,37 @@ export default function MessageForm({
 
       <div className="space-y-2">
         <label htmlFor="content" className="text-sm font-medium text-gray-700">
-          留言内容
+          {isReply ? '回复内容' : '留言内容'}
         </label>
-        <Textarea
-          id="content"
-          name="content"
+
+        <input type="hidden" name="content" value={content} />
+
+        <RichTextEditor
           value={content}
-          onChange={(e) => setContent(e.target.value)}
-          placeholder="在这里输入您的留言..."
-          required
-          className="min-h-[120px] w-full"
+          onChange={setContent}
+          placeholder={
+            isReply ? '在这里输入您的回复...' : '在这里输入您的留言...'
+          }
+          minHeight={isReply ? '80px' : '120px'}
           disabled={isSubmitting}
         />
       </div>
 
-      <div className="flex justify-end">
+      <div className="flex justify-end gap-2">
+        {onCancel && (
+          <Button
+            type="button"
+            variant="outline"
+            onClick={onCancel}
+            disabled={isSubmitting}
+          >
+            取消
+          </Button>
+        )}
+
         <Button
           type="submit"
-          disabled={isSubmitting}
+          disabled={isSubmitting || !content.trim()}
           className={`${isAdmin ? 'bg-red-500 hover:bg-red-600' : 'bg-blue-500 hover:bg-blue-600'}`}
         >
           {isSubmitting ? (
@@ -124,12 +173,12 @@ export default function MessageForm({
                   d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                 ></path>
               </svg>
-              发送中...
+              {isReply ? '回复中...' : '发送中...'}
             </span>
           ) : (
             <span className="flex items-center gap-2">
               <Send className="h-4 w-4" />
-              发送留言
+              {isReply ? '发送回复' : '发送留言'}
             </span>
           )}
         </Button>

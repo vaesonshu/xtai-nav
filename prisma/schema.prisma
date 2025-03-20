@@ -112,6 +112,15 @@ model Message {
   author    String
   isAdmin   Boolean  @default(false)
   createdAt DateTime @default(now())
+
+  // New fields for replies
+  parentId  String?
+  parent    Message?  @relation("MessageReplies", fields: [parentId], references: [id], onDelete: Cascade)
+  replies   Message[] @relation("MessageReplies")
+  
+  // New fields for reactions
+  likes     Int       @default(0)
+  isPinned  Boolean   @default(false)
 }
 
 model UserCount {
