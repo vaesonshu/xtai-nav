@@ -54,7 +54,7 @@ export function AppSidebar() {
     } finally {
       setIsLoading(false)
     }
-  }, [])
+  }, [errorToast])
 
   useEffect(() => {
     loadCategories()
@@ -81,8 +81,8 @@ export function AppSidebar() {
 
   const footItems = [
     {
-      title: '弹幕留言板',
-      url: '/danmu',
+      title: '留言板',
+      url: '/message-board',
       icon: NotepadText,
     },
   ]

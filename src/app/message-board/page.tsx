@@ -32,12 +32,11 @@ async function getUserInfo() {
   }
 }
 
-export default async function MessageBoardPage({
-  searchParams = { page: 1 },
-}: {
-  searchParams: { page?: number }
+export default async function MessageBoardPage(props: {
+  searchParams: Promise<{ page?: number }>
 }) {
-  const { page } = await searchParams
+  const searchParams = await props.searchParams
+  const { page } = searchParams
   // const page = Number.parseInt(searchParams.page ?? '1')
   const { success, messages, pagination } = await getMessages(page, 10, null)
   const { isLoggedIn, isAdmin, user, avatarUrl } = await getUserInfo()

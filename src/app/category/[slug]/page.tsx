@@ -5,16 +5,15 @@ import { Button } from '@/components/ui/button'
 import { NavCard } from '@/components/nav-card'
 
 interface CategoryPageProps {
-  params: { slug: string }
-  searchParams: { page?: string }
+  params: Promise<{ slug: string }>
+  searchParams: Promise<{ page?: string }>
 }
 
-export default async function CategoryPage({
-  params,
-  searchParams,
-}: CategoryPageProps) {
-  const { slug } = await params
-  const { page: pageParam } = await searchParams
+export default async function CategoryPage(props: CategoryPageProps) {
+  const params = await props.params
+  const searchParams = await props.searchParams
+  const slug = params.slug
+  const pageParam = searchParams.page
   const page = parseInt(pageParam || '1', 10)
 
   let result
@@ -24,7 +23,6 @@ export default async function CategoryPage({
       page,
       pageSize: 10,
     })
-    console.log(result)
   } catch (error) {
     return notFound()
   }

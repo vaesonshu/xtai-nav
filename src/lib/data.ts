@@ -20,6 +20,8 @@ export interface WebsiteWithCategories {
     name: string
     slug: string
   }[] // 只包含 category 对象
+  hasFavorited: boolean
+  hasLiked: boolean
 }
 
 // 获取网站列表
@@ -119,7 +121,7 @@ export async function getWebsitesByCategory({
   page = 1,
   pageSize = 10,
 }: GetWebsitesByCategory): Promise<{
-  websites: WebsiteWithCategories[]
+  websites: any[]
   categoryName: string
   pagination: {
     total: number
