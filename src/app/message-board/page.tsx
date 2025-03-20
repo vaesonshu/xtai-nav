@@ -2,7 +2,7 @@ import { Suspense } from 'react'
 import { getMessages } from '@/lib/message-actions'
 import MessageForm from '@/components/message-board/message-form'
 import MessageList from '@/components/message-board/message-list'
-import { auth } from '@clerk/nextjs/server'
+import { auth, currentUser } from '@clerk/nextjs/server'
 import { db } from '@/db/db'
 
 export const metadata = {
@@ -14,29 +14,33 @@ async function getUserInfo() {
   const { userId } = await auth()
 
   if (!userId) {
-    return { isLoggedIn: false, isAdmin: false, user: null }
+    return { isLoggedIn: false, isAdmin: false, user: null, avatarUrl: null }
   }
 
-  const user = await db.user.findUnique({
-    where: { clerkId: userId },
-  })
+  const [user, clerkUser] = await Promise.all([
+    db.user.findUnique({
+      where: { clerkId: userId },
+    }),
+    currentUser(),
+  ])
 
   return {
     isLoggedIn: true,
     isAdmin: user?.role === 'ADMIN',
     user,
+    avatarUrl: clerkUser?.imageUrl || null,
   }
 }
 
 export default async function MessageBoardPage({
-  searchParams = {},
+  searchParams = { page: 1 },
 }: {
-  searchParams: { page?: string }
+  searchParams: { page?: number }
 }) {
-  // const page = searchParams.page ? Number.parseInt(searchParams.page) : 1
-  const page = Number.parseInt(searchParams.page ?? '1')
+  const { page } = await searchParams
+  // const page = Number.parseInt(searchParams.page ?? '1')
   const { success, messages, pagination } = await getMessages(page, 10, null)
-  const { isLoggedIn, isAdmin, user } = await getUserInfo()
+  const { isLoggedIn, isAdmin, user, avatarUrl } = await getUserInfo()
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50">
@@ -63,6 +67,7 @@ export default async function MessageBoardPage({
                 isLoggedIn={isLoggedIn}
                 isAdmin={isAdmin}
                 userName={user?.name || ''}
+                avatarUrl={avatarUrl}
               />
             </div>
           </div>

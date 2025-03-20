@@ -121,6 +121,9 @@ model Message {
   // New fields for reactions
   likes     Int       @default(0)
   isPinned  Boolean   @default(false)
+
+  // 新增用户头像字段
+  avatarUrl String?
 }
 
 model UserCount {

@@ -10,6 +10,7 @@ import {
 } from '@/lib/message-actions'
 import { Button } from '@/components/ui/button'
 import { useToast } from '@/hooks/use-toast'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { formatDistanceToNow } from 'date-fns'
 import { zhCN } from 'date-fns/locale'
 import {
@@ -55,6 +56,7 @@ interface Message {
   likes: number
   isPinned: boolean
   parentId: string | null
+  avatarUrl?: string | null
   replies?: Message[]
   _count?: {
     replies: number
@@ -232,15 +234,24 @@ export default function MessageList({
 
           <div className="flex items-start justify-between">
             <div className="flex items-center gap-2">
-              <div
-                className={`p-2 rounded-full ${message.isAdmin ? 'bg-red-100' : 'bg-blue-100'}`}
-              >
-                {message.isAdmin ? (
-                  <ShieldAlert className="h-5 w-5 text-red-500" />
-                ) : (
-                  <User className="h-5 w-5 text-blue-500" />
-                )}
-              </div>
+              {message.avatarUrl ? (
+                <Avatar className="h-9 w-9">
+                  <AvatarImage src={message.avatarUrl} alt={message.author} />
+                  <AvatarFallback>
+                    {message.author.slice(0, 2).toUpperCase()}
+                  </AvatarFallback>
+                </Avatar>
+              ) : (
+                <div
+                  className={`p-2 rounded-full ${message.isAdmin ? 'bg-red-100' : 'bg-blue-100'}`}
+                >
+                  {message.isAdmin ? (
+                    <ShieldAlert className="h-5 w-5 text-red-500" />
+                  ) : (
+                    <User className="h-5 w-5 text-blue-500" />
+                  )}
+                </div>
+              )}
               <div>
                 <p
                   className={`font-medium ${message.isAdmin ? 'text-red-600' : 'text-blue-600'}`}
@@ -417,15 +428,27 @@ export default function MessageList({
                     {expandedReplies[message.id].map((reply) => (
                       <div key={reply.id} className="p-3 bg-gray-50 rounded-md">
                         <div className="flex items-center gap-2">
-                          <div
-                            className={`p-1.5 rounded-full ${reply.isAdmin ? 'bg-red-100' : 'bg-blue-100'}`}
-                          >
-                            {reply.isAdmin ? (
-                              <ShieldAlert className="h-4 w-4 text-red-500" />
-                            ) : (
-                              <User className="h-4 w-4 text-blue-500" />
-                            )}
-                          </div>
+                          {reply.avatarUrl ? (
+                            <Avatar className="h-7 w-7">
+                              <AvatarImage
+                                src={reply.avatarUrl}
+                                alt={reply.author}
+                              />
+                              <AvatarFallback>
+                                {reply.author.slice(0, 2).toUpperCase()}
+                              </AvatarFallback>
+                            </Avatar>
+                          ) : (
+                            <div
+                              className={`p-1.5 rounded-full ${reply.isAdmin ? 'bg-red-100' : 'bg-blue-100'}`}
+                            >
+                              {reply.isAdmin ? (
+                                <ShieldAlert className="h-4 w-4 text-red-500" />
+                              ) : (
+                                <User className="h-4 w-4 text-blue-500" />
+                              )}
+                            </div>
+                          )}
                           <div>
                             <p
                               className={`text-sm font-medium ${reply.isAdmin ? 'text-red-600' : 'text-blue-600'}`}
@@ -522,15 +545,27 @@ export default function MessageList({
                   {message.replies.map((reply) => (
                     <div key={reply.id} className="p-3 bg-gray-50 rounded-md">
                       <div className="flex items-center gap-2">
-                        <div
-                          className={`p-1.5 rounded-full ${reply.isAdmin ? 'bg-red-100' : 'bg-blue-100'}`}
-                        >
-                          {reply.isAdmin ? (
-                            <ShieldAlert className="h-4 w-4 text-red-500" />
-                          ) : (
-                            <User className="h-4 w-4 text-blue-500" />
-                          )}
-                        </div>
+                        {reply.avatarUrl ? (
+                          <Avatar className="h-7 w-7">
+                            <AvatarImage
+                              src={reply.avatarUrl}
+                              alt={reply.author}
+                            />
+                            <AvatarFallback>
+                              {reply.author.slice(0, 2).toUpperCase()}
+                            </AvatarFallback>
+                          </Avatar>
+                        ) : (
+                          <div
+                            className={`p-1.5 rounded-full ${reply.isAdmin ? 'bg-red-100' : 'bg-blue-100'}`}
+                          >
+                            {reply.isAdmin ? (
+                              <ShieldAlert className="h-4 w-4 text-red-500" />
+                            ) : (
+                              <User className="h-4 w-4 text-blue-500" />
+                            )}
+                          </div>
+                        )}
                         <p
                           className={`text-sm font-medium ${reply.isAdmin ? 'text-red-600' : 'text-blue-600'}`}
                         >

@@ -1,7 +1,7 @@
 'use server'
 
 import { db } from '@/db/db'
-import { auth } from '@clerk/nextjs/server'
+import { auth, currentUser } from '@clerk/nextjs/server'
 import { revalidatePath } from 'next/cache'
 
 export async function getMessages(
@@ -12,7 +12,7 @@ export async function getMessages(
   try {
     const skip = (page - 1) * limit
 
-    // Get only top-level messages (no parentId) if parentId is null
+    // 获取顶级留言（无 parentId）或特定父留言的回复
     const where = parentId === null ? { parentId: null } : { parentId }
 
     const [messages, totalCount] = await Promise.all([
@@ -21,15 +21,15 @@ export async function getMessages(
         skip,
         take: limit,
         orderBy: [
-          { isPinned: 'desc' }, // ✅ 这里改成数组
-          { createdAt: 'desc' }, // ✅ 这里改成数组
+          { isPinned: 'desc' }, // 置顶留言优先
+          { createdAt: 'desc' }, // 然后按日期排序
         ],
         include: {
           replies: {
             orderBy: {
               createdAt: 'asc',
             },
-            take: 3, // Preview only first 3 replies
+            take: 3, // 仅预览前3条回复
           },
           _count: {
             select: {
@@ -52,7 +52,7 @@ export async function getMessages(
     }
   } catch (error) {
     console.error('Error fetching messages:', error)
-    return { success: false, error: 'Failed to fetch messages' }
+    return { success: false, error: '获取留言失败' }
   }
 }
 
@@ -83,7 +83,7 @@ export async function getReplies(parentId: string, page = 1, limit = 10) {
     }
   } catch (error) {
     console.error('Error fetching replies:', error)
-    return { success: false, error: 'Failed to fetch replies' }
+    return { success: false, error: '获取回复失败' }
   }
 }
 
@@ -101,15 +101,22 @@ export async function createMessage(formData: FormData) {
   }
 
   try {
-    // Check if user is logged in and is admin
+    // 获取当前用户信息
     const { userId } = await auth()
     let isAdmin = false
+    let avatarUrl = null
 
     if (userId) {
+      // 获取用户详细信息，包括头像
       const user = await db.user.findUnique({
         where: { clerkId: userId },
       })
+
       isAdmin = user?.role === 'ADMIN'
+
+      // 获取 Clerk 用户信息以获取头像
+      const clerkUser = await currentUser()
+      avatarUrl = clerkUser?.imageUrl || null
     }
 
     const message = await db.message.create({
@@ -118,6 +125,7 @@ export async function createMessage(formData: FormData) {
         author: author.trim(),
         isAdmin,
         parentId: parentId || null,
+        avatarUrl,
       },
     })
 
@@ -131,7 +139,7 @@ export async function createMessage(formData: FormData) {
 
 export async function deleteMessage(id: string) {
   try {
-    // Check if user is admin
+    // 检查用户是否为管理员
     const { userId } = await auth()
 
     if (!userId) {
@@ -179,7 +187,7 @@ export async function likeMessage(id: string) {
 
 export async function togglePinMessage(id: string) {
   try {
-    // Check if user is admin
+    // 检查用户是否为管理员
     const { userId } = await auth()
 
     if (!userId) {

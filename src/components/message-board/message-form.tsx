@@ -5,6 +5,7 @@ import { createMessage } from '@/lib/message-actions'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { useToast } from '@/hooks/use-toast'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { AlertCircle, Send, User, ShieldAlert, X } from 'lucide-react'
 import RichTextEditor from './rich-text-editor'
 
@@ -12,6 +13,7 @@ interface MessageFormProps {
   isLoggedIn: boolean
   isAdmin: boolean
   userName: string
+  avatarUrl?: string | null
   parentId?: string | null
   parentAuthor?: string
   onSuccess?: () => void
@@ -23,6 +25,7 @@ export default function MessageForm({
   isLoggedIn,
   isAdmin,
   userName,
+  avatarUrl = null,
   parentId = null,
   parentAuthor,
   onSuccess,
@@ -91,7 +94,14 @@ export default function MessageForm({
 
       <div className="space-y-2">
         <div className="flex items-center gap-2">
-          {isAdmin ? (
+          {avatarUrl ? (
+            <Avatar className="h-8 w-8">
+              <AvatarImage src={avatarUrl} alt={author} />
+              <AvatarFallback>
+                {author.slice(0, 2).toUpperCase()}
+              </AvatarFallback>
+            </Avatar>
+          ) : isAdmin ? (
             <ShieldAlert className="h-5 w-5 text-red-500" />
           ) : isLoggedIn ? (
             <User className="h-5 w-5 text-blue-500" />
