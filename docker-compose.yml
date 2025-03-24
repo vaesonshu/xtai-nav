@@ -1,0 +1,25 @@
+version: '3.8'
+
+services:
+  nextjs:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: xtai-nav-docker
+    restart: unless-stopped
+    expose:
+      - '3000' # 仅暴露给 Nginx，不映射到主机
+
+  nginx:
+    image: nginx:alpine
+    container_name: nginx
+    ports:
+      - '80:80'
+      - '443:443'
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf
+      - /etc/nginx/xtainav.cn_bundle.crt:/etc/nginx/certs/xtainav.cn_bundle.crt
+      - /etc/nginx/xtainav.cn.key:/etc/nginx/certs/xtainav.cn.key
+    depends_on:
+      - xtai-nav-docker
+    restart: unless-stopped
