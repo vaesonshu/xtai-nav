@@ -17,7 +17,7 @@ services:
       - '80:80'
       - '443:443'
     volumes:
-      - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf
+      - /etc/nginx/nginx.conf:/etc/nginx/conf.d/default.conf
       - /etc/nginx/xtainav.cn_bundle.crt:/etc/nginx/certs/xtainav.cn_bundle.crt
       - /etc/nginx/xtainav.cn.key:/etc/nginx/certs/xtainav.cn.key
     depends_on:
