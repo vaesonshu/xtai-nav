@@ -1,7 +1,7 @@
 version: '3.8'
 
 services:
-  nextjs:
+  xtai-nav-docker:
     build:
       context: .
       dockerfile: Dockerfile
