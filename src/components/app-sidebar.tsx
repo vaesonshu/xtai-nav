@@ -58,7 +58,7 @@ export function AppSidebar() {
 
   useEffect(() => {
     loadCategories()
-  }, [loadCategories])
+  }, []) // 空依赖数组，只在组件挂载时运行一次
 
   // Static navigation items
   const navItems = [
