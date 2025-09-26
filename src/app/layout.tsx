@@ -45,7 +45,7 @@ export default async function RootLayout({
     >
       <html lang="en" suppressHydrationWarning>
         {/* 这里的SEO的配置,是作用域所有的页面 className="prose" */}
-        <body suppressHydrationWarning>
+        <body>
           <ThemeProvider
             attribute="class"
             defaultTheme="system"

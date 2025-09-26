@@ -59,7 +59,11 @@ export function WebsiteCard({ website }: { website: any }) {
         </CardContent>
         <CardFooter className="p-4 pt-0 flex justify-between">
           <div className="flex items-center space-x-4 text-sm text-muted-foreground">
-            <Button variant="ghost" size="sm" className="h-8 px-2">
+            <Button
+              variant="secondary"
+              size="sm"
+              className="h-8 px-2 cursor-default"
+            >
               <Heart className="mr-1 h-4 w-4 fill-red-500 text-red-500" />
               {likes}
             </Button>
