@@ -55,7 +55,7 @@ export default function VisitCounter() {
   }, [])
 
   return (
-    <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
+    <div className="flex items-center justify-center gap-2 text-[12px] text-muted-foreground">
       <div className="flex items-center">
         <Eye className="h-3.5 w-3.5 mr-1 opacity-70" />
         <span>
@@ -66,7 +66,7 @@ export default function VisitCounter() {
           )}
         </span>
       </div>
-      <span className="mx-2">|</span>
+      <span className="mx-1">|</span>
       <div className="flex items-center">
         <Clock className="h-3.5 w-3.5 mr-1 opacity-70" />
         <span>{currentTime}</span>

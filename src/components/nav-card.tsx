@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { useState } from 'react'
 import type React from 'react'
-import * as LucideIcons from 'lucide-react'
+import { Heart, Star, ExternalLink, Eye, ArrowUpRight } from 'lucide-react'
 
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -29,10 +29,6 @@ export function NavCard({ website }: { website: WebsiteProps }) {
     const newViews = await incrementViews(website.id)
     setViews(newViews)
   }
-
-  const HeartIcon = LucideIcons.Heart
-  const Star = LucideIcons.Star
-  const Eye = LucideIcons.Eye
 
   const handleLike = async (e: React.MouseEvent) => {
     // 阻止事件冒泡，避免触发卡片的链接导航
@@ -79,33 +75,55 @@ export function NavCard({ website }: { website: WebsiteProps }) {
   }
 
   return (
-    <Card className="h-full overflow-hidden transition-all duration-300 hover:shadow-md hover:scale-105 hover:border-primary/50">
-      <CardHeader className="pb-2">
+    <Card className="h-full overflow-hidden transition-all duration-300 hover:shadow-md hover:scale-[1.03] hover:border-primary/50 bg-card/90 backdrop-blur-sm group">
+      {/* 分类标签 */}
+      {/* {website.category && (
+        <div className="absolute right-2 top-2 z-10">
+          <Badge
+            variant="outline"
+            className="bg-background/80 text-xs px-2 py-0.5"
+          >
+            {website.category}
+          </Badge>
+        </div>
+      )} */}
+
+      <CardHeader className="pb-2 relative">
         <div className="flex items-center gap-2">
-          <Avatar>
-            <AvatarImage src={website.iconUrl} />
-            <AvatarFallback className="text-lg font-semibold text-muted-foreground">
+          <Avatar className="transition-transform duration-300 group-hover:scale-110">
+            <AvatarImage src={website.iconUrl} alt={website.name} />
+            <AvatarFallback className="text-lg font-semibold text-muted-foreground bg-primary/10">
               {website.name.charAt(0)}
             </AvatarFallback>
           </Avatar>
-          <h3 className="font-medium line-clamp-1">{website.name}</h3>
+          <h3 className="font-medium line-clamp-1 text-foreground group-hover:text-primary transition-colors duration-200">
+            {website.name}
+          </h3>
         </div>
       </CardHeader>
+
       <CardContent className="pb-2">
         <p className="text-sm text-muted-foreground line-clamp-2">
-          {website.description}
+          {website.description || '暂无描述'}
         </p>
       </CardContent>
+
       <CardFooter className="flex flex-col items-start">
+        {/* 标签 */}
         <div className="flex flex-wrap gap-1 pb-3">
           {website.tags.map((tag) => (
-            <Badge key={tag} variant="secondary" className="text-xs">
+            <Badge
+              key={tag}
+              variant="secondary"
+              className="text-xs bg-primary/5 hover:bg-primary/10 transition-colors duration-200"
+            >
               {tag}
             </Badge>
           ))}
         </div>
-        <div className="flex justify-between w-full">
-          <div>
+
+        <div className="flex justify-between w-full items-center">
+          <div className="flex items-center gap-1">
             {/* 点赞 */}
             <TooltipWrapper
               content={isLiked ? '取消点赞' : '点赞'}
@@ -115,12 +133,12 @@ export function NavCard({ website }: { website: WebsiteProps }) {
               <Button
                 variant="ghost"
                 size="sm"
-                className={`h-8 px-2 ${isLiked ? 'text-primary' : 'text-muted-foreground'}`}
+                className={`h-8 px-2 rounded-full transition-all duration-200 ${isLiked ? 'text-red-500' : 'text-muted-foreground hover:text-red-500'}`}
                 onClick={handleLike}
                 disabled={isLoading}
               >
-                <HeartIcon
-                  className={`mr-1 h-4 w-4 ${isLiked ? 'fill-red-500 text-red-500' : ''}`}
+                <Heart
+                  className={`mr-1 h-4 w-4 transition-all duration-200 ${isLiked ? 'fill-red-500' : ''}`}
                 />
                 {likes}
               </Button>
@@ -128,39 +146,41 @@ export function NavCard({ website }: { website: WebsiteProps }) {
 
             {/* 收藏 */}
             <TooltipWrapper
-              content={isLiked ? '取消收藏' : '收藏'}
+              content={isFavorited ? '取消收藏' : '收藏'}
               side="top"
               delayDuration={200}
             >
               <Button
                 variant="ghost"
                 size="sm"
-                className={`h-8 px-2 ${isFavorited ? 'text-primary' : 'text-muted-foreground'}`}
+                className={`h-8 px-2 rounded-full transition-all duration-200 ${isFavorited ? 'text-yellow-500' : 'text-muted-foreground hover:text-yellow-500'}`}
                 onClick={handleFavorite}
                 disabled={isLoading}
               >
                 <Star
-                  className={`mr-1 h-4 w-4 ${isFavorited ? ' fill-yellow-500 text-yellow-500' : ''}`}
+                  className={`h-4 w-4 transition-all duration-200 ${isFavorited ? 'fill-yellow-500' : ''}`}
                 />
               </Button>
             </TooltipWrapper>
-          </div>
-          <div className="">
+
             {/* 查看次数 */}
-            {/* <div className="flex items-center">
-            <Eye className="mr-1 h-4 w-4" />
-            {views}
-          </div> */}
+            <div className="flex items-center text-xs text-muted-foreground ml-1">
+              <Eye className="mr-1 h-3.5 w-3.5" />
+              {views}
+            </div>
+          </div>
+
+          <div className="">
             {/* 访问 */}
             <TooltipWrapper
-              content={'访问' + website.name}
+              content={`访问 ${website.name}`}
               side="top"
               delayDuration={200}
             >
               <Button
-                variant="outline"
+                variant="default"
                 size="sm"
-                className="h-8"
+                className="h-8 w-8 p-0 rounded-full transition-all duration-200 hover:scale-110"
                 onClick={handleVisit}
                 asChild
               >
@@ -168,10 +188,9 @@ export function NavCard({ website }: { website: WebsiteProps }) {
                   href={website.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-xs text-muted-foreground hover:text-primary"
                   onClick={(e) => e.stopPropagation()}
                 >
-                  <LucideIcons.ExternalLink className="h-4 w-4" />
+                  <ArrowUpRight className="h-4 w-4" />
                 </Link>
               </Button>
             </TooltipWrapper>

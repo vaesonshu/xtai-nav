@@ -8,7 +8,7 @@ export default async function NavShowcase({}: {
   tag?: string
 }) {
   const { websites } = await getWebsites()
-  console.log('获取', websites)
+  // console.log('获取', websites)
 
   // todo: 后续优化UI
   if (websites.length === 0) {

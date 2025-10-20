@@ -2,35 +2,79 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { Heart, ExternalLink, Tag } from 'lucide-react'
+import { Heart, ExternalLink, Tag, X } from 'lucide-react'
 import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { toast } from 'sonner'
+import { toggleFavorite } from '@/lib/actions'
 
-export function WebsiteCard({ website }: { website: any }) {
+export function WebsiteCard({
+  website,
+  onUnfavorite,
+}: {
+  website: any
+  onUnfavorite?: (websiteId: string) => void
+}) {
   const [likes] = useState(website.likes.length)
+  const [isLoading, setIsLoading] = useState(false)
 
   // 获取网站分类名称
   const categoryNames = website.categories
     ? website.categories.map((wc: any) => wc.category?.name).filter(Boolean)
     : []
 
+  // 处理取消收藏
+  const handleUnfavorite = async () => {
+    try {
+      setIsLoading(true)
+      await toggleFavorite(website.id)
+      toast.success('已取消收藏')
+      // 通知父组件更新列表
+      if (onUnfavorite) {
+        onUnfavorite(website.id)
+      }
+    } catch (error) {
+      toast.error('取消收藏失败')
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
   return (
     <>
-      <Card className="overflow-hidden transition-all hover:shadow-md">
+      <Card className="overflow-hidden transition-all duration-300 hover:shadow-md hover:scale-[1.02] border-border/80">
         <CardHeader className="p-4 pb-0 flex flex-row items-start justify-between space-y-0">
           <div className="flex items-center space-x-3">
-            <Avatar>
-              <AvatarImage src={website.iconUrl} />
+            <Avatar className="h-10 w-10 ring-2 ring-background">
+              <AvatarImage src={website.iconUrl} alt={website.name} />
               <AvatarFallback className="text-lg font-semibold text-muted-foreground">
                 {website.name.charAt(0)}
               </AvatarFallback>
             </Avatar>
             <div>
-              <h3 className="font-semibold leading-none">{website.name}</h3>
+              <h3 className="font-semibold leading-none line-clamp-1">
+                {website.name}
+              </h3>
+              <p className="text-xs text-muted-foreground line-clamp-1">
+                {new URL(website.url).hostname}
+              </p>
             </div>
           </div>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8 opacity-70 hover:opacity-100 hover:text-destructive"
+            onClick={handleUnfavorite}
+            disabled={isLoading}
+          >
+            {isLoading ? (
+              <div className="h-4 w-4 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+            ) : (
+              <X className="h-4 w-4" />
+            )}
+          </Button>
         </CardHeader>
         <CardContent className="p-4">
           <p className="text-sm text-muted-foreground line-clamp-2">
@@ -68,9 +112,9 @@ export function WebsiteCard({ website }: { website: any }) {
               {likes}
             </Button>
           </div>
-          <Button variant="outline" size="sm" className="h-8" asChild>
+          <Button variant="default" size="sm" className="h-8 gap-1" asChild>
             <Link href={website.url} target="_blank" rel="noopener noreferrer">
-              <ExternalLink className="mr-1 h-4 w-4" />
+              <ExternalLink className="h-4 w-4" />
               访问
             </Link>
           </Button>
