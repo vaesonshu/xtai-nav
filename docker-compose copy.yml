@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  xtai-nav-docker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: xtai-nav-docker
+    environment:
+      - NODE_ENV=production
+      - DATABASE_URL=${DATABASE_URL} # 可选：如使用 Prisma 数据库
+    expose:
+      - '3000'
+    restart: unless-stopped
+
+  nginx:
+    image: nginx:alpine
+    container_name: nginx
+    ports:
+      - '80:80'
+      - '443:443'
+    volumes:
+      # 配置文件
+      - /etc/nginx/conf.d/xtainav.conf:/etc/nginx/conf.d/default.conf:ro
+      # 证书文件
+      - /etc/nginx/xtainav.cn_bundle.crt:/etc/nginx/certs/xtainav.cn_bundle.crt:ro
+      - /etc/nginx/xtainav.cn.key:/etc/nginx/certs/xtainav.cn.key:ro
+    depends_on:
+      - xtai-nav-docker
+    restart: unless-stopped

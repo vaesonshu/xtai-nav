@@ -84,20 +84,22 @@ model WebsiteCategory {
 // 网站统计
 model Visit {
   id        String   @id @default(cuid())
-  createdAt String   
-  ip        String
+  createdAt String
+  ip        String   // 实际存储格式: {IP}_{UserAgent}，用于区分相同IP不同设备的访问
   userAgent String?
   path      String   @default("/")
 }
 
+// 唯一访客表
 model UniqueVisitor {
   id         String   @id @default(cuid())
-  ip         String   @unique
-  firstVisit String   
-  lastVisit  String 
-  visitCount Int      @default(1)
+  ip         String   @unique // 实际存储格式: {IP}_{UserAgent}，用于区分相同IP不同设备的访客
+  firstVisit String
+  lastVisit  String
+  visitCount Int      @default(1) // 访问次数，默认 1
 }
 
+// 网站访问统计
 model VisitStats {
   id          String   @id @default("singleton")
   count       Int      @default(0)

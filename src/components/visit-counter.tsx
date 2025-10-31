@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from 'react'
 import { incrementVisitCount } from '@/lib/visit-actions'
-import { Eye, Clock } from 'lucide-react'
+import { Eye, Clock, Users } from 'lucide-react'
+import { Spinner } from '@/components/ui/spinner'
 
 export default function VisitCounter() {
   const [stats, setStats] = useState<{
@@ -19,9 +20,21 @@ export default function VisitCounter() {
     const trackVisit = async () => {
       try {
         setLoading(true)
-        // Only increment on first load
-        // const visitStats = await incrementVisitCount()
-        const response = await fetch('/api/visit', { method: 'POST' })
+
+        // 生成或获取session ID
+        let sessionId = localStorage.getItem('visit-session-id')
+        if (!sessionId) {
+          sessionId = `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+          localStorage.setItem('visit-session-id', sessionId)
+        }
+
+        // 发送包含session ID的请求
+        const response = await fetch('/api/visit', {
+          method: 'POST',
+          headers: {
+            'x-session-id': sessionId,
+          },
+        })
         const visitStats = await response.json()
         setStats(visitStats)
       } catch (error) {
@@ -57,10 +70,10 @@ export default function VisitCounter() {
   return (
     <div className="flex items-center justify-center gap-2 text-[12px] text-muted-foreground">
       <div className="flex items-center">
-        <Eye className="h-3.5 w-3.5 mr-1 opacity-70" />
-        <span>
+        <Users className="h-3.5 w-3.5 mr-1 opacity-70" />
+        <span className="inline-block text-center">
           {loading ? (
-            <span className="inline-block h-4 w-4 rounded-full border-2 border-muted-foreground/30 border-t-transparent animate-spin"></span>
+            <Spinner />
           ) : (
             <span>{stats.uniqueVisitors.toLocaleString()} 位访客</span>
           )}
@@ -68,6 +81,17 @@ export default function VisitCounter() {
       </div>
       <span className="mx-1">|</span>
       <div className="flex items-center">
+        <Eye className="h-3.5 w-3.5 mr-1 opacity-70" />
+        <span>
+          {loading ? (
+            <Spinner />
+          ) : (
+            <span>{stats.totalVisits.toLocaleString()} 次访问</span>
+          )}
+        </span>
+      </div>
+      <span className="mx-1 hidden sm:inline">|</span>
+      <div className="hidden sm:flex items-center">
         <Clock className="h-3.5 w-3.5 mr-1 opacity-70" />
         <span>{currentTime}</span>
       </div>
