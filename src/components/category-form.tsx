@@ -50,7 +50,7 @@ export function CategoryForm({ onSuccess }: { onSuccess: () => void }) {
     const loadCategories = async () => {
       try {
         const data = await getCategories()
-        setCategories(data.map((c) => ({ ...c, icon: c.icon ?? undefined })))
+        setCategories(data.map((c) => ({ ...c, icon: c.icon ?? null })))
       } catch (error) {
         console.error('加载分类失败:', error)
       } finally {
@@ -70,7 +70,7 @@ export function CategoryForm({ onSuccess }: { onSuccess: () => void }) {
       form.reset()
       const updatedCategories = await getCategories()
       setCategories(
-        updatedCategories.map((c) => ({ ...c, icon: c.icon ?? undefined }))
+        updatedCategories.map((c) => ({ ...c, icon: c.icon ?? null }))
       )
       router.refresh()
     } catch (error: any) {
@@ -110,7 +110,7 @@ export function CategoryForm({ onSuccess }: { onSuccess: () => void }) {
       await deleteCategory(id)
       const updatedCategories = await getCategories()
       setCategories(
-        updatedCategories.map((c) => ({ ...c, icon: c.icon ?? undefined }))
+        updatedCategories.map((c) => ({ ...c, icon: c.icon ?? null }))
       )
       router.refresh()
     } catch (error) {
