@@ -43,10 +43,5 @@ jobs:
           docker load < /tmp/xtai-nav-app.tar.gz
           docker stop xtai-nav-app || true
           docker rm xtai-nav-app || true
-          docker run -d \
-            --name xtai-nav-app \
-            -p 3000:3000 \
-            -e NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY='${{ secrets.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY }}' \
-            -e CLERK_SECRET_KEY='${{ secrets.CLERK_SECRET_KEY }}' \
-            xtai-nav-app
+          docker run --env-file .env -d --name xtai-nav-app -p 3000:3000 xtai-nav-app
           EOF
