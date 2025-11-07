@@ -1,47 +1,51 @@
-name: 🚀 Deploy Next.js with Docker
+name: 🚀 Deploy xtai-nav-app to ECS
 
 on:
   push:
     branches:
-      - deploy # 推送到 deploy 分支触发
+      - deploy # 推送到 deploy 分支自动部署
 
 jobs:
   deploy:
+    name: Deploy to ECS
     runs-on: ubuntu-latest
 
     steps:
-      - name: 🧩 Checkout code
-        uses: actions/checkout@v4
+      - name: 🚀 Deploy on Remote ECS
+        env:
+          PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          HOSTNAME: ${{ secrets.SSH_HOST }}
+          USER_NAME: ${{ secrets.SSH_USER }}
 
-      - name: 🔧 Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22
-
-      - name: 🐳 Build Docker image
         run: |
-          docker build -t xtai-nav-app .
+          echo "$PRIVATE_KEY" > private_key && chmod 600 private_key
 
-      - name: 📦 Save image as tarball
-        run: |
-          docker save xtai-nav-app | gzip > xtai-nav-app.tar.gz
+          ssh -o StrictHostKeyChecking=no -i private_key ${USER_NAME}@${HOSTNAME} "
+            set -e
+            echo '➡️ 进入部署目录...'
+            cd ~/xtai-nav-app || mkdir -p ~/xtai-nav-app && cd ~/xtai-nav-app
 
-      - name: 🔐 Setup SSH
-        uses: webfactory/ssh-agent@v0.9.0
-        with:
-          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+            echo '📦 拉取最新代码...'
+            if [ ! -d .git ]; then
+              git clone -b deploy git@github.com:${{ github.repository }} .
+            else
+              git fetch origin deploy && git reset --hard origin/deploy
+            fi
 
-      - name: 📤 Upload Docker image to server
-        run: |
-          scp -o StrictHostKeyChecking=no xtai-nav-app.tar.gz ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/tmp/
+            echo '🐳 停止旧容器...'
+            docker stop xtai-nav-app || true
+            docker rm xtai-nav-app || true
 
-      - name: 🚀 Deploy on server
-        run: |
-          ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
-          set -e
-          cd ~/xtai-nav-app || mkdir -p ~/xtai-nav-app
-          docker load < /tmp/xtai-nav-app.tar.gz
-          docker stop xtai-nav-app || true
-          docker rm xtai-nav-app || true
-          docker run --env-file .env -d --name xtai-nav-app -p 3000:3000 xtai-nav-app
-          EOF
+            echo '🧱 构建新镜像...'
+            docker build -t xtai-nav-app .
+
+            echo '🚀 启动容器...'
+            docker run -d \
+              --name xtai-nav-app \
+              -p 3000:3000 \
+              xtai-nav-app
+
+            echo '✅ 部署完成！'
+          "
+
+          rm -f private_key
