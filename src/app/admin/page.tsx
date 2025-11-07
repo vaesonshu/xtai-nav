@@ -16,7 +16,7 @@ import { getCategories } from '@/lib/actions'
 import NotAuthorized from '@/components/not-authorized'
 
 interface AdminPageProps {
-  searchParams: { [key: string]: string | string[] | undefined }
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>
 }
 
 async function getStats() {
@@ -47,9 +47,10 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
     return <NotAuthorized />
   }
 
+  // 等待获取searchParams的实际值
+  const params = await searchParams
   const stats = await getStats()
-  const search =
-    typeof searchParams.search === 'string' ? searchParams.search : ''
+  const search = typeof params.search === 'string' ? params.search : ''
 
   return (
     <div className="min-h-screen bg-gray-50/50">
