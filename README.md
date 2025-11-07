@@ -35,7 +35,7 @@ server {
     ssl_certificate /etc/nginx/certs/xtainav.cn_bundle.crt;
     ssl_certificate_key /etc/nginx/certs/xtainav.cn.key;
     location / {
-        proxy_pass http://xtai-nav-docker:3000;
+        proxy_pass http://xtai-nav-app:3000;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
@@ -50,6 +50,13 @@ server {
 
 - `docker compose down`
 
+> 构建并运行 Docker 容器
+
+- docker build -t xtai-nav-app .
+- docker run -p 3000:3000 xtai-nav-app
+
+常用命令
+
 > 强制重新构建镜像并在后台运行
 
 - `docker compose up -d --build`
@@ -60,12 +67,42 @@ server {
 
 > 检查日志
 
-- `docker logs xtai-nav-docker`
+- `docker logs xtai-nav-app`
 - `docker logs nginx`
 
 > 测试 HTTPS
 
 - `curl -I https://xtainav.cn`
+
+### Github Actions
+
+## 1. Ubuntu 生成 SSH Key
+
+- 在服务器的终端命令行输入 `ssh-keygen -t rsa -b 4096 -C "deploy@yourdomain.com" -P "" -f ~/.ssh/id_rsa`
+  - 私钥保存到：`~/.ssh/id_rsa`
+  - 公钥保存到：`~/.ssh/id_rsa.pub`
+  - 查看并复制公钥：`cat ~/.ssh/id_rsa.pub` 添加到 [Github 仓库的 SSH Keys](https://github.com/settings/keys)
+
+## 2. 配置 Github Actions Secrets
+
+- 在 Github 仓库页面，点击 `Settings` -> `Secrets and variables` -> `Actions` -> `New repository secret`
+  - 添加以下 Secrets：
+    - `SSH_PRIVATE_KEY`：将 `~/.ssh/id_rsa` 的内容复制到该 Secret 中。PS: `cat ~/.ssh/id_rsa` 查看私钥内容
+    - `SERVER_HOST`：服务器的 IP 地址。PS: `ifconfig` 查看 IP 地址
+    - `SSH_USER`：服务器用户名
+
+## 3. 配置 Github Actions 工作流
+
+- 在项目根目录新建 `.github/workflows/deploy.yml` 文件，添加以下
+
+```yaml
+name: Deploy to Server
+```
+
+## ssh 免密登录（如果需要）
+
+- 在本地终端命令行输入以下命令，将本地公钥复制到服务器，实现免密登录
+  - ssh-copy-id user@your-server-ip
 
 ## 项目技术栈
 

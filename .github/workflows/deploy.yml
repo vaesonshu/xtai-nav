@@ -1,0 +1,47 @@
+name: 🚀 Deploy Next.js with Docker
+
+on:
+  push:
+    branches:
+      - deploy # 推送到 deploy 分支触发
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 🧩 Checkout code
+        uses: actions/checkout@v4
+
+      - name: 🔧 Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: 🐳 Build Docker image
+        run: |
+          docker build -t xtai-nav-app .
+
+      - name: 📦 Save image as tarball
+        run: |
+          docker save xtai-nav-app | gzip > xtai-nav-app.tar.gz
+
+      - name: 🔐 Setup SSH
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: 📤 Upload Docker image to server
+        run: |
+          scp -o StrictHostKeyChecking=no xtai-nav-app.tar.gz ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/tmp/
+
+      - name: 🚀 Deploy on server
+        run: |
+          ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
+          set -e
+          cd ~/xtai-nav-app || mkdir -p ~/xtai-nav-app
+          docker load < /tmp/xtai-nav-app.tar.gz
+          docker stop xtai-nav-app || true
+          docker rm xtai-nav-app || true
+          docker run -d --name xtai-nav-app -p 3000:3000 xtai-nav-app
+          EOF
