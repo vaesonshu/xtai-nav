@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from 'react'
 import { usePathname, useRouter } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
+import * as LucideIcons from 'lucide-react'
 import {
   Home,
   FolderOpenDot,
@@ -29,15 +30,21 @@ import { Separator } from '@/components/ui/separator'
 import { WebCategory } from '@/types/nav-list'
 import Logo from '@/images/logo2.png'
 import { useToast } from '@/hooks/use-toast'
-import { SignInButton, SignedIn, SignedOut, UserButton } from '@clerk/nextjs'
-import { auth } from '@clerk/nextjs/server'
+import {
+  SignInButton,
+  SignedIn,
+  SignedOut,
+  UserButton,
+  useUser,
+} from '@clerk/nextjs'
 import { isAdmin } from '@/lib/utils'
 
 export function AppSidebar() {
   const pathname = usePathname()
+  const { user } = useUser()
   const [categories, setCategories] = useState<WebCategory[]>([])
   const [isLoading, setIsLoading] = useState(true)
-  const [ifAdmin, setIfAdmin] = useState(false)
+  const [isAdminUser, setIsAdminUser] = useState(false)
   const { errorToast } = useToast()
 
   const loadCategories = useCallback(async () => {
@@ -60,7 +67,26 @@ export function AppSidebar() {
     loadCategories()
   }, []) // 空依赖数组，只在组件挂载时运行一次
 
-  // Static navigation items
+  // Check admin status when user changes
+  useEffect(() => {
+    const checkAdminStatus = async () => {
+      if (user?.id) {
+        try {
+          const adminStatus = await isAdmin(user.id)
+          setIsAdminUser(adminStatus)
+        } catch (error) {
+          console.error('检查管理员状态失败:', error)
+          setIsAdminUser(false)
+        }
+      } else {
+        setIsAdminUser(false)
+      }
+    }
+
+    checkAdminStatus()
+  }, [user?.id])
+
+  // Static navigation items - conditionally include admin item
   const navItems = [
     {
       title: '应用广场',
@@ -72,11 +98,15 @@ export function AppSidebar() {
       url: '/favorites',
       icon: Star,
     },
-    {
-      title: '网站管理',
-      url: '/admin',
-      icon: Settings,
-    },
+    ...(isAdminUser
+      ? [
+          {
+            title: '网站管理',
+            url: '/admin',
+            icon: Settings,
+          },
+        ]
+      : []),
   ]
 
   const footItems = [
@@ -126,9 +156,7 @@ export function AppSidebar() {
         </SidebarGroup>
 
         <SidebarGroup>
-          <div className="flex items-center justify-between mb-2 px-2">
-            <SidebarGroupLabel className="mb-0">网站分类</SidebarGroupLabel>
-          </div>
+          <SidebarGroupLabel>网站分类</SidebarGroupLabel>
           <SidebarGroupContent>
             {isLoading ? (
               <div className="flex justify-center py-3">
@@ -150,7 +178,20 @@ export function AppSidebar() {
                         href={`/category/${category.slug}`}
                         className="flex items-center"
                       >
-                        <FolderOpenDot className="h-4 w-4 mr-2" />
+                        {category.icon ? (
+                          (() => {
+                            const IconComponent = (LucideIcons as any)[
+                              category.icon
+                            ]
+                            return IconComponent ? (
+                              <IconComponent className="h-4 w-4 mr-2" />
+                            ) : (
+                              <FolderOpenDot className="h-4 w-4 mr-2" />
+                            )
+                          })()
+                        ) : (
+                          <FolderOpenDot className="h-4 w-4 mr-2" />
+                        )}
                         <span>{category.name}</span>
                       </Link>
                     </SidebarMenuButton>

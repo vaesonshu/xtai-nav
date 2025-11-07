@@ -122,12 +122,13 @@ export async function getCategories() {
 
 // 创建分类
 export async function createCategory(data: any) {
-  const { name, slug } = data
+  const { name, slug, icon } = data
 
   const category = await db.category.create({
     data: {
       name,
       slug,
+      icon,
     },
   })
 

@@ -19,6 +19,7 @@ export interface WebCategory {
   id: string
   name: string
   slug: string
+  icon?: string
 }
 
 export interface GetWebsitesParams {

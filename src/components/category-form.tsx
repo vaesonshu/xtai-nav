@@ -26,6 +26,7 @@ const categorySchema = z.object({
     .string()
     .min(1, '分类别名不能为空')
     .regex(/^[a-z0-9-]+$/, '只能包含小写字母、数字和连字符'),
+  icon: z.string().optional(),
 })
 
 export function CategoryForm({ onSuccess }: { onSuccess: () => void }) {
@@ -47,7 +48,7 @@ export function CategoryForm({ onSuccess }: { onSuccess: () => void }) {
     const loadCategories = async () => {
       try {
         const data = await getCategories()
-        setCategories(data)
+        setCategories(data.map((c) => ({ ...c, icon: c.icon ?? undefined })))
       } catch (error) {
         console.error('加载分类失败:', error)
       } finally {
@@ -64,7 +65,9 @@ export function CategoryForm({ onSuccess }: { onSuccess: () => void }) {
       await createCategory(data)
       form.reset()
       const updatedCategories = await getCategories()
-      setCategories(updatedCategories)
+      setCategories(
+        updatedCategories.map((c) => ({ ...c, icon: c.icon ?? undefined }))
+      )
       router.refresh()
     } catch (error) {
       console.error('创建分类时出错:', error)
@@ -80,7 +83,9 @@ export function CategoryForm({ onSuccess }: { onSuccess: () => void }) {
       setIsDeleting(true)
       await deleteCategory(id)
       const updatedCategories = await getCategories()
-      setCategories(updatedCategories)
+      setCategories(
+        updatedCategories.map((c) => ({ ...c, icon: c.icon ?? undefined }))
+      )
       router.refresh()
     } catch (error) {
       console.error('删除分类时出错:', error)
@@ -124,6 +129,27 @@ export function CategoryForm({ onSuccess }: { onSuccess: () => void }) {
                       }}
                     />
                   </FormControl>
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  用于URL的分类标识，只能包含小写字母、数字和连字符
+                </p>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="icon"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>分类图标</FormLabel>
+                <div className="flex gap-2">
+                  <FormControl>
+                    <Input
+                      placeholder="Lucide图标名称 (如: Code, Brain, Book等)"
+                      {...field}
+                    />
+                  </FormControl>
                   <Button type="submit" disabled={isSubmitting}>
                     {isSubmitting ? (
                       <Loader2 className="h-4 w-4 animate-spin" />
@@ -133,7 +159,7 @@ export function CategoryForm({ onSuccess }: { onSuccess: () => void }) {
                   </Button>
                 </div>
                 <p className="text-xs text-muted-foreground">
-                  用于URL的分类标识，只能包含小写字母、数字和连字符
+                  从 https://lucide.dev/icons/ 选择图标名称，可选字段
                 </p>
                 <FormMessage />
               </FormItem>
