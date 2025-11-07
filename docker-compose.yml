@@ -1,11 +1,11 @@
 version: '3.8'
 
 services:
-  xtai-nav-docker:
+  xtai-nav-app:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: xtai-nav-docker
+    container_name: xtai-nav-app
     restart: unless-stopped
     expose:
       - '3000' # 仅暴露给 Nginx，不映射到主机
@@ -21,5 +21,5 @@ services:
       - /etc/nginx/xtainav.cn_bundle.crt:/etc/nginx/certs/xtainav.cn_bundle.crt
       - /etc/nginx/xtainav.cn.key:/etc/nginx/certs/xtainav.cn.key
     depends_on:
-      - xtai-nav-docker
+      - xtai-nav-app
     restart: unless-stopped
