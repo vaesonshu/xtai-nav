@@ -1,12 +1,13 @@
 'use client'
 
-import { useRouter, useSearchParams } from 'next/navigation'
+import { useRouter, useSearchParams, usePathname } from 'next/navigation'
 import { useTransition } from 'react'
 import { Search } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 
 export function SearchForm() {
   const router = useRouter()
+  const pathname = usePathname()
   const searchParams = useSearchParams()
   const [isPending, startTransition] = useTransition()
 
@@ -20,7 +21,7 @@ export function SearchForm() {
     }
 
     startTransition(() => {
-      router.push(`/?${params.toString()}`)
+      router.push(`${pathname}?${params.toString()}`)
     })
   }
 

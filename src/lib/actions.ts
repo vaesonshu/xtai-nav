@@ -124,16 +124,30 @@ export async function getCategories() {
 export async function createCategory(data: any) {
   const { name, slug, icon } = data
 
-  const category = await db.category.create({
-    data: {
-      name,
-      slug,
-      icon,
-    },
-  })
+  try {
+    const category = await db.category.create({
+      data: {
+        name,
+        slug,
+        icon,
+      },
+    })
 
-  revalidatePath('/')
-  return category
+    revalidatePath('/')
+    return category
+  } catch (error: any) {
+    // Add more context to the error before propagating it
+    if (error.code === 'P2002') {
+      // This is a Prisma unique constraint error
+      if (error.meta?.target?.includes('name')) {
+        throw new Error(`分类名称 "${name}" 已存在，请使用不同的名称`)
+      } else if (error.meta?.target?.includes('slug')) {
+        throw new Error(`分类别名 "${slug}" 已存在，请使用不同的别名`)
+      }
+    }
+    // Re-throw the original error if it's not a unique constraint error or we couldn't add more context
+    throw error
+  }
 }
 
 // 删除分类

@@ -85,8 +85,8 @@ export async function getWebsites(
         likes: true,
         favorites: true,
       },
-      // skip,
-      // take,
+      skip,
+      take,
     }),
     db.website.count({ where }),
   ])

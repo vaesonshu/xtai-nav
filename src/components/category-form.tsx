@@ -35,12 +35,14 @@ export function CategoryForm({ onSuccess }: { onSuccess: () => void }) {
   const [isDeleting, setIsDeleting] = useState(false)
   const [categories, setCategories] = useState<WebCategory[]>([])
   const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
   const form = useForm({
     resolver: zodResolver(categorySchema),
     defaultValues: {
       name: '',
       slug: '',
+      icon: '',
     },
   })
 
@@ -60,8 +62,10 @@ export function CategoryForm({ onSuccess }: { onSuccess: () => void }) {
   }, [])
 
   const onSubmit = async (data: any) => {
+    console.log('Submitting category:', data)
     try {
       setIsSubmitting(true)
+      setError(null)
       await createCategory(data)
       form.reset()
       const updatedCategories = await getCategories()
@@ -69,8 +73,30 @@ export function CategoryForm({ onSuccess }: { onSuccess: () => void }) {
         updatedCategories.map((c) => ({ ...c, icon: c.icon ?? undefined }))
       )
       router.refresh()
-    } catch (error) {
+    } catch (error: any) {
       console.error('创建分类时出错:', error)
+      // Improved error handling to catch unique constraint errors
+      if (
+        error.code === 'P2002' ||
+        error.message?.includes('Unique constraint failed')
+      ) {
+        // Check if the error specifically mentions 'name' field
+        if (
+          error.meta?.target?.includes('name') ||
+          error.message?.includes('name')
+        ) {
+          setError('分类名称已存在，请使用不同的名称')
+        } else if (
+          error.meta?.target?.includes('slug') ||
+          error.message?.includes('slug')
+        ) {
+          setError('分类别名已存在，请使用不同的别名')
+        } else {
+          setError('分类名称或别名已存在，请使用不同的名称')
+        }
+      } else {
+        setError('创建分类失败，请稍后重试')
+      }
     } finally {
       setIsSubmitting(false)
     }
@@ -150,13 +176,6 @@ export function CategoryForm({ onSuccess }: { onSuccess: () => void }) {
                       {...field}
                     />
                   </FormControl>
-                  <Button type="submit" disabled={isSubmitting}>
-                    {isSubmitting ? (
-                      <Loader2 className="h-4 w-4 animate-spin" />
-                    ) : (
-                      <Plus className="h-4 w-4" />
-                    )}
-                  </Button>
                 </div>
                 <p className="text-xs text-muted-foreground">
                   从 https://lucide.dev/icons/ 选择图标名称，可选字段
@@ -165,8 +184,28 @@ export function CategoryForm({ onSuccess }: { onSuccess: () => void }) {
               </FormItem>
             )}
           />
+
+          <Button type="submit" disabled={isSubmitting} className="w-full">
+            {isSubmitting ? (
+              <>
+                <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                创建中...
+              </>
+            ) : (
+              <>
+                <Plus className="h-4 w-4 mr-2" />
+                创建分类
+              </>
+            )}
+          </Button>
         </form>
       </Form>
+
+      {error && (
+        <div className="p-3 text-sm text-red-600 bg-red-50 border border-red-200 rounded-md">
+          {error}
+        </div>
+      )}
 
       <div className="space-y-2">
         <h3 className="text-sm font-medium">现有分类</h3>
