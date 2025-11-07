@@ -36,6 +36,9 @@ jobs:
             docker stop xtai-nav-app || true
             docker rm xtai-nav-app || true
 
+            echo '🧹 删除旧镜像...'
+            docker rmi xtai-nav-app || true
+
             echo '🧱 构建新镜像...'
             docker build -t xtai-nav-app .
 
