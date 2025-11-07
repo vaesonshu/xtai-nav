@@ -48,12 +48,14 @@ server {
 
 > 停止现有容器
 
-- `docker compose down`
+- `docker stop xtai-nav-app`
+- `docker rm xtai-nav-app`
+- `docker rmi -f xtai-nav-app`
 
 > 构建并运行 Docker 容器
 
-- docker build -t xtai-nav-app .
-- docker run -p 3000:3000 xtai-nav-app
+- `docker build -t xtai-nav-app .`
+- `docker run -p 3000:3000 xtai-nav-app`
 
 常用命令
 
