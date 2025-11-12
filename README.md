@@ -130,6 +130,24 @@ name: Deploy to Server
 - [sonner](https://sonner.emilkowal.ski)
 - [Lucide](https://lucide.dev/icons)
 
+### MCP Server
+
+- [shadcn](https://ui.shadcn.com/docs/mcp)
+
+```bash
+{
+  "mcpServers": {
+    "shadcn": {
+      "command": "npx",
+      "args": [
+        "shadcn@latest",
+        "mcp"
+      ]
+    }
+  }
+}
+```
+
 ## 项目功能点
 
 - [x] 登录

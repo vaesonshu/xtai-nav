@@ -133,3 +133,13 @@ model UserCount {
   id    String @id @default("singleton")
   count Int    @default(0)
 }
+
+// 日志表
+model Log {
+  id        String   @id @default(cuid())
+  title     String   // 日志标题
+  content   String   // 日志内容
+  isPinned  Boolean  @default(false) // 是否置顶
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

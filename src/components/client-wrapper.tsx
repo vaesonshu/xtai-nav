@@ -54,9 +54,10 @@ export default function ClientWrapper({
 }) {
   const pathname = usePathname()
   const isAdminPage =
-    pathname.startsWith('/admin') ||
-    pathname.startsWith('/danmu') ||
-    pathname.startsWith('/user-info')
+    pathname &&
+    (pathname.startsWith('/admin') ||
+      pathname.startsWith('/danmu') ||
+      pathname.startsWith('/user-info'))
   return !isAdminPage ? (
     <SidebarProvider>
       <ChildWrapper defaultOpen={defaultOpen}>{children}</ChildWrapper>

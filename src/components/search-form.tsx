@@ -12,7 +12,7 @@ export function SearchForm() {
   const [isPending, startTransition] = useTransition()
 
   const handleSearch = (term: any) => {
-    const params = new URLSearchParams(searchParams)
+    const params = new URLSearchParams(searchParams || '')
 
     if (term) {
       params.set('search', term)
@@ -32,7 +32,7 @@ export function SearchForm() {
         type="search"
         placeholder="搜索网站..."
         className="pl-8"
-        defaultValue={searchParams.get('search') || ''}
+        defaultValue={searchParams?.get('search') || ''}
         onChange={(e) => handleSearch(e.target.value)}
       />
     </div>

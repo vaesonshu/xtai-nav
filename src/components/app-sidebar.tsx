@@ -12,6 +12,8 @@ import {
   NotepadText,
   Star,
   Settings,
+  FileText,
+  Eye,
 } from 'lucide-react'
 import {
   Sidebar,
@@ -115,6 +117,20 @@ export function AppSidebar() {
       url: '/message-board',
       icon: NotepadText,
     },
+    {
+      title: '系统日志',
+      url: '/logs',
+      icon: Eye,
+    },
+    ...(isAdminUser
+      ? [
+          {
+            title: '日志管理',
+            url: '/admin/logs',
+            icon: FileText,
+          },
+        ]
+      : []),
   ]
 
   return (
