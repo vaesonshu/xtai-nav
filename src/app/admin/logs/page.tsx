@@ -242,10 +242,17 @@ export default function LogsPage() {
 
   const openEditDialog = (log: Log) => {
     setEditingLog(log)
+    const date = new Date(log.createdAt)
+    const year = date.getFullYear()
+    const month = String(date.getMonth() + 1).padStart(2, '0')
+    const day = String(date.getDate()).padStart(2, '0')
+    const hours = String(date.getHours()).padStart(2, '0')
+    const minutes = String(date.getMinutes()).padStart(2, '0')
+    const localDateTime = `${year}-${month}-${day}T${hours}:${minutes}`
     setFormData({
       title: log.title,
       content: log.content,
-      createdAt: new Date(log.createdAt).toISOString().slice(0, 16), // 转换为datetime-local格式
+      createdAt: localDateTime, // 使用本地时间格式
     })
     setIsEditDialogOpen(true)
   }
@@ -265,7 +272,7 @@ export default function LogsPage() {
                 日志管理
               </h1>
               <p className="text-lg text-muted-foreground mt-2">
-                查看和管理系统日志记录。
+                查看和管理更新日志记录。
               </p>
             </div>
             <div className="flex items-center gap-3">
@@ -304,6 +311,7 @@ export default function LogsPage() {
                       <label className="text-sm font-medium">内容</label>
                       <Textarea
                         value={formData.content}
+                        className="h-[120px]"
                         onChange={(e) =>
                           setFormData({ ...formData, content: e.target.value })
                         }
@@ -514,6 +522,7 @@ export default function LogsPage() {
                 <label className="text-sm font-medium">内容</label>
                 <Textarea
                   value={formData.content}
+                  className="h-[120px]"
                   onChange={(e) =>
                     setFormData({ ...formData, content: e.target.value })
                   }

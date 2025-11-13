@@ -128,7 +128,7 @@ export default function LogsPage() {
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
             <div>
               <h1 className="text-4xl font-bold tracking-tight text-foreground">
-                系统日志
+                更新日志
               </h1>
               <p className="text-lg text-muted-foreground mt-2">
                 查看系统运行日志记录。
