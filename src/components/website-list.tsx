@@ -117,11 +117,11 @@ export function WebsiteList({
       {/* Scrollable Website Grid Container */}
       <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
         <div className="p-6">
-          <div className="grid gap-6 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 auto-rows-fr">
+          <div className="grid gap-4 grid-cols-1">
             {websites.map((website) => (
               <div
                 key={website.id}
-                className="transform transition-all duration-200 hover:scale-[1.02]"
+                className="transform transition-all duration-200 hover:shadow-lg"
               >
                 <WebsiteCard website={website} />
               </div>

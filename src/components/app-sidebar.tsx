@@ -134,7 +134,7 @@ export function AppSidebar() {
   ]
 
   return (
-    <Sidebar className="border-r bg-background">
+    <Sidebar className="border-r bg-white border-gray-200">
       <SidebarHeader className="flex flex-row justify-between items-center h-14">
         <div className="flex justify-start items-center gap-2 px-2">
           <Image
@@ -159,8 +159,15 @@ export function AppSidebar() {
             <SidebarMenu>
               {navItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild isActive={pathname === item.url}>
-                    <Link href={item.url} className="flex items-center">
+                  <SidebarMenuButton asChild>
+                    <Link
+                      href={item.url}
+                      className={`flex items-center px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+                        pathname === item.url
+                          ? 'bg-blue-50 text-blue-700 border border-blue-200 shadow-sm'
+                          : 'text-gray-700 hover:bg-blue-25 hover:text-blue-600 hover:shadow-sm'
+                      }`}
+                    >
                       <item.icon className="h-4 w-4 mr-2" />
                       <span>{item.title}</span>
                     </Link>
@@ -186,13 +193,14 @@ export function AppSidebar() {
               <SidebarMenu>
                 {categories.map((category) => (
                   <SidebarMenuItem key={category.id}>
-                    <SidebarMenuButton
-                      asChild
-                      isActive={pathname === `/category/${category.slug}`}
-                    >
+                    <SidebarMenuButton asChild>
                       <Link
                         href={`/category/${category.slug}`}
-                        className="flex items-center"
+                        className={`flex items-center px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+                          pathname === `/category/${category.slug}`
+                            ? 'bg-blue-50 text-blue-700 border border-blue-200 shadow-sm'
+                            : 'text-gray-700 hover:bg-blue-25 hover:text-blue-600 hover:shadow-sm'
+                        }`}
                       >
                         {category.icon ? (
                           (() => {
@@ -224,8 +232,15 @@ export function AppSidebar() {
         <SidebarMenu>
           {footItems.map((item) => (
             <SidebarMenuItem key={item.title}>
-              <SidebarMenuButton asChild isActive={pathname === item.url}>
-                <Link href={item.url} className="flex items-center">
+              <SidebarMenuButton asChild>
+                <Link
+                  href={item.url}
+                  className={`flex items-center px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+                    pathname === item.url
+                      ? 'bg-blue-50 text-blue-700 border border-blue-200 shadow-sm'
+                      : 'text-gray-700 hover:bg-blue-25 hover:text-blue-600 hover:shadow-sm'
+                  }`}
+                >
                   <item.icon className="h-4 w-4 mr-2" />
                   <span>{item.title}</span>
                 </Link>
