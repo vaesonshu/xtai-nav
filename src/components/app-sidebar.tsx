@@ -118,19 +118,10 @@ export function AppSidebar() {
       icon: NotepadText,
     },
     {
-      title: '系统日志',
+      title: '更新日志',
       url: '/logs',
       icon: Eye,
     },
-    ...(isAdminUser
-      ? [
-          {
-            title: '日志管理',
-            url: '/admin/logs',
-            icon: FileText,
-          },
-        ]
-      : []),
   ]
 
   return (

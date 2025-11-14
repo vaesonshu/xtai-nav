@@ -138,11 +138,11 @@ export function WebsiteCard({
                 {website.description || '暂无描述'}
               </p>
               <div className="flex items-center space-x-4 text-xs text-gray-500">
-                <span>
+                {/* <span>
                   {formatDistanceToNow(new Date(website.createdAt), {
                     addSuffix: true,
                   })}
-                </span>
+                </span> */}
                 {categoryNames.length > 0 && (
                   <div className="flex items-center gap-1">
                     <Tag className="h-3 w-3 text-blue-500" />
