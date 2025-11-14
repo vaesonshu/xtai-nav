@@ -62,7 +62,9 @@ export function WebsiteForm({
   // 获取网站已有的分类ID
   const getWebsiteCategoryIds = () => {
     if (!website || !website.categories) return []
-    return website.categories.map((wc) => wc.categoryId || wc.category?.id)
+
+    // 编辑时的数据结构：categories直接是分类对象数组，所以直接使用wc.id
+    return website.categories.map((wc: any) => wc.id).filter(Boolean)
   }
 
   const defaultValues = website

@@ -114,7 +114,7 @@ export function WebsiteCard({
 
   // 获取网站分类名称
   const categoryNames = website.categories
-    ? website.categories.map((wc: any) => wc.category?.name).filter(Boolean)
+    ? website.categories.map((wc: any) => wc.name).filter(Boolean)
     : []
 
   return (
