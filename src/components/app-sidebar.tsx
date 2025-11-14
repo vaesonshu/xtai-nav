@@ -47,12 +47,9 @@ export function AppSidebar() {
   const [categories, setCategories] = useState<WebCategory[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [isAdminUser, setIsAdminUser] = useState(false)
-  const [hasLoadedCategories, setHasLoadedCategories] = useState(false)
   const { errorToast } = useToast()
 
   useEffect(() => {
-    if (hasLoadedCategories) return
-
     const loadCategories = async () => {
       try {
         // const data = await getCategories()
@@ -66,12 +63,11 @@ export function AppSidebar() {
         })
       } finally {
         setIsLoading(false)
-        setHasLoadedCategories(true)
       }
     }
 
     loadCategories()
-  }, [hasLoadedCategories, errorToast]) // eslint-disable-line react-hooks/exhaustive-deps
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   // Check admin status when user changes
   useEffect(() => {
