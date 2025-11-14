@@ -18,6 +18,7 @@ import { TooltipWrapper } from '@/components/ui/tooltip-wrapper'
 export function NavCard({ website }: { website: WebsiteProps }) {
   const { isSignedIn } = useAuth()
   const [likes, setLikes] = useState(website.likes?.length || 0)
+  const [favorites, setFavorites] = useState(website.favorites?.length || 0)
   const [views, setViews] = useState(website.views)
   const [isLoading, setIsLoading] = useState(false)
   const [isLiked, setIsLiked] = useState(website.hasLiked)
@@ -54,7 +55,11 @@ export function NavCard({ website }: { website: WebsiteProps }) {
     }
   }
 
-  const handleFavorite = async () => {
+  const handleFavorite = async (e: React.MouseEvent) => {
+    // 阻止事件冒泡，避免触发卡片的链接导航
+    e.preventDefault()
+    e.stopPropagation()
+
     if (!isSignedIn) {
       warning('请先登录哈！')
       return
@@ -64,6 +69,9 @@ export function NavCard({ website }: { website: WebsiteProps }) {
       setIsLoading(true)
       const result = await toggleFavorite(website.id)
       setIsFavorited(result.favorited)
+      setFavorites((prev: number) =>
+        result.favorited ? prev + 1 : Math.max(0, prev - 1)
+      )
       success(result.favorited ? '收藏成功！' : '取消收藏成功！')
     } catch (error) {
       errorToast('收藏失败咯！', {
@@ -158,8 +166,9 @@ export function NavCard({ website }: { website: WebsiteProps }) {
                 disabled={isLoading}
               >
                 <Star
-                  className={`h-4 w-4 transition-all duration-200 ${isFavorited ? 'fill-yellow-500' : ''}`}
+                  className={`mr-1 h-4 w-4 transition-all duration-200 ${isFavorited ? 'fill-yellow-500' : ''}`}
                 />
+                {favorites}
               </Button>
             </TooltipWrapper>
 
@@ -180,7 +189,7 @@ export function NavCard({ website }: { website: WebsiteProps }) {
               <Button
                 variant="default"
                 size="sm"
-                className="h-8 w-8 p-0 rounded-full transition-all duration-200 hover:scale-110"
+                className="h-8 w-8 p-0 rounded-full bg-gradient-to-r from-purple-500 to-blue-600 hover:from-purple-600 hover:to-blue-700 text-white shadow-sm transition-all duration-200 hover:scale-110 hover:shadow-lg"
                 onClick={handleVisit}
                 asChild
               >

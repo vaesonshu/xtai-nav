@@ -3,7 +3,9 @@
 import { useState, useEffect } from 'react'
 import { Input } from '@/components/ui/input'
 import { NavCard } from '@/components/nav-card'
+import { WebsiteCard } from '@/components/website-card'
 import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
 import {
   Dialog,
   DialogContent,
@@ -24,6 +26,8 @@ import {
   Sparkles,
   Filter,
   Check,
+  Grid3X3,
+  List,
 } from 'lucide-react'
 import { WebsiteProps } from '@/types/nav-list'
 import { EmptyState } from './empty-state'
@@ -38,7 +42,7 @@ export default function NavMain({ websites }: { websites: WebsiteProps[] }) {
     'all'
   )
   const [filteredWebsites, setFilteredWebsites] = useState<WebsiteProps[]>([])
-  // 筛选状态已在组件状态中定义，不需要额外状态
+  const [layout, setLayout] = useState<'card' | 'row'>('card')
 
   const { success } = useToast()
 
@@ -177,6 +181,28 @@ export default function NavMain({ websites }: { websites: WebsiteProps[] }) {
         </div>
 
         <div className="flex gap-3 items-center w-full sm:w-auto justify-center sm:justify-end">
+          {/* 布局切换开关 */}
+          <div className="flex rounded-full bg-secondary p-1 border">
+            <Button
+              variant={layout === 'card' ? 'default' : 'ghost'}
+              size="sm"
+              onClick={() => setLayout('card')}
+              className="h-8 w-8 p-0 rounded-full"
+              aria-label="网格布局"
+            >
+              <Grid3X3 className="h-4 w-4" />
+            </Button>
+            <Button
+              variant={layout === 'row' ? 'default' : 'ghost'}
+              size="sm"
+              onClick={() => setLayout('row')}
+              className="h-8 w-8 p-0 rounded-full"
+              aria-label="列表布局"
+            >
+              <List className="h-4 w-4" />
+            </Button>
+          </div>
+
           {/* 排序选项卡 */}
           <div className="flex flex-wrap gap-2">
             {[
@@ -383,40 +409,75 @@ export default function NavMain({ websites }: { websites: WebsiteProps[] }) {
         </div>
       )}
 
-      {/* 网站卡片网格 - 优化间距和列数 */}
+      {/* 网站卡片网格 - 支持布局切换 */}
       {isLoading ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
-          {Array.from({ length: 4 }).map((_, index) => (
-            <div
-              key={index}
-              className="bg-card rounded-xl shadow-sm border p-5 animate-pulse"
-            >
-              <div className="h-10 w-10 rounded-full bg-muted mb-3"></div>
-              <div className="h-4 w-3/4 bg-muted rounded mb-2"></div>
-              <div className="h-4 w-1/2 bg-muted rounded mb-3"></div>
-              <div className="flex flex-wrap gap-1.5 mb-3">
-                <div className="h-5 w-14 bg-muted rounded-full"></div>
-                <div className="h-5 w-14 bg-muted rounded-full"></div>
+        layout === 'card' ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
+            {Array.from({ length: 4 }).map((_, index) => (
+              <div
+                key={index}
+                className="bg-card rounded-xl shadow-sm border p-5 animate-pulse"
+              >
+                <div className="h-10 w-10 rounded-full bg-muted mb-3"></div>
+                <div className="h-4 w-3/4 bg-muted rounded mb-2"></div>
+                <div className="h-4 w-1/2 bg-muted rounded mb-3"></div>
+                <div className="flex flex-wrap gap-1.5 mb-3">
+                  <div className="h-5 w-14 bg-muted rounded-full"></div>
+                  <div className="h-5 w-14 bg-muted rounded-full"></div>
+                </div>
+                <div className="flex justify-between items-center">
+                  <div className="h-5 w-16 bg-muted rounded"></div>
+                  <div className="h-7 w-7 bg-muted rounded-full"></div>
+                </div>
               </div>
-              <div className="flex justify-between items-center">
-                <div className="h-5 w-16 bg-muted rounded"></div>
-                <div className="h-7 w-7 bg-muted rounded-full"></div>
+            ))}
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 gap-4">
+            {Array.from({ length: 4 }).map((_, index) => (
+              <div
+                key={index}
+                className="bg-card rounded-xl shadow-sm border p-6 animate-pulse"
+              >
+                <div className="flex items-center space-x-4">
+                  <div className="h-14 w-14 rounded-full bg-muted"></div>
+                  <div className="flex-1 space-y-2">
+                    <div className="h-5 bg-muted rounded w-1/4"></div>
+                    <div className="h-4 bg-muted rounded w-3/4"></div>
+                    <div className="h-3 bg-muted rounded w-1/2"></div>
+                  </div>
+                  <div className="h-10 bg-muted rounded w-20"></div>
+                </div>
               </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )
       ) : filteredWebsites.length > 0 ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
-          {filteredWebsites.map((website, index) => (
-            <div
-              key={website.id}
-              className="animate-in fade-in-50 duration-500"
-              style={{ animationDelay: `${index * 30}ms` }}
-            >
-              <NavCard website={website} />
-            </div>
-          ))}
-        </div>
+        layout === 'card' ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
+            {filteredWebsites.map((website, index) => (
+              <div
+                key={website.id}
+                className="animate-in fade-in-50 duration-500"
+                style={{ animationDelay: `${index * 30}ms` }}
+              >
+                <NavCard website={website} />
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 gap-4">
+            {filteredWebsites.map((website, index) => (
+              <div
+                key={website.id}
+                className="animate-in fade-in-50 duration-500"
+                style={{ animationDelay: `${index * 30}ms` }}
+              >
+                <WebsiteCard website={website as any} allowOperations={false} />
+              </div>
+            ))}
+          </div>
+        )
       ) : (
         <EmptyState
           title={searchTerm ? '没有找到匹配的网站' : '暂无网站数据'}
@@ -432,7 +493,7 @@ export default function NavMain({ websites }: { websites: WebsiteProps[] }) {
         />
       )}
 
-      {/* 热门推荐区域 - 优化后更加紧凑 */}
+      {/* 热门推荐区域 - 根据布局状态调整显示 */}
       {filteredWebsites.length > 0 && activeTab === 'all' && (
         <div className="mt-10 mb-8">
           <div className="flex items-center mb-4 gap-2">
@@ -442,25 +503,50 @@ export default function NavMain({ websites }: { websites: WebsiteProps[] }) {
               （基于用户点赞）
             </span>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
-            {websites
-              .sort((a, b) => (b.likes?.length || 0) - (a.likes?.length || 0))
-              .slice(0, 4)
-              .map((website, index) => (
-                <div
-                  key={website.id}
-                  className="animate-in fade-in-50 slide-in-from-bottom-4 duration-500"
-                  style={{ animationDelay: `${index * 75}ms` }}
-                >
-                  <div className="relative">
-                    <NavCard website={website} />
-                    <div className="absolute -top-2 -left-2 bg-gradient-to-r from-yellow-400 to-yellow-600 text-white rounded-full h-6 w-6 flex items-center justify-center shadow-sm font-bold text-xs">
-                      {index + 1}
+          {layout === 'card' ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
+              {websites
+                .sort((a, b) => (b.likes?.length || 0) - (a.likes?.length || 0))
+                .slice(0, 4)
+                .map((website, index) => (
+                  <div
+                    key={website.id}
+                    className="animate-in fade-in-50 slide-in-from-bottom-4 duration-500"
+                    style={{ animationDelay: `${index * 75}ms` }}
+                  >
+                    <div className="relative">
+                      <NavCard website={website} />
+                      <div className="absolute -top-2 -left-2 bg-gradient-to-r from-yellow-400 to-yellow-600 text-white rounded-full h-6 w-6 flex items-center justify-center shadow-sm font-bold text-xs">
+                        {index + 1}
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
-          </div>
+                ))}
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 gap-4">
+              {websites
+                .sort((a, b) => (b.likes?.length || 0) - (a.likes?.length || 0))
+                .slice(0, 4)
+                .map((website, index) => (
+                  <div
+                    key={website.id}
+                    className="animate-in fade-in-50 slide-in-from-bottom-4 duration-500"
+                    style={{ animationDelay: `${index * 75}ms` }}
+                  >
+                    <div className="relative">
+                      <WebsiteCard
+                        website={website as any}
+                        allowOperations={false}
+                      />
+                      <div className="absolute -top-2 -left-2 bg-gradient-to-r from-yellow-400 to-yellow-600 text-white rounded-full h-6 w-6 flex items-center justify-center shadow-sm font-bold text-xs">
+                        {index + 1}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+            </div>
+          )}
         </div>
       )}
     </div>

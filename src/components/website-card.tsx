@@ -12,6 +12,7 @@ import {
   Edit,
   Trash2,
   Tag,
+  Star,
 } from 'lucide-react'
 import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -25,18 +26,90 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { WebsiteEditDialog } from '@/components/website-edit-dialog'
 import { WebsiteDeleteDialog } from '@/components/website-delete-dialog'
-import { incrementViews } from '@/lib/actions'
+import { incrementViews, toggleLike, toggleFavorite } from '@/lib/actions'
 import { WebsiteProps } from '@/types/nav-list'
+import { useAuth } from '@clerk/nextjs'
+import { useToast } from '@/hooks/use-toast'
+import { TooltipWrapper } from '@/components/ui/tooltip-wrapper'
 
-export function WebsiteCard({ website }: { website: any }) {
+interface WebsiteCardProps {
+  website: any
+  layout?: 'card' | 'row'
+  allowOperations?: boolean
+  allowUserOperations?: boolean
+}
+
+export function WebsiteCard({
+  website,
+  layout = 'card',
+  allowOperations = false,
+  allowUserOperations = true,
+}: WebsiteCardProps) {
+  const { isSignedIn } = useAuth()
   const [showEditDialog, setShowEditDialog] = useState(false)
   const [showDeleteDialog, setShowDeleteDialog] = useState(false)
-  const [likes, setLikes] = useState(website.likes.length)
-  const [views, setViews] = useState(website.views)
+  const [likes, setLikes] = useState(website.likes?.length || 0)
+  const [favorites, setFavorites] = useState(website.favorites?.length || 0)
+  const [views, setViews] = useState(website.views || 0)
+  const [isLoading, setIsLoading] = useState(false)
+  const [isLiked, setIsLiked] = useState(website.hasLiked)
+  const [isFavorited, setIsFavorited] = useState(website.hasFavorited)
+  const { success, warning, errorToast } = useToast()
 
   const handleVisit = async () => {
     const newViews = await incrementViews(website.id)
     setViews(newViews)
+  }
+
+  const handleLike = async (e: React.MouseEvent) => {
+    // 阻止事件冒泡，避免触发卡片的链接导航
+    e.preventDefault()
+    e.stopPropagation()
+
+    if (!isSignedIn) {
+      warning('请先登录哈！')
+      return
+    }
+    try {
+      setIsLoading(true)
+      const result = await toggleLike(website.id)
+      setLikes(result.count)
+      setIsLiked(result.liked)
+      success(result.liked ? '点赞成功！' : '取消点赞成功！')
+    } catch (error) {
+      errorToast('点赞失败咯！', {
+        description: error as string,
+      })
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const handleFavorite = async (e: React.MouseEvent) => {
+    // 阻止事件冒泡，避免触发卡片的链接导航
+    e.preventDefault()
+    e.stopPropagation()
+
+    if (!isSignedIn) {
+      warning('请先登录哈！')
+      return
+    }
+
+    try {
+      setIsLoading(true)
+      const result = await toggleFavorite(website.id)
+      setIsFavorited(result.favorited)
+      setFavorites((prev: number) =>
+        result.favorited ? prev + 1 : Math.max(0, prev - 1)
+      )
+      success(result.favorited ? '收藏成功！' : '取消收藏成功！')
+    } catch (error) {
+      errorToast('收藏失败咯！', {
+        description: error as string,
+      })
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   // 获取网站分类名称
@@ -103,65 +176,151 @@ export function WebsiteCard({ website }: { website: any }) {
             )}
           </div>
 
-          {/* 右侧统计和操作 */}
-          <div className="flex items-center space-x-6 shrink-0">
-            <div className="hidden sm:flex items-center space-x-4">
-              <div className="flex items-center text-sm text-gray-600">
-                <Heart className="mr-1.5 h-4 w-4 text-red-400" />
-                <span className="font-medium">{likes}</span>
-              </div>
-              <div className="flex items-center text-sm text-gray-600">
-                <Eye className="mr-1.5 h-4 w-4 text-blue-400" />
-                <span className="font-medium">{views}</span>
-              </div>
-            </div>
+          {/* 右侧操作 */}
+          <div className="flex items-center shrink-0">
+            <div className="flex items-center space-x-3">
+              {/* 用户操作按钮 - 点赞、收藏、查看次数 */}
+              <div className="flex items-center space-x-1">
+                <>
+                  {allowUserOperations ? (
+                    <TooltipWrapper
+                      content={isLiked ? '取消点赞' : '点赞'}
+                      side="top"
+                      delayDuration={200}
+                    >
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className={`h-8 px-2 rounded-full transition-all duration-200 ${isLiked ? 'text-red-500' : 'text-muted-foreground hover:text-red-500'}`}
+                        onClick={handleLike}
+                        disabled={isLoading}
+                      >
+                        <Heart
+                          className={`mr-1 h-4 w-4 transition-all duration-200 ${isLiked ? 'fill-red-500' : ''}`}
+                        />
+                        {likes}
+                      </Button>
+                    </TooltipWrapper>
+                  ) : (
+                    <TooltipWrapper
+                      content="仅查看模式"
+                      side="top"
+                      delayDuration={200}
+                    >
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className={`h-8 px-2 rounded-full transition-all duration-200 cursor-not-allowed text-red-500 pointer-events-none`}
+                      >
+                        <Heart className="mr-1 h-4 w-4 fill-red-500 text-red-500" />
+                        {likes}
+                      </Button>
+                    </TooltipWrapper>
+                  )}
+                </>
 
-            <div className="flex items-center space-x-2">
-              <Button
-                variant="default"
-                size="sm"
-                className="h-9 px-4 bg-blue-600 hover:bg-blue-700 text-white shadow-sm"
-                onClick={handleVisit}
-                asChild
-              >
-                <Link
-                  href={website.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
+                <>
+                  {allowUserOperations ? (
+                    <TooltipWrapper
+                      content={isFavorited ? '取消收藏' : '收藏'}
+                      side="top"
+                      delayDuration={200}
+                    >
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className={`h-8 px-2 rounded-full transition-all duration-200 ${isFavorited ? 'text-yellow-500' : 'text-muted-foreground hover:text-yellow-500'}`}
+                        onClick={handleFavorite}
+                        disabled={isLoading}
+                      >
+                        <Star
+                          className={`mr-1 h-4 w-4 transition-all duration-200 ${isFavorited ? 'fill-yellow-500' : ''}`}
+                        />
+                        {favorites}
+                      </Button>
+                    </TooltipWrapper>
+                  ) : (
+                    <TooltipWrapper
+                      content="仅查看模式"
+                      side="top"
+                      delayDuration={200}
+                    >
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className={`h-8 px-2 rounded-full transition-all duration-200 cursor-not-allowed text-yellow-500 pointer-events-none`}
+                      >
+                        <Star className="mr-1 h-4 w-4 fill-yellow-500 text-yellow-500" />
+                        {favorites}
+                      </Button>
+                    </TooltipWrapper>
+                  )}
+                </>
+
+                <div className="flex items-center text-sm text-muted-foreground ml-1">
+                  <Eye className="mr-1.5 h-4 w-4 text-blue-400" />
+                  <span className="font-medium">{views}</span>
+                </div>
+              </div>
+
+              {/* 分隔符 */}
+              <div className="h-5 w-px bg-gray-300"></div>
+
+              {/* 右侧操作按钮 */}
+              <div className="flex items-center space-x-2">
+                <TooltipWrapper
+                  content={`访问 ${website.name}`}
+                  side="top"
+                  delayDuration={200}
                 >
-                  <ExternalLink className="mr-1.5 h-3.5 w-3.5" />
-                  访问
-                </Link>
-              </Button>
-
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
                   <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-9 w-9 opacity-50 group-hover:opacity-100 transition-opacity hover:bg-gray-100"
+                    variant="default"
+                    size="sm"
+                    className="h-9 w-9 p-0 rounded-full bg-gradient-to-r from-purple-400 to-blue-400 hover:from-purple-500 hover:to-blue-500 text-white shadow-sm transition-all duration-200 hover:scale-110 hover:shadow-lg"
+                    onClick={handleVisit}
+                    asChild
                   >
-                    <MoreHorizontal className="h-4 w-4" />
-                    <span className="sr-only">打开菜单</span>
+                    <Link
+                      href={website.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <ExternalLink className="h-4 w-4" />
+                    </Link>
                   </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-40">
-                  <DropdownMenuItem
-                    onClick={() => setShowEditDialog(true)}
-                    className="cursor-pointer"
-                  >
-                    <Edit className="mr-2 h-4 w-4" />
-                    编辑
-                  </DropdownMenuItem>
-                  <DropdownMenuItem
-                    onClick={() => setShowDeleteDialog(true)}
-                    className="cursor-pointer text-red-600 focus:text-red-600"
-                  >
-                    <Trash2 className="mr-2 h-4 w-4" />
-                    删除
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
+                </TooltipWrapper>
+
+                {allowOperations && (
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-9 w-9 opacity-50 group-hover:opacity-100 transition-opacity hover:bg-gray-100"
+                      >
+                        <MoreHorizontal className="h-4 w-4" />
+                        <span className="sr-only">打开菜单</span>
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" className="w-40">
+                      <DropdownMenuItem
+                        onClick={() => setShowEditDialog(true)}
+                        className="cursor-pointer"
+                      >
+                        <Edit className="mr-2 h-4 w-4" />
+                        编辑
+                      </DropdownMenuItem>
+                      <DropdownMenuItem
+                        onClick={() => setShowDeleteDialog(true)}
+                        className="cursor-pointer text-red-600 focus:text-red-600"
+                      >
+                        <Trash2 className="mr-2 h-4 w-4" />
+                        删除
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                )}
+              </div>
             </div>
           </div>
 

@@ -12,6 +12,8 @@ interface WebsiteListProps {
   category?: string
   initialPage?: number
   pageSize?: number
+  allowOperations?: boolean
+  allowUserOperations?: boolean
 }
 
 interface PaginationData {
@@ -26,6 +28,8 @@ export function WebsiteList({
   category = '',
   initialPage = 1,
   pageSize = 12,
+  allowOperations = false,
+  allowUserOperations = true,
 }: WebsiteListProps) {
   const [websites, setWebsites] = useState<WebsiteWithCategories[]>([])
   const [pagination, setPagination] = useState<PaginationData | null>(null)
@@ -123,7 +127,11 @@ export function WebsiteList({
                 key={website.id}
                 className="transform transition-all duration-200 hover:shadow-lg"
               >
-                <WebsiteCard website={website} />
+                <WebsiteCard
+                  website={website}
+                  allowOperations={allowOperations}
+                  allowUserOperations={allowUserOperations}
+                />
               </div>
             ))}
           </div>

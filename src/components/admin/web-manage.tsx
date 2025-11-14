@@ -157,7 +157,11 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
         {/* Content Section */}
         <div className="space-y-6">
           <Suspense fallback={<WebsitesLoading />}>
-            <WebsiteList search={search} />
+            <WebsiteList
+              search={search}
+              allowOperations={true}
+              allowUserOperations={false}
+            />
           </Suspense>
         </div>
       </div>
