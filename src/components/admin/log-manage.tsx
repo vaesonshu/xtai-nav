@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
@@ -99,38 +99,41 @@ export default function LogsPage() {
   }, [user?.id])
 
   // Fetch logs
-  const fetchLogs = async (page = 1) => {
-    try {
-      setLoading(true)
-      const params = new URLSearchParams({
-        page: page.toString(),
-        limit: '10',
-      })
-      if (searchTerm) params.append('search', searchTerm)
+  const fetchLogs = useCallback(
+    async (page = 1) => {
+      try {
+        setLoading(true)
+        const params = new URLSearchParams({
+          page: page.toString(),
+          limit: '10',
+        })
+        if (searchTerm) params.append('search', searchTerm)
 
-      const response = await fetch(`/api/logs?${params}`)
-      const data = await response.json()
+        const response = await fetch(`/api/logs?${params}`)
+        const data = await response.json()
 
-      if (response.ok) {
-        setLogs(data.logs)
-        console.log('获取日志成功:', data)
-        setPagination(data.pagination)
-      } else {
-        errorToast('获取日志失败', { description: data.error })
+        if (response.ok) {
+          setLogs(data.logs)
+          console.log('获取日志成功:', data)
+          setPagination(data.pagination)
+        } else {
+          errorToast('获取日志失败', { description: data.error })
+        }
+      } catch (error) {
+        console.error('获取日志失败:', error)
+        errorToast('获取日志失败', { description: '网络错误，请稍后重试' })
+      } finally {
+        setLoading(false)
       }
-    } catch (error) {
-      console.error('获取日志失败:', error)
-      errorToast('获取日志失败', { description: '网络错误，请稍后重试' })
-    } finally {
-      setLoading(false)
-    }
-  }
+    },
+    [searchTerm, errorToast]
+  )
 
   useEffect(() => {
     if (isAdminUser) {
       fetchLogs(currentPage)
     }
-  }, [isAdminUser, currentPage, searchTerm])
+  }, [isAdminUser, currentPage, searchTerm, fetchLogs])
 
   const handleSearch = () => {
     setCurrentPage(1)

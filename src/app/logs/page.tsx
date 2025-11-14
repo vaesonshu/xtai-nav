@@ -26,42 +26,47 @@ export default function LogsPage() {
   const [currentPage, setCurrentPage] = useState(1)
 
   // 分页获取日志
-  const fetchLogs = async (page = 1, append = false) => {
-    try {
-      if (append) {
-        setLoadingMore(true)
-      } else {
-        setLoading(true)
-      }
-
-      const params = new URLSearchParams({
-        page: page.toString(),
-        limit: '10',
-      })
-
-      const response = await fetch(`/api/logs?${params}`)
-      const data = await response.json()
-
-      if (response.ok) {
+  const fetchLogs = useCallback(
+    async (page = 1, append = false) => {
+      try {
         if (append) {
-          setLogs((prev) => [...prev, ...data.logs])
+          setLoadingMore(true)
         } else {
-          setLogs(data.logs)
+          setLoading(true)
         }
 
-        // 检查是否还有更多页面
-        setHasMore(data.logs.length === 10 && data.pagination.totalPages > page)
-      } else {
-        errorToast('获取日志失败', { description: data.error })
+        const params = new URLSearchParams({
+          page: page.toString(),
+          limit: '10',
+        })
+
+        const response = await fetch(`/api/logs?${params}`)
+        const data = await response.json()
+
+        if (response.ok) {
+          if (append) {
+            setLogs((prev) => [...prev, ...data.logs])
+          } else {
+            setLogs(data.logs)
+          }
+
+          // 检查是否还有更多页面
+          setHasMore(
+            data.logs.length === 10 && data.pagination.totalPages > page
+          )
+        } else {
+          errorToast('获取日志失败', { description: data.error })
+        }
+      } catch (error) {
+        console.error('获取日志失败:', error)
+        errorToast('获取日志失败', { description: '网络错误，请稍后重试' })
+      } finally {
+        setLoading(false)
+        setLoadingMore(false)
       }
-    } catch (error) {
-      console.error('获取日志失败:', error)
-      errorToast('获取日志失败', { description: '网络错误，请稍后重试' })
-    } finally {
-      setLoading(false)
-      setLoadingMore(false)
-    }
-  }
+    },
+    [errorToast]
+  )
 
   // 分页加载更多日志
   const loadMore = useCallback(() => {
@@ -70,7 +75,7 @@ export default function LogsPage() {
       setCurrentPage(nextPage)
       fetchLogs(nextPage, true)
     }
-  }, [currentPage, loadingMore, hasMore])
+  }, [currentPage, loadingMore, hasMore, fetchLogs])
 
   // 分页滚动加载更多日志
   useEffect(() => {
@@ -99,7 +104,7 @@ export default function LogsPage() {
   useEffect(() => {
     // 初始化加载第一页日志
     fetchLogs(1, false)
-  }, [])
+  }, [fetchLogs])
 
   const formatTime = (dateString: string) => {
     const date = new Date(dateString)

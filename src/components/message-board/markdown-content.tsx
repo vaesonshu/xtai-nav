@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import ReactMarkdown from 'react-markdown'
+import Image from 'next/image'
 
 interface MarkdownContentProps {
   content: string
@@ -35,11 +36,13 @@ export default function MarkdownContent({
             />
           ),
           img: ({ node, ...props }) => (
-            <img
-              {...props}
-              className="max-w-full h-auto rounded-md my-2"
-              loading="lazy"
+            <Image
+              src={props.src || ''}
               alt={props.alt || 'Image'}
+              width={800}
+              height={600}
+              className="max-w-full h-auto rounded-md my-2"
+              unoptimized
             />
           ),
           code: ({ node, ...props }) => (

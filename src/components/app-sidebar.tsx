@@ -47,27 +47,31 @@ export function AppSidebar() {
   const [categories, setCategories] = useState<WebCategory[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [isAdminUser, setIsAdminUser] = useState(false)
+  const [hasLoadedCategories, setHasLoadedCategories] = useState(false)
   const { errorToast } = useToast()
 
-  const loadCategories = useCallback(async () => {
-    try {
-      // const data = await getCategories()
-      const response = await fetch('/api/categories')
-      const data = await response.json()
-      setCategories(data)
-    } catch (error) {
-      console.error('加载分类失败:', error)
-      errorToast('分类加载失败', {
-        description: error as string,
-      })
-    } finally {
-      setIsLoading(false)
-    }
-  }, [errorToast])
-
   useEffect(() => {
+    if (hasLoadedCategories) return
+
+    const loadCategories = async () => {
+      try {
+        // const data = await getCategories()
+        const response = await fetch('/api/categories')
+        const data = await response.json()
+        setCategories(data)
+      } catch (error) {
+        console.error('加载分类失败:', error)
+        errorToast('分类加载失败', {
+          description: error as string,
+        })
+      } finally {
+        setIsLoading(false)
+        setHasLoadedCategories(true)
+      }
+    }
+
     loadCategories()
-  }, []) // 空依赖数组，只在组件挂载时运行一次
+  }, [hasLoadedCategories, errorToast]) // eslint-disable-line react-hooks/exhaustive-deps
 
   // Check admin status when user changes
   useEffect(() => {

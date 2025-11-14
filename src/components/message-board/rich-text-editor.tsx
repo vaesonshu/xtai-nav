@@ -215,6 +215,7 @@ export default function RichTextEditor({
                 className="h-8 w-8 p-0"
                 onClick={insertImage}
                 disabled={disabled}
+                aria-label="插入图片"
               >
                 <Image className="h-4 w-4" />
               </Button>
