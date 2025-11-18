@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { WebsitesLoading } from '@/components/websites-loading'
 import { House, Globe, FileText, Users, TrendingUp } from 'lucide-react'
-import { auth } from '@clerk/nextjs/server'
+import { getCurrentUserId } from '@/lib/auth-client'
 import { isAdmin } from '@/lib/utils'
 import { getWebsites } from '@/lib/data'
 import { getCategories } from '@/lib/actions'
@@ -12,6 +12,9 @@ import LogManage from '@/components/admin/log-manage'
 import WebManage from '@/components/admin/web-manage'
 import NotAuthorized from '@/components/not-authorized'
 import Link from 'next/link'
+
+// Force dynamic rendering to allow cookies usage
+export const dynamic = 'force-dynamic'
 
 interface AdminPageProps {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>
@@ -38,11 +41,11 @@ async function getStats() {
 }
 
 export default async function AdminPage({ searchParams }: AdminPageProps) {
-  const { userId } = await auth()
+  const userId = await getCurrentUserId()
 
   // 权限检查
   if (!userId) {
-    redirect('/sign-in')
+    redirect('/')
   }
 
   const userInfo = await isAdmin(userId)

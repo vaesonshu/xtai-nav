@@ -1,11 +1,29 @@
 import { Bookmark } from 'lucide-react'
-import { auth } from '@clerk/nextjs/server'
+import { auth } from '@/lib/auth'
+import { cookies } from 'next/headers'
 import { getUserFavorites } from '@/lib/actions'
 import { Button } from '@/components/ui/button'
 import { ClientFavoritesPage } from '@/components/favorites/client-favorites-page'
 
+// Force dynamic rendering to allow cookies usage
+export const dynamic = 'force-dynamic'
+
 export default async function FavoritesPage() {
-  const { userId } = await auth()
+  let userId: string | undefined
+
+  try {
+    const headers = new Headers()
+    const cookieStore = await cookies()
+    cookieStore.getAll().forEach((cookie) => {
+      headers.append('Cookie', `${cookie.name}=${cookie.value}`)
+    })
+
+    const session = await auth.api.getSession({ headers })
+    userId = session?.user?.id
+  } catch (error) {
+    console.error('Auth error:', error)
+    userId = undefined
+  }
 
   // 获取收藏数据（在服务器端）
   let websites: any[] = []

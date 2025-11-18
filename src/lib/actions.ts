@@ -2,7 +2,7 @@
 
 import { revalidatePath } from 'next/cache'
 import { db } from '@/db/db'
-import { auth, clerkClient } from '@clerk/nextjs/server'
+import { getCurrentUserId } from '@/lib/auth-client'
 
 interface WebsiteType {
   name: string
@@ -162,14 +162,13 @@ export async function deleteCategory(id: string) {
 
 // 获取用户或创建用户
 async function getOrCreateUser() {
-  const { userId } = await auth()
-
+  const userId = await getCurrentUserId()
   if (!userId) {
     throw new Error('请先登录')
   }
 
   const user = await db.user.findUnique({
-    where: { clerkId: userId },
+    where: { id: userId },
   })
 
   if (!user) {

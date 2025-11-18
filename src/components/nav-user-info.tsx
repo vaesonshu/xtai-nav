@@ -13,11 +13,12 @@ import {
   CardTitle,
 } from '@/components/ui/card'
 import { cn } from '@/lib/utils'
-import { useUser } from '@clerk/nextjs'
+import { useSession } from '@/lib/auth-client'
 import { createOrUpdateUser } from '@/lib/user-actions'
 
 export default function DashboardPage() {
-  const { user, isLoaded, isSignedIn } = useUser()
+  // 使用原始的 useSession hook，可以获得加载状态
+  const { data: session, isPending, error } = useSession()
   const router = useRouter()
   const [progress, setProgress] = useState(100)
   const totalTime = 3000
@@ -26,15 +27,25 @@ export default function DashboardPage() {
   const fireworksRef = useRef<Fireworks | null>(null)
   const containerRef = useRef<HTMLDivElement | null>(null) // 为容器指定 HTMLDivElement 类型
 
-  useEffect(() => {
-    if (!isLoaded) return
+  const userInfo = session?.user
+  const isSignedIn = !!userInfo?.id
+  const isLoading = isPending // 明确标识加载状态
 
-    if (!isSignedIn || !user) {
-      console.error('Clerk: User not signed in or failed to load')
-      router.push('/sign-in')
+  useEffect(() => {
+    console.log('Session state:', { session, isLoading, isSignedIn, userInfo })
+
+    // 如果仍在加载中，跳过处理
+    if (isLoading) {
       return
     }
 
+    // 加载完成后，如果用户未登录，重定向到首页
+    if (!isSignedIn) {
+      router.push('/')
+      return
+    }
+
+    // 用户已登录，处理登录后的逻辑
     createOrUpdateUser().catch((err) =>
       console.error('Failed to create/update user:', err)
     )
@@ -94,7 +105,7 @@ export default function DashboardPage() {
         fireworksRef.current.stop()
       }
     }
-  }, [isLoaded, isSignedIn, user, router])
+  }, [isLoading, isSignedIn, userInfo])
 
   // 计算动态颜色
   const getDynamicColor = () => {
@@ -103,7 +114,9 @@ export default function DashboardPage() {
     return '#ef4444' // red-500
   }
 
-  if (!isLoaded) {
+  // 处理不同的状态
+  if (isLoading) {
+    // 正在加载用户信息
     return (
       <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-gray-50 via-teal-50 to-blue-100">
         <div className="relative w-16 h-16">
@@ -120,15 +133,25 @@ export default function DashboardPage() {
             />
           </svg>
           <p className="absolute inset-0 flex items-center justify-center text-sm text-gray-600">
-            Loading
+            Loading...
           </p>
         </div>
       </div>
     )
   }
 
-  if (!isSignedIn || !user) {
-    return null
+  if (!isSignedIn) {
+    // 已确认未登录，用户将被重定向，但在此之前暂时显示
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-red-50 via-orange-50 to-yellow-100">
+        <div className="text-center">
+          <div className="w-16 h-16 mx-auto mb-4 text-red-600">
+            <UserCircle className="w-full h-full" />
+          </div>
+          <p className="text-gray-600">未登录，即将重定向...</p>
+        </div>
+      </div>
+    )
   }
 
   return (
@@ -142,7 +165,7 @@ export default function DashboardPage() {
       <Card className="w-full max-w-lg shadow-lg bg-white/95 backdrop-blur-md">
         <CardHeader className="text-center">
           <CardTitle className="text-3xl font-bold text-gray-800">
-            欢迎, {user?.username || user?.firstName || 'User'}!
+            欢迎, {userInfo?.name || 'User'}!
           </CardTitle>
           <CardDescription className="text-gray-600">
             您已登录成功！开启您的精彩 AI 旅程吧！
@@ -150,9 +173,9 @@ export default function DashboardPage() {
         </CardHeader>
         <CardContent className="flex flex-col items-center gap-6">
           <div className="flex items-center space-x-4 animate-fade-in">
-            {user?.imageUrl ? (
+            {userInfo?.image ? (
               <Image
-                src={user.imageUrl}
+                src={userInfo.image}
                 alt="Profile"
                 className="h-16 w-16 rounded-full border-2 border-teal-200 shadow-md"
                 width={64}
@@ -163,11 +186,9 @@ export default function DashboardPage() {
             )}
             <div>
               <p className="font-semibold text-xl text-gray-800">
-                {user?.username || user?.firstName || 'User'}
+                {userInfo?.name || 'User'}
               </p>
-              <p className="text-sm text-gray-500">
-                {user?.emailAddresses[0]?.emailAddress}
-              </p>
+              <p className="text-sm text-gray-500">{userInfo?.email}</p>
             </div>
           </div>
 

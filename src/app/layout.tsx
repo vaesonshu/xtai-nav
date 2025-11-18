@@ -2,9 +2,7 @@ import type { Metadata } from 'next'
 import { cookies } from 'next/headers'
 import { Toaster } from 'sonner'
 import ClientWrapper from '@/components/client-wrapper'
-import { ClerkProvider } from '@clerk/nextjs'
-import { zhCN } from '@clerk/localizations'
-import { dark, neobrutalism } from '@clerk/themes'
+// No provider needed for better-auth - authentication handled through sessions
 import {
   SidebarProvider,
   SidebarTrigger,
@@ -32,32 +30,20 @@ export default async function RootLayout({
     sidebarState !== undefined ? sidebarState === 'true' : true
 
   return (
-    <ClerkProvider
-      localization={zhCN}
-      appearance={{
-        signIn: {
-          baseTheme: neobrutalism,
-        },
-        signUp: {
-          baseTheme: neobrutalism,
-        },
-      }}
-    >
-      <html lang="en" suppressHydrationWarning>
-        {/* 这里的SEO的配置,是作用域所有的页面 className="prose" */}
-        <body>
-          <ThemeProvider
-            attribute="class"
-            defaultTheme="system"
-            enableSystem
-            disableTransitionOnChange
-          >
-            <ClientWrapper defaultOpen={defaultOpen}>{children}</ClientWrapper>
-          </ThemeProvider>
-          {/* 提示框 */}
-          <Toaster position="top-center" richColors />
-        </body>
-      </html>
-    </ClerkProvider>
+    <html lang="en" suppressHydrationWarning>
+      {/* 这里的SEO的配置,是作用域所有的页面 className="prose" */}
+      <body>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <ClientWrapper defaultOpen={defaultOpen}>{children}</ClientWrapper>
+        </ThemeProvider>
+        {/* 提示框 */}
+        <Toaster position="top-center" richColors />
+      </body>
+    </html>
   )
 }

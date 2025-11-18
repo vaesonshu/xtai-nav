@@ -28,7 +28,7 @@ import { WebsiteEditDialog } from '@/components/website-edit-dialog'
 import { WebsiteDeleteDialog } from '@/components/website-delete-dialog'
 import { incrementViews, toggleLike, toggleFavorite } from '@/lib/actions'
 import { WebsiteProps } from '@/types/nav-list'
-import { useAuth } from '@clerk/nextjs'
+import { useIsAuthenticated } from '@/lib/auth-client'
 import { useToast } from '@/hooks/use-toast'
 import { TooltipWrapper } from '@/components/ui/tooltip-wrapper'
 
@@ -45,7 +45,7 @@ export function WebsiteCard({
   allowOperations = false,
   allowUserOperations = true,
 }: WebsiteCardProps) {
-  const { isSignedIn } = useAuth()
+  const isSignedIn = useIsAuthenticated()
   const [showEditDialog, setShowEditDialog] = useState(false)
   const [showDeleteDialog, setShowDeleteDialog] = useState(false)
   const [likes, setLikes] = useState(website.likes?.length || 0)

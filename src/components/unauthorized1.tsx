@@ -62,7 +62,7 @@ export default function Unauthorized() {
               variant="outline"
               className="w-full group border border-slate-200 hover:bg-slate-50"
             >
-              <Link href="/login">
+              <Link href="/">
                 <LogIn className="mr-2 h-4 w-4" />
                 立即登录
               </Link>

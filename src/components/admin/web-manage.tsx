@@ -9,7 +9,8 @@ import { CategoryCreateButton } from '@/components/category-create-button'
 import { SearchForm } from '@/components/search-form'
 import { WebsitesLoading } from '@/components/websites-loading'
 import { House, Globe, FolderOpen, Users, TrendingUp } from 'lucide-react'
-import { auth } from '@clerk/nextjs/server'
+import { auth } from '@/lib/auth'
+import { cookies } from 'next/headers'
 import { isAdmin } from '@/lib/utils'
 import { getWebsites } from '@/lib/data'
 import { getCategories } from '@/lib/actions'
@@ -40,10 +41,24 @@ async function getStats() {
 }
 
 export default async function AdminPage({ searchParams }: AdminPageProps) {
-  const { userId } = await auth()
-  const userInfo = await isAdmin(userId!)
+  try {
+    const headers = new Headers()
+    const cookieStore = await cookies()
+    cookieStore.getAll().forEach((cookie) => {
+      headers.append('Cookie', `${cookie.name}=${cookie.value}`)
+    })
 
-  if (!userInfo) {
+    const session = await auth.api.getSession({ headers })
+    if (!session?.user?.id) {
+      return <NotAuthorized />
+    }
+
+    const userInfo = await isAdmin(session.user.id)
+    if (!userInfo) {
+      return <NotAuthorized />
+    }
+  } catch (error) {
+    console.error('Auth error:', error)
     return <NotAuthorized />
   }
 
