@@ -43,7 +43,7 @@ import {
 } from '@/components/ui/alert-dialog'
 import { House, Plus, Edit, Trash2, Search, Filter } from 'lucide-react'
 import { useToast } from '@/hooks/use-toast'
-import { useUser } from '@clerk/nextjs'
+import { useSession } from '@/lib/auth-client'
 import { isAdmin } from '@/lib/utils'
 import NotAuthorized from '@/components/not-authorized'
 
@@ -66,7 +66,9 @@ interface Pagination {
 export default function LogsPage() {
   const router = useRouter()
   const { errorToast } = useToast()
-  const { user } = useUser()
+  const { data: session } = useSession()
+
+  const user = session?.user
   const [logs, setLogs] = useState<Log[]>([])
   const [pagination, setPagination] = useState<Pagination | null>(null)
   const [loading, setLoading] = useState(true)

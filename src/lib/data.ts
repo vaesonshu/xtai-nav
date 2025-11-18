@@ -1,6 +1,6 @@
 import { db } from '@/db/db'
 import { GetWebsitesParams } from '@/types/nav-list'
-import { auth } from '@clerk/nextjs/server'
+import { getCurrentUserId } from '@/lib/auth-client'
 import { type GetWebsitesByCategory } from '@/types/nav-list'
 
 export interface WebsiteWithCategories {
@@ -63,16 +63,7 @@ export async function getWebsites(
   }
 
   // 获取当前用户
-  const { userId: clerkId } = await auth()
-  let currentUserId: string | undefined
-
-  if (clerkId) {
-    const user = await db.user.findUnique({
-      where: { clerkId },
-      select: { id: true },
-    })
-    currentUserId = user?.id
-  }
+  const currentUserId = await getCurrentUserId()
 
   const [websites, total] = await Promise.all([
     db.website.findMany({
@@ -230,14 +221,14 @@ export async function getWebsiteById(id: string) {
 
 // 获取当前用户信息
 export async function getCurrentUser() {
-  const { userId } = await auth()
+  const userId = await getCurrentUserId()
 
   if (!userId) {
     return null
   }
 
   const user = await db.user.findUnique({
-    where: { clerkId: userId },
+    where: { id: userId },
   })
 
   return user

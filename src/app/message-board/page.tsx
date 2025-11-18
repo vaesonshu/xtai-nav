@@ -2,7 +2,7 @@ import { Suspense } from 'react'
 import { getMessages } from '@/lib/message-actions'
 import MessageForm from '@/components/message-board/message-form'
 import MessageList from '@/components/message-board/message-list'
-import { auth, currentUser } from '@clerk/nextjs/server'
+import { getCurrentUserId } from '@/lib/auth-client'
 import { db } from '@/db/db'
 
 export const metadata = {
@@ -11,24 +11,21 @@ export const metadata = {
 }
 
 async function getUserInfo() {
-  const { userId } = await auth()
+  const userId = await getCurrentUserId()
 
   if (!userId) {
     return { isLoggedIn: false, isAdmin: false, user: null, avatarUrl: null }
   }
 
-  const [user, clerkUser] = await Promise.all([
-    db.user.findUnique({
-      where: { clerkId: userId },
-    }),
-    currentUser(),
-  ])
+  const user = await db.user.findUnique({
+    where: { id: userId },
+  })
 
   return {
     isLoggedIn: true,
     isAdmin: user?.role === 'ADMIN',
     user,
-    avatarUrl: clerkUser?.imageUrl || null,
+    avatarUrl: user?.image || null,
   }
 }
 

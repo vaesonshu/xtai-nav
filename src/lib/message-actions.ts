@@ -1,7 +1,7 @@
 'use server'
 
 import { db } from '@/db/db'
-import { auth, currentUser } from '@clerk/nextjs/server'
+import { getCurrentUserId } from '@/lib/auth-client'
 import { revalidatePath } from 'next/cache'
 
 export async function getMessages(
@@ -102,21 +102,19 @@ export async function createMessage(formData: FormData) {
 
   try {
     // 获取当前用户信息
-    const { userId } = await auth()
+    const userId = await getCurrentUserId()
     let isAdmin = false
     let avatarUrl = null
 
     if (userId) {
       // 获取用户详细信息，包括头像
       const user = await db.user.findUnique({
-        where: { clerkId: userId },
+        where: { id: userId },
       })
 
       isAdmin = user?.role === 'ADMIN'
 
-      // 获取 Clerk 用户信息以获取头像
-      const clerkUser = await currentUser()
-      avatarUrl = clerkUser?.imageUrl || null
+      avatarUrl = user?.image || null
     }
 
     const message = await db.message.create({
@@ -139,15 +137,13 @@ export async function createMessage(formData: FormData) {
 
 export async function deleteMessage(id: string) {
   try {
-    // 检查用户是否为管理员
-    const { userId } = await auth()
-
+    const userId = await getCurrentUserId()
     if (!userId) {
       return { success: false, error: '未授权操作' }
     }
 
     const user = await db.user.findUnique({
-      where: { clerkId: userId },
+      where: { id: userId },
     })
 
     if (user?.role !== 'ADMIN') {
@@ -188,14 +184,14 @@ export async function likeMessage(id: string) {
 export async function togglePinMessage(id: string) {
   try {
     // 检查用户是否为管理员
-    const { userId } = await auth()
+    const userId = await getCurrentUserId()
 
     if (!userId) {
       return { success: false, error: '未授权操作' }
     }
 
     const user = await db.user.findUnique({
-      where: { clerkId: userId },
+      where: { id: userId },
     })
 
     if (user?.role !== 'ADMIN') {

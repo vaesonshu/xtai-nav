@@ -32,18 +32,14 @@ import { Separator } from '@/components/ui/separator'
 import { WebCategory } from '@/types/nav-list'
 import Logo from '@/images/logo2.png'
 import { useToast } from '@/hooks/use-toast'
-import {
-  SignInButton,
-  SignedIn,
-  SignedOut,
-  UserButton,
-  useUser,
-} from '@clerk/nextjs'
+import { useSession, signOut } from '@/lib/auth-client'
+import { AuthModal } from '@/components/auth-modal'
+import { NavUser } from '@/components/nav-user'
 import { isAdmin } from '@/lib/utils'
 
 export function AppSidebar() {
   const pathname = usePathname()
-  const { user } = useUser()
+  const { data: session } = useSession()
   const [categories, setCategories] = useState<WebCategory[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [isAdminUser, setIsAdminUser] = useState(false)
@@ -72,9 +68,9 @@ export function AppSidebar() {
   // Check admin status when user changes
   useEffect(() => {
     const checkAdminStatus = async () => {
-      if (user?.id) {
+      if (session?.user?.id) {
         try {
-          const adminStatus = await isAdmin(user.id)
+          const adminStatus = await isAdmin(session.user.id)
           setIsAdminUser(adminStatus)
         } catch (error) {
           console.error('检查管理员状态失败:', error)
@@ -86,7 +82,7 @@ export function AppSidebar() {
     }
 
     checkAdminStatus()
-  }, [user?.id])
+  }, [session?.user?.id])
 
   // Static navigation items - conditionally include admin item
   const navItems = [
@@ -252,20 +248,21 @@ export function AppSidebar() {
 
       <Separator />
       <SidebarFooter className="py-1 h-[50px] flex flex-col items-start justify-center">
-        <SignedOut>
-          <SignInButton
-            mode="modal"
-            forceRedirectUrl={'/user-info'}
-            signUpForceRedirectUrl={'/user-info'}
-          >
+        {session?.user ? (
+          <NavUser
+            user={{
+              name: session.user.name || '用户',
+              email: session.user.email || '',
+              avatar: session.user.image || '',
+            }}
+          />
+        ) : (
+          <AuthModal defaultTab="login">
             <button className="w-full rounded-full border border-black bg-black px-4 py-1.5 text-sm text-white transition-colors hover:bg-white hover:text-black">
               登录
             </button>
-          </SignInButton>
-        </SignedOut>
-        <SignedIn>
-          <UserButton />
-        </SignedIn>
+          </AuthModal>
+        )}
       </SidebarFooter>
     </Sidebar>
   )

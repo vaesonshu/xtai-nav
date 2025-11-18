@@ -1,5 +1,8 @@
 'use client'
 
+import { useRouter } from 'next/navigation'
+import { signOut } from '@/lib/auth-client'
+import { toast } from 'sonner'
 import {
   BadgeCheck,
   Bell,
@@ -36,6 +39,18 @@ export function NavUser({
   }
 }) {
   const { isMobile } = useSidebar()
+  const router = useRouter()
+
+  const handleSignOut = async () => {
+    try {
+      await signOut()
+      toast.success('已退出登录')
+      router.push('/')
+    } catch (error) {
+      toast.error('退出登录失败，请重试')
+      console.error('Sign out error:', error)
+    }
+  }
 
   return (
     <SidebarMenu>
@@ -46,9 +61,11 @@ export function NavUser({
               size="lg"
               className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
             >
-              <Avatar>
+              <Avatar className="">
                 <AvatarImage src={user.avatar} alt={user.name} />
-                <AvatarFallback>CN</AvatarFallback>
+                <AvatarFallback className="text-white font-semibold bg-gradient-to-br from-blue-500 to-purple-300">
+                  {user.name?.charAt(0) || 'CN'}
+                </AvatarFallback>
               </Avatar>
               <div className="grid flex-1 text-left text-sm leading-tight">
                 <span className="truncate font-semibold">{user.name}</span>
@@ -65,9 +82,11 @@ export function NavUser({
           >
             <DropdownMenuLabel className="p-0 font-normal">
               <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
-                <Avatar>
+                <Avatar className="">
                   <AvatarImage src={user.avatar} alt={user.name} />
-                  <AvatarFallback>CN</AvatarFallback>
+                  <AvatarFallback className="text-white font-semibold bg-gradient-to-br from-blue-500 to-purple-300">
+                    {user.name?.charAt(0) || 'CN'}
+                  </AvatarFallback>
                 </Avatar>
                 <div className="grid flex-1 text-left text-sm leading-tight">
                   <span className="truncate font-semibold">{user.name}</span>
@@ -76,31 +95,30 @@ export function NavUser({
               </div>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuGroup>
+            {/* <DropdownMenuGroup>
               <DropdownMenuItem>
                 <Sparkles />
                 Upgrade to Pro
               </DropdownMenuItem>
             </DropdownMenuGroup>
-            <DropdownMenuSeparator />
+            <DropdownMenuSeparator /> */}
             <DropdownMenuGroup>
               <DropdownMenuItem>
                 <BadgeCheck />
-                Account
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                <CreditCard />
-                Billing
+                账户设置
               </DropdownMenuItem>
               <DropdownMenuItem>
                 <Bell />
-                Notifications
+                消息中心
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={handleSignOut}
+              className="text-destructive hover:bg-destructive hover:text-destructive-foreground"
+            >
               <LogOut />
-              Log out
+              退出登录
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

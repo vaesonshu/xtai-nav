@@ -11,12 +11,12 @@ import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { WebsiteProps } from '@/types/nav-list'
 import { incrementViews, toggleLike, toggleFavorite } from '@/lib/actions'
-import { useAuth } from '@clerk/nextjs'
+import { useIsAuthenticated } from '@/lib/auth-client'
 import { useToast } from '@/hooks/use-toast'
 import { TooltipWrapper } from '@/components/ui/tooltip-wrapper'
 
 export function NavCard({ website }: { website: WebsiteProps }) {
-  const { isSignedIn } = useAuth()
+  const isSignedIn = useIsAuthenticated()
   const [likes, setLikes] = useState(website.likes?.length || 0)
   const [favorites, setFavorites] = useState(website.favorites?.length || 0)
   const [views, setViews] = useState(website.views)
