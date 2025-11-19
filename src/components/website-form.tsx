@@ -19,14 +19,20 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form'
-import { createWebsite, updateWebsite, getCategories } from '@/lib/actions'
+import {
+  submitWebsite,
+  adminCreateWebsite,
+  updateUserWebsite,
+  updateWebsite,
+  getCategories,
+} from '@/lib/actions'
 import { WebsiteProps, WebCategory } from '@/types/nav-list'
 
 const websiteSchema = z.object({
   name: z.string().min(1, '网站名称不能为空'),
   url: z.string().url('请输入有效的URL'),
-  iconUrl: z.string().url('请输入有效的URL'),
-  description: z.string(),
+  iconUrl: z.string().optional(),
+  description: z.string().optional(),
   tags: z.array(z.string()),
   categoryIds: z.array(z.string()),
 })
@@ -34,9 +40,11 @@ const websiteSchema = z.object({
 export function WebsiteForm({
   website,
   onSuccess,
+  isAdminMode = false,
 }: {
   website?: WebsiteProps
   onSuccess?: () => void
+  isAdminMode?: boolean
 }) {
   const router = useRouter()
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -103,10 +111,30 @@ export function WebsiteForm({
   const onSubmit = async (data: any) => {
     try {
       setIsSubmitting(true)
+
+      // 确保数据格式正确，特别是可选字段
+      const sanitizedData = {
+        ...data,
+        iconUrl: data.iconUrl || null,
+        description: data.description || null,
+        tags: data.tags || [],
+        categoryIds: data.categoryIds || [],
+      }
+
       if (website) {
-        await updateWebsite(website.id, data)
+        // 管理员使用管理员更新函数，用户使用用户更新函数
+        if (isAdminMode) {
+          await updateWebsite(website.id, sanitizedData)
+        } else {
+          await updateUserWebsite(website.id, sanitizedData)
+        }
       } else {
-        await createWebsite(data)
+        // 管理员使用管理员创建函数，用户使用用户提交函数
+        if (isAdminMode) {
+          await adminCreateWebsite(sanitizedData)
+        } else {
+          await submitWebsite(sanitizedData)
+        }
       }
       router.refresh()
       onSuccess?.()

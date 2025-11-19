@@ -26,7 +26,7 @@ export interface WebsiteWithCategories {
 
 // 获取网站列表
 export async function getWebsites(
-  { search, category, tag, page, pageSize }: GetWebsitesParams = {
+  { search, category, tag, page, pageSize, approved }: GetWebsitesParams = {
     page: 1,
     pageSize: 10,
   }
@@ -36,6 +36,12 @@ export async function getWebsites(
   // todo: 分页
   const skip = (page - 1) * pageSize
   const take = pageSize
+
+  // 默认只返回审批通过的网站，除非指定 approved: false
+  if (approved !== false) {
+    where.isApproved = true
+    where.approvalStatus = 'approved'
+  }
 
   // 构建查询条件
   if (search) {
@@ -145,12 +151,14 @@ export async function getWebsitesByCategory({
       where: { categoryId: category.id },
     })
 
-    // 4. 查询网站
+    // 4. 查询网站（只返回审批通过的）
     const websites = await db.website.findMany({
       where: {
         categories: {
           some: { categoryId: category.id }, // 筛选属于该分类的网站
         },
+        isApproved: true,
+        approvalStatus: 'approved',
       },
       skip,
       take,

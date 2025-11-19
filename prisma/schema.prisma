@@ -26,20 +26,27 @@ model User {
 }
 
 model Website {
-  id          String            @id @default(cuid())
-  name        String
-  url         String            @unique
-  iconUrl     String
-  description String
-  tags        String[]
-  views       Int               @default(0)
-  createdAt   DateTime          @default(now())
-  updatedAt   DateTime          @updatedAt
-  favorites   Favorite[]
-  likes       Like[]
-  categories  WebsiteCategory[]
+  id            String               @id @default(cuid())
+  name          String
+  url           String               @unique
+  iconUrl       String
+  description   String
+  tags          String[]
+  views         Int                  @default(0)
+  createdAt     DateTime             @default(now())
+  updatedAt     DateTime             @updatedAt
+  isApproved    Boolean              @default(false)
+  approvalStatus String              @default("pending") // pending, approved, rejected
+  submittedBy   String?
+  rejectReason  String?
+  approvedAt    DateTime?
+  approvedBy    String?
+  favorites     Favorite[]
+  likes         Like[]
+  categories    WebsiteCategory[]
 
   @@index([tags])
+  @@index([approvalStatus])
 }
 
 model Like {

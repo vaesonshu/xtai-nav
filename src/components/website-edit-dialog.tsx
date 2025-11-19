@@ -24,7 +24,11 @@ export function WebsiteEditDialog({
         <DialogHeader>
           <DialogTitle>编辑网站</DialogTitle>
         </DialogHeader>
-        <WebsiteForm website={website} onSuccess={() => onOpenChange(false)} />
+        <WebsiteForm
+          website={website}
+          onSuccess={() => onOpenChange(false)}
+          isAdminMode={true}
+        />
       </DialogContent>
     </Dialog>
   )

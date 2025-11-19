@@ -10,6 +10,8 @@ import {
   CreditCard,
   LogOut,
   Sparkles,
+  FileEdit,
+  Eye,
 } from 'lucide-react'
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
@@ -103,6 +105,16 @@ export function NavUser({
             </DropdownMenuGroup>
             <DropdownMenuSeparator /> */}
             <DropdownMenuGroup>
+              <DropdownMenuItem onClick={() => router.push('/user/websites')}>
+                <FileEdit />
+                网站管理
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => router.push('/user/submissions')}
+              >
+                <Eye />
+                提交状态
+              </DropdownMenuItem>
               <DropdownMenuItem>
                 <BadgeCheck />
                 账户设置

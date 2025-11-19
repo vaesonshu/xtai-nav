@@ -25,7 +25,7 @@ export function WebsiteCreateButton() {
           <DialogHeader>
             <DialogTitle>添加新网站</DialogTitle>
           </DialogHeader>
-          <WebsiteForm onSuccess={() => setOpen(false)} />
+          <WebsiteForm onSuccess={() => setOpen(false)} isAdminMode={true} />
         </DialogContent>
       </Dialog>
     </>

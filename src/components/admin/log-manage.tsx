@@ -267,290 +267,285 @@ export default function LogsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50/50">
-      <div className="container mx-auto px-6 py-8 max-w-7xl">
-        {/* Header Section */}
-        <div className="mb-8">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
-            <div>
-              <h1 className="text-4xl font-bold tracking-tight text-gray-900">
-                日志管理
-              </h1>
-              <p className="text-lg text-muted-foreground mt-2">
-                查看和管理更新日志记录。
-              </p>
-            </div>
-            <div className="flex items-center gap-3">
-              <Button variant="outline" asChild>
-                <Link href={'/admin'}>
-                  <House className="mr-2 h-4 w-4" />
-                  返回管理
-                </Link>
-              </Button>
-              <Dialog
-                open={isCreateDialogOpen}
-                onOpenChange={setIsCreateDialogOpen}
-              >
-                <DialogTrigger asChild>
-                  <Button>
-                    <Plus className="mr-2 h-4 w-4" />
-                    新增日志
-                  </Button>
-                </DialogTrigger>
-                <DialogContent>
-                  <DialogHeader>
-                    <DialogTitle>新增日志</DialogTitle>
-                  </DialogHeader>
-                  <div className="space-y-4">
-                    <div>
-                      <label className="text-sm font-medium">标题</label>
-                      <Input
-                        value={formData.title}
-                        onChange={(e) =>
-                          setFormData({ ...formData, title: e.target.value })
-                        }
-                        placeholder="输入日志标题"
-                      />
-                    </div>
-                    <div>
-                      <label className="text-sm font-medium">内容</label>
-                      <Textarea
-                        value={formData.content}
-                        className="h-[120px]"
-                        onChange={(e) =>
-                          setFormData({ ...formData, content: e.target.value })
-                        }
-                        placeholder="输入日志内容"
-                      />
-                    </div>
-                    <div>
-                      <label className="text-sm font-medium">
-                        创建时间（可选）
-                      </label>
-                      <Input
-                        type="datetime-local"
-                        value={formData.createdAt}
-                        onChange={(e) =>
-                          setFormData({
-                            ...formData,
-                            createdAt: e.target.value,
-                          })
-                        }
-                      />
-                    </div>
-                    <Button onClick={handleCreateLog} className="w-full">
-                      创建
-                    </Button>
-                  </div>
-                </DialogContent>
-              </Dialog>
-            </div>
+    <div className="space-y-6">
+      <div className="mb-8">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+          <div>
+            <h1 className="text-4xl font-bold tracking-tight text-gray-900">
+              日志管理
+            </h1>
+            <p className="text-lg text-muted-foreground mt-2">
+              查看和管理更新日志记录。
+            </p>
           </div>
-
-          {/* Search Section */}
-          <div className="bg-white rounded-lg border p-4 shadow-sm">
-            <div className="flex flex-col sm:flex-row sm:items-center gap-4">
-              <div className="flex-1">
-                <Input
-                  placeholder="搜索标题或内容..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
-                />
-              </div>
-              <Button onClick={handleSearch}>
-                <Search className="mr-2 h-4 w-4" />
-                搜索
-              </Button>
-            </div>
+          <div className="flex items-center gap-3">
+            <Button variant="outline" asChild>
+              <Link href={'/admin'}>
+                <House className="mr-2 h-4 w-4" />
+                返回管理
+              </Link>
+            </Button>
+            <Dialog
+              open={isCreateDialogOpen}
+              onOpenChange={setIsCreateDialogOpen}
+            >
+              <DialogTrigger asChild>
+                <Button>
+                  <Plus className="mr-2 h-4 w-4" />
+                  新增日志
+                </Button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>新增日志</DialogTitle>
+                </DialogHeader>
+                <div className="space-y-4">
+                  <div>
+                    <label className="text-sm font-medium">标题</label>
+                    <Input
+                      value={formData.title}
+                      onChange={(e) =>
+                        setFormData({ ...formData, title: e.target.value })
+                      }
+                      placeholder="输入日志标题"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium">内容</label>
+                    <Textarea
+                      value={formData.content}
+                      className="h-[120px]"
+                      onChange={(e) =>
+                        setFormData({ ...formData, content: e.target.value })
+                      }
+                      placeholder="输入日志内容"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium">
+                      创建时间（可选）
+                    </label>
+                    <Input
+                      type="datetime-local"
+                      value={formData.createdAt}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          createdAt: e.target.value,
+                        })
+                      }
+                    />
+                  </div>
+                  <Button onClick={handleCreateLog} className="w-full">
+                    创建
+                  </Button>
+                </div>
+              </DialogContent>
+            </Dialog>
           </div>
         </div>
 
-        {/* Logs Table */}
-        <Card>
-          <CardHeader>
-            <CardTitle>日志列表</CardTitle>
-          </CardHeader>
-          <CardContent>
-            {loading ? (
-              <div className="text-center py-8">加载中...</div>
-            ) : logs.length === 0 ? (
-              <div className="text-center py-8 text-muted-foreground">
-                暂无日志记录
-              </div>
-            ) : (
-              <>
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>置顶</TableHead>
-                      <TableHead>标题</TableHead>
-                      <TableHead>内容</TableHead>
-                      <TableHead>时间</TableHead>
-                      <TableHead>操作</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {logs.map((log) => (
-                      <TableRow key={log.id}>
-                        <TableCell>
-                          <Badge
-                            variant={log.isPinned ? 'default' : 'secondary'}
-                          >
-                            {log.isPinned ? '置顶' : '普通'}
-                          </Badge>
-                        </TableCell>
-                        <TableCell
-                          className="max-w-xs truncate"
-                          title={log.title}
-                        >
-                          {log.title}
-                        </TableCell>
-                        <TableCell
-                          className="max-w-xs truncate"
-                          title={log.content}
-                        >
-                          {log.content}
-                        </TableCell>
-                        <TableCell>
-                          {new Date(log.createdAt).toLocaleString('zh-CN')}
-                        </TableCell>
-                        <TableCell>
-                          <div className="flex items-center gap-2">
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              onClick={() => handleTogglePin(log.id)}
-                            >
-                              {log.isPinned ? '取消置顶' : '置顶'}
-                            </Button>
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              onClick={() => openEditDialog(log)}
-                            >
-                              <Edit className="h-4 w-4" />
-                            </Button>
-                            <AlertDialog>
-                              <AlertDialogTrigger asChild>
-                                <Button variant="outline" size="sm">
-                                  <Trash2 className="h-4 w-4" />
-                                </Button>
-                              </AlertDialogTrigger>
-                              <AlertDialogContent>
-                                <AlertDialogHeader>
-                                  <AlertDialogTitle>确认删除</AlertDialogTitle>
-                                  <AlertDialogDescription>
-                                    确定要删除这条日志记录吗？此操作无法撤销。
-                                  </AlertDialogDescription>
-                                </AlertDialogHeader>
-                                <AlertDialogFooter>
-                                  <AlertDialogCancel>取消</AlertDialogCancel>
-                                  <AlertDialogAction
-                                    onClick={() => handleDeleteLog(log.id)}
-                                  >
-                                    删除
-                                  </AlertDialogAction>
-                                </AlertDialogFooter>
-                              </AlertDialogContent>
-                            </AlertDialog>
-                          </div>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-
-                {/* Pagination */}
-                {pagination && pagination.totalPages > 1 && (
-                  <div className="flex items-center justify-between mt-4">
-                    <div className="text-sm text-muted-foreground">
-                      显示 {(pagination.page - 1) * pagination.limit + 1} -{' '}
-                      {Math.min(
-                        pagination.page * pagination.limit,
-                        pagination.total
-                      )}{' '}
-                      条，共 {pagination.total} 条
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() =>
-                          setCurrentPage((prev) => Math.max(1, prev - 1))
-                        }
-                        disabled={pagination.page === 1}
-                      >
-                        上一页
-                      </Button>
-                      <span className="text-sm">
-                        {pagination.page} / {pagination.totalPages}
-                      </span>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() =>
-                          setCurrentPage((prev) =>
-                            Math.min(pagination.totalPages, prev + 1)
-                          )
-                        }
-                        disabled={pagination.page === pagination.totalPages}
-                      >
-                        下一页
-                      </Button>
-                    </div>
-                  </div>
-                )}
-              </>
-            )}
-          </CardContent>
-        </Card>
-
-        {/* Edit Dialog */}
-        <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>编辑日志</DialogTitle>
-            </DialogHeader>
-            <div className="space-y-4">
-              <div>
-                <label className="text-sm font-medium">标题</label>
-                <Input
-                  value={formData.title}
-                  onChange={(e) =>
-                    setFormData({ ...formData, title: e.target.value })
-                  }
-                  placeholder="输入日志标题"
-                />
-              </div>
-              <div>
-                <label className="text-sm font-medium">内容</label>
-                <Textarea
-                  value={formData.content}
-                  className="h-[120px]"
-                  onChange={(e) =>
-                    setFormData({ ...formData, content: e.target.value })
-                  }
-                  placeholder="输入日志内容"
-                />
-              </div>
-              <div>
-                <label className="text-sm font-medium">创建时间</label>
-                <Input
-                  type="datetime-local"
-                  value={formData.createdAt}
-                  onChange={(e) =>
-                    setFormData({ ...formData, createdAt: e.target.value })
-                  }
-                />
-              </div>
-              <Button onClick={handleEditLog} className="w-full">
-                更新
-              </Button>
+        {/* Search Section */}
+        <div className="bg-white rounded-lg border p-4 shadow-sm">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-4">
+            <div className="flex-1">
+              <Input
+                placeholder="搜索标题或内容..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
+              />
             </div>
-          </DialogContent>
-        </Dialog>
+            <Button onClick={handleSearch}>
+              <Search className="mr-2 h-4 w-4" />
+              搜索
+            </Button>
+          </div>
+        </div>
       </div>
+
+      {/* Logs Table */}
+      <Card>
+        <CardHeader>
+          <CardTitle>日志列表</CardTitle>
+        </CardHeader>
+        <CardContent>
+          {loading ? (
+            <div className="text-center py-8">加载中...</div>
+          ) : logs.length === 0 ? (
+            <div className="text-center py-8 text-muted-foreground">
+              暂无日志记录
+            </div>
+          ) : (
+            <>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>置顶</TableHead>
+                    <TableHead>标题</TableHead>
+                    <TableHead>内容</TableHead>
+                    <TableHead>时间</TableHead>
+                    <TableHead>操作</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {logs.map((log) => (
+                    <TableRow key={log.id}>
+                      <TableCell>
+                        <Badge variant={log.isPinned ? 'default' : 'secondary'}>
+                          {log.isPinned ? '置顶' : '普通'}
+                        </Badge>
+                      </TableCell>
+                      <TableCell
+                        className="max-w-xs truncate"
+                        title={log.title}
+                      >
+                        {log.title}
+                      </TableCell>
+                      <TableCell
+                        className="max-w-xs truncate"
+                        title={log.content}
+                      >
+                        {log.content}
+                      </TableCell>
+                      <TableCell>
+                        {new Date(log.createdAt).toLocaleString('zh-CN')}
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex items-center gap-2">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleTogglePin(log.id)}
+                          >
+                            {log.isPinned ? '取消置顶' : '置顶'}
+                          </Button>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => openEditDialog(log)}
+                          >
+                            <Edit className="h-4 w-4" />
+                          </Button>
+                          <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                              <Button variant="outline" size="sm">
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent>
+                              <AlertDialogHeader>
+                                <AlertDialogTitle>确认删除</AlertDialogTitle>
+                                <AlertDialogDescription>
+                                  确定要删除这条日志记录吗？此操作无法撤销。
+                                </AlertDialogDescription>
+                              </AlertDialogHeader>
+                              <AlertDialogFooter>
+                                <AlertDialogCancel>取消</AlertDialogCancel>
+                                <AlertDialogAction
+                                  onClick={() => handleDeleteLog(log.id)}
+                                >
+                                  删除
+                                </AlertDialogAction>
+                              </AlertDialogFooter>
+                            </AlertDialogContent>
+                          </AlertDialog>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+
+              {/* Pagination */}
+              {pagination && pagination.totalPages > 1 && (
+                <div className="flex items-center justify-between mt-4">
+                  <div className="text-sm text-muted-foreground">
+                    显示 {(pagination.page - 1) * pagination.limit + 1} -{' '}
+                    {Math.min(
+                      pagination.page * pagination.limit,
+                      pagination.total
+                    )}{' '}
+                    条，共 {pagination.total} 条
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() =>
+                        setCurrentPage((prev) => Math.max(1, prev - 1))
+                      }
+                      disabled={pagination.page === 1}
+                    >
+                      上一页
+                    </Button>
+                    <span className="text-sm">
+                      {pagination.page} / {pagination.totalPages}
+                    </span>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() =>
+                        setCurrentPage((prev) =>
+                          Math.min(pagination.totalPages, prev + 1)
+                        )
+                      }
+                      disabled={pagination.page === pagination.totalPages}
+                    >
+                      下一页
+                    </Button>
+                  </div>
+                </div>
+              )}
+            </>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Edit Dialog */}
+      <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>编辑日志</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div>
+              <label className="text-sm font-medium">标题</label>
+              <Input
+                value={formData.title}
+                onChange={(e) =>
+                  setFormData({ ...formData, title: e.target.value })
+                }
+                placeholder="输入日志标题"
+              />
+            </div>
+            <div>
+              <label className="text-sm font-medium">内容</label>
+              <Textarea
+                value={formData.content}
+                className="h-[120px]"
+                onChange={(e) =>
+                  setFormData({ ...formData, content: e.target.value })
+                }
+                placeholder="输入日志内容"
+              />
+            </div>
+            <div>
+              <label className="text-sm font-medium">创建时间</label>
+              <Input
+                type="datetime-local"
+                value={formData.createdAt}
+                onChange={(e) =>
+                  setFormData({ ...formData, createdAt: e.target.value })
+                }
+              />
+            </div>
+            <Button onClick={handleEditLog} className="w-full">
+              更新
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

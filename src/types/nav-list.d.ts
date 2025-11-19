@@ -28,6 +28,7 @@ export interface GetWebsitesParams {
   tag?: string
   page: number
   pageSize: number
+  approved?: boolean
 }
 
 // 通过分类获取网站

@@ -10,6 +10,7 @@ import { getWebsites } from '@/lib/data'
 import { getCategories } from '@/lib/actions'
 import LogManage from '@/components/admin/log-manage'
 import WebManage from '@/components/admin/web-manage'
+import PendingWebsitesManage from '@/components/admin/pending-websites-manage'
 import NotAuthorized from '@/components/not-authorized'
 import Link from 'next/link'
 
@@ -80,6 +81,17 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
           >
             <Globe className="mr-3 h-5 w-5" />
             总览
+          </Link>
+          <Link
+            href="/admin?page=pending"
+            className={`flex items-center px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+              currentPage === 'pending'
+                ? 'bg-yellow-50 text-yellow-700 border border-yellow-200 shadow-sm'
+                : 'text-gray-700 hover:bg-yellow-25 hover:text-yellow-600 hover:shadow-sm'
+            }`}
+          >
+            <TrendingUp className="mr-3 h-5 w-5" />
+            待审批网站
           </Link>
           <Link
             href="/admin?page=websites"
@@ -257,6 +269,27 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
             <div className="space-y-2">
               <Suspense fallback={<WebsitesLoading />}>
                 <WebManage searchParams={searchParams} />
+              </Suspense>
+            </div>
+          ) : currentPage === 'pending' ? (
+            <div className="space-y-6">
+              <div className="mb-8">
+                <h1 className="text-4xl font-bold tracking-tight text-gray-900">
+                  待审批网站
+                </h1>
+                <p className="text-lg text-muted-foreground mt-2">
+                  审核用户提交的网站，只有通过审批的网站才会公开显示。
+                </p>
+              </div>
+
+              <Suspense
+                fallback={
+                  <div className="p-6 text-center text-gray-500">
+                    加载待审批网站...
+                  </div>
+                }
+              >
+                <PendingWebsitesManage />
               </Suspense>
             </div>
           ) : currentPage === 'logs' ? (

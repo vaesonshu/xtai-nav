@@ -21,17 +21,23 @@ export function useIsAuthenticated() {
 // Server-side helpers (can be used in server actions and API routes)
 // Import auth from lib/auth and provide session validation utilities
 export async function getServerSession() {
-  const auth = (await import('@/lib/auth')).auth
-  const { cookies } = await import('next/headers')
+  const { headers } = await import('next/headers')
+  const readonlyHeaders = await headers()
+  const authHeaders = new Headers(readonlyHeaders)
 
-  const headers = new Headers()
-  const cookieStore = await cookies()
-  cookieStore.getAll().forEach((cookie) => {
-    headers.append('Cookie', `${cookie.name}=${cookie.value}`)
-  })
+  const response = await fetch(
+    process.env.NEXT_PUBLIC_BASE_URL + '/api/auth/get-session',
+    {
+      headers: Object.fromEntries(authHeaders.entries()),
+    }
+  )
 
-  const session = await auth.api.getSession({ headers })
-  return session
+  if (response.ok) {
+    const session = await response.json()
+    return session
+  }
+
+  return null
 }
 
 export async function getCurrentUserId(): Promise<string | null> {
