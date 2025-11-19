@@ -1,8 +1,8 @@
-# Next.js 全栈实战项目 — 星途 AI 导航
+# Next.js入门全栈实战项目 — 星途AI导航
 
 ## 概述
 
-这是一个使用最新 Next.js 版本构建的一个 AI 导航类项目，主要是收集国内外的一些 AI 技术和应用，希望在使用 AI 应用方面能起到一个导航的作用，在众多的 AI 应用中，快速找到自己需要的应用。
+这是一个使用最新 Next.js 版本构建的一个 AI 导航类项目，主要是收集国内外的一些 AI 技术和应用，希望在使用 AI 应用和开发方面能起到一个导航的作用，在众多的 AI 应用中，快速找到自己需要的应用。
 
 ## 快速开始
 
@@ -10,13 +10,74 @@
 
 - 登录 [supabase](https://supabase.com) 新建一个项目，获取到 `DATABASE_URL`，赋值给 `.env` 文件中的 `DATABASE_URL`，用于连接线上数据库。
 
-- 登录 [clerk](https://clerk.com) 新建一个项目，获取到 `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` 和 `CLERK_SECRET_KEY`，赋值给 `.env` 文件中对应的环境变量，用于登录和注册。
+- 访问 [better-auth.com](https://www.better-auth.com/docs/installation#set-environment-variables) 官网，点击 `Generate Secret` 按钮，生成一个 `BETTER_AUTH_SECRET`，赋值给 `.env` 文件中对应的环境变量，其中的 `BETTER_AUTH_URL` 赋值为项目的部署地址，例如 `http://xtainav.cn`，本地开发测试使用 `http://localhost:3000`。
 
 - `pnpm install` 安装依赖
 
-- `pnpm run db:push` 同步数据库
+- `pnpm run db:push` 同步数据库表结构
 
 - `pnpm run dev` 启动项目
+
+## 项目技术栈
+
+### 开发框架
+
+- [Next.js](https://nextjs.org)
+
+### 登录注册
+
+- [better-auth](https://www.better-auth.com)
+
+### 数据库
+
+- [Supabase](https://supabase.com)
+
+### ORM
+
+- [Prisma](https://www.prisma.io)
+
+### 组件库
+
+- [shadcn/ui](https://ui.shadcn.com)
+- [sonner](https://sonner.emilkowal.ski)
+- [Lucide](https://lucide.dev/icons)
+
+### MCP Server
+
+- [shadcn](https://ui.shadcn.com/docs/mcp)
+
+```bash
+{
+  "mcpServers": {
+    "shadcn": {
+      "command": "npx",
+      "args": [
+        "shadcn@latest",
+        "mcp"
+      ]
+    }
+  }
+}
+```
+
+## 项目功能点
+
+- [x] 登录
+- [x] 注册
+- [x] 点赞
+- [x] 收藏
+- [x] 编辑网站
+- [x] 新增网站
+- [x] 删除网站
+- [x] 更新网站
+- [x] 我的收藏
+- [x] 个人设置
+- [x] 暗黑主题
+- [x] 侧边栏导航
+- [x] 搜索网站
+- [x] 日志记录
+- [ ] AI 聊天助手
+- [ ] ...
 
 ## 项目部署
 
@@ -95,75 +156,68 @@ server {
 
 ## 3. 配置 Github Actions 工作流
 
-- 在项目根目录新建 `.github/workflows/deploy.yml` 文件，添加以下
+- 在项目根目录新建 `.github/workflows/deploy.yml` 文件，添加以下内容
 
 ```yaml
-name: Deploy to Server
+name: 🚀 Deploy xtai-nav-app to ECS
+
+on:
+  push:
+    branches:
+      - deploy # 推送到 deploy 分支自动部署
+
+jobs:
+  deploy:
+    name: Deploy to ECS
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 🚀 Deploy on Remote ECS
+        env:
+          PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          HOSTNAME: ${{ secrets.SSH_HOST }}
+          USER_NAME: ${{ secrets.SSH_USER }}
+
+        run: |
+          echo "$PRIVATE_KEY" > private_key && chmod 600 private_key
+
+          ssh -o StrictHostKeyChecking=no -i private_key ${USER_NAME}@${HOSTNAME} "
+            set -e
+            echo '➡️ 进入部署目录...'
+            cd ~/xtai-nav-app || mkdir -p ~/xtai-nav-app && cd ~/xtai-nav-app
+
+            echo '📦 拉取最新代码...'
+            if [ ! -d .git ]; then
+              git clone -b deploy git@github.com:${{ github.repository }} .
+            else
+              git fetch origin deploy && git reset --hard origin/deploy
+            fi
+
+            echo '🐳 停止旧容器...'
+            docker stop xtai-nav-app || true
+            docker rm xtai-nav-app || true
+
+            echo '🧹 删除旧镜像...'
+            docker rmi xtai-nav-app || true
+
+            echo '🧱 构建新镜像...'
+            docker build -t xtai-nav-app .
+
+            echo '🚀 启动容器...'
+            docker run -d \
+              --name xtai-nav-app \
+              -p 3000:3000 \
+              xtai-nav-app
+
+            echo '✅ 部署完成！'
+          "
+
+          rm -f private_key
 ```
 
 ## ssh 免密登录（如果需要）
 
 - 在本地终端命令行输入以下命令，将本地公钥复制到服务器，实现免密登录
   - ssh-copy-id user@your-server-ip
-
-## 项目技术栈
-
-### 开发框架
-
-- [Next.js](https://nextjs.org)
-
-### 登录注册
-
-- [Clerk](https://clerk.com)
-
-### 数据库
-
-- [Supabase](https://supabase.com)
-
-### ORM
-
-- [Prisma](https://www.prisma.io)
-
-### 组件库
-
-- [shadcn/ui](https://ui.shadcn.com)
-- [sonner](https://sonner.emilkowal.ski)
-- [Lucide](https://lucide.dev/icons)
-
-### MCP Server
-
-- [shadcn](https://ui.shadcn.com/docs/mcp)
-
-```bash
-{
-  "mcpServers": {
-    "shadcn": {
-      "command": "npx",
-      "args": [
-        "shadcn@latest",
-        "mcp"
-      ]
-    }
-  }
-}
-```
-
-## 项目功能点
-
-- [x] 登录
-- [x] 注册
-- [x] 点赞
-- [x] 收藏
-- [x] 编辑网站
-- [x] 新增网站
-- [x] 删除网站
-- [x] 更新网站
-- [x] 我的收藏
-- [x] 个人设置
-- [x] 暗黑主题
-- [x] 侧边栏导航
-- [x] 弹幕留言板
-- [x] AI 聊天助手
-- [ ] ...
 
 ## 项目优化
