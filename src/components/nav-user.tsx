@@ -105,15 +105,11 @@ export function NavUser({
             </DropdownMenuGroup>
             <DropdownMenuSeparator /> */}
             <DropdownMenuGroup>
-              <DropdownMenuItem onClick={() => router.push('/user/websites')}>
-                <FileEdit />
-                网站管理
-              </DropdownMenuItem>
               <DropdownMenuItem
                 onClick={() => router.push('/user/submissions')}
               >
                 <Eye />
-                提交状态
+                网站提交状态
               </DropdownMenuItem>
               <DropdownMenuItem>
                 <BadgeCheck />

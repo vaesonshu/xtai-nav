@@ -541,7 +541,7 @@ export async function getUserFavorites() {
   try {
     const userId = await getCurrentUserId()
     if (!userId) {
-      return { success: false, message: '请先登录或完成账户设置' }
+      return []
     }
 
     const favorites = await db.favorite.findMany({
@@ -569,6 +569,6 @@ export async function getUserFavorites() {
     return favorites.map((favorite) => favorite.website)
   } catch (error) {
     console.error('获取收藏失败:', error)
-    return { success: false, message: '获取收藏失败' }
+    return []
   }
 }

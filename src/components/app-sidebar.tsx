@@ -14,6 +14,7 @@ import {
   Settings,
   FileText,
   Eye,
+  FileEdit,
 } from 'lucide-react'
 import {
   Sidebar,
@@ -117,6 +118,11 @@ export function AppSidebar() {
       title: '更新日志',
       url: '/logs',
       icon: Eye,
+    },
+    {
+      title: '我的网站',
+      url: '/user/websites',
+      icon: FileEdit,
     },
   ]
 

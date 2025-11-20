@@ -410,9 +410,9 @@ export default function UserWebsitesPage() {
 
   return (
     <div className="min-h-screen bg-gray-50/50">
-      <div className="container mx-auto px-6 max-w-4xl">
+      <div className="container mx-auto px-6 py-8 max-w-4xl">
         {/* Fixed Header relative to page */}
-        <div className="sticky top-0 z-10 bg-white shadow-sm border-b  p-6 mb-8">
+        <div className="sticky top-0 z-10  mb-8">
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-4xl font-bold tracking-tight text-gray-900">
@@ -480,12 +480,8 @@ export default function UserWebsitesPage() {
                   暂无网站管理记录
                 </h3>
                 <p className="text-gray-600 mb-4">
-                  您还没有提交过网站，快去首页添加一个吧！
+                  您还没有提交过网站，快去添加一个吧！
                 </p>
-                <Button onClick={handleAdd}>
-                  <Plus className="w-4 h-4 mr-2" />
-                  添加新网站
-                </Button>
               </CardContent>
             </Card>
           ) : (
