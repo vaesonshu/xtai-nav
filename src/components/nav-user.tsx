@@ -105,20 +105,20 @@ export function NavUser({
             </DropdownMenuGroup>
             <DropdownMenuSeparator /> */}
             <DropdownMenuGroup>
-              <DropdownMenuItem
+              {/* <DropdownMenuItem
                 onClick={() => router.push('/user/submissions')}
               >
                 <Eye />
                 网站提交状态
-              </DropdownMenuItem>
-              <DropdownMenuItem>
+              </DropdownMenuItem> */}
+              {/* <DropdownMenuItem>
                 <BadgeCheck />
                 账户设置
               </DropdownMenuItem>
               <DropdownMenuItem>
                 <Bell />
                 消息中心
-              </DropdownMenuItem>
+              </DropdownMenuItem> */}
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuItem

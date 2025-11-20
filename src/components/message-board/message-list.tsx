@@ -325,7 +325,7 @@ export default function MessageList({
             <MarkdownContent content={message.content} />
           </div>
 
-          <div className="mt-4 flex items-center gap-4">
+          {/* <div className="mt-4 flex items-center gap-4">
             <Button
               variant="ghost"
               size="sm"
@@ -345,7 +345,7 @@ export default function MessageList({
               <MessageSquare className="h-4 w-4" />
               <span>回复</span>
             </Button>
-          </div>
+          </div> */}
 
           {/* Reply form */}
           {replyingTo === message.id && (
@@ -509,7 +509,7 @@ export default function MessageList({
                           />
                         </div>
 
-                        <div className="mt-2 flex items-center gap-3">
+                        {/* <div className="mt-2 flex items-center gap-3">
                           <Button
                             variant="ghost"
                             size="sm"
@@ -533,7 +533,7 @@ export default function MessageList({
                             <MessageSquare className="h-3 w-3" />
                             <span>回复</span>
                           </Button>
-                        </div>
+                        </div> */}
                       </div>
                     ))}
                   </div>

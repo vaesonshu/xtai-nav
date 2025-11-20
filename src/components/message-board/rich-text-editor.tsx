@@ -185,7 +185,7 @@ export default function RichTextEditor({
           </Tooltip>
         </TooltipProvider>
 
-        <TooltipProvider>
+        {/* <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
               <Button
@@ -203,9 +203,9 @@ export default function RichTextEditor({
               <p>插入链接</p>
             </TooltipContent>
           </Tooltip>
-        </TooltipProvider>
+        </TooltipProvider> */}
 
-        <TooltipProvider>
+        {/* <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
               <Button
@@ -224,7 +224,7 @@ export default function RichTextEditor({
               <p>插入图片</p>
             </TooltipContent>
           </Tooltip>
-        </TooltipProvider>
+        </TooltipProvider> */}
 
         <TooltipProvider>
           <Tooltip>
@@ -287,9 +287,9 @@ export default function RichTextEditor({
         disabled={disabled}
       />
 
-      <div className="text-xs text-gray-500">
+      {/* <div className="text-xs text-gray-500">
         支持 Markdown 格式: **加粗**, *斜体*, `代码`, [链接](url), ![图片](url)
-      </div>
+      </div> */}
     </div>
   )
 }

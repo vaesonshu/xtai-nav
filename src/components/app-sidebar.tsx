@@ -92,11 +92,15 @@ export function AppSidebar() {
       url: '/',
       icon: Home,
     },
-    {
-      title: '我的收藏',
-      url: '/favorites',
-      icon: Star,
-    },
+    ...(session?.user
+      ? [
+          {
+            title: '我的收藏',
+            url: '/favorites',
+            icon: Star,
+          },
+        ]
+      : []),
     ...(isAdminUser
       ? [
           {
@@ -119,11 +123,15 @@ export function AppSidebar() {
       url: '/logs',
       icon: Eye,
     },
-    {
-      title: '我的网站',
-      url: '/user/websites',
-      icon: FileEdit,
-    },
+    ...(session?.user
+      ? [
+          {
+            title: '我的网站',
+            url: '/user/websites',
+            icon: FileEdit,
+          },
+        ]
+      : []),
   ]
 
   return (
@@ -157,8 +165,8 @@ export function AppSidebar() {
                       href={item.url}
                       className={`flex items-center px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
                         pathname === item.url
-                          ? 'bg-blue-50 text-blue-700 border border-blue-200 shadow-sm'
-                          : 'text-gray-700 hover:bg-blue-25 hover:text-blue-600 hover:shadow-sm'
+                          ? 'bg-blue-50 text-blue-700 border border-blue-200 shadow-sm hover:bg-blue-100 hover:shadow-md '
+                          : 'text-gray-700 hover:bg-blue-100 hover:text-blue-700 hover:shadow-md hover:scale-105'
                       }`}
                     >
                       <item.icon className="h-4 w-4 mr-2" />
@@ -191,8 +199,8 @@ export function AppSidebar() {
                         href={`/category/${category.slug}`}
                         className={`flex items-center px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
                           pathname === `/category/${category.slug}`
-                            ? 'bg-blue-50 text-blue-700 border border-blue-200 shadow-sm'
-                            : 'text-gray-700 hover:bg-blue-25 hover:text-blue-600 hover:shadow-sm'
+                            ? 'bg-blue-50 text-blue-700 border border-blue-200 shadow-sm hover:bg-blue-100 hover:shadow-md'
+                            : 'text-gray-700 hover:bg-blue-100 hover:text-blue-700 hover:shadow-md hover:scale-105'
                         }`}
                       >
                         {category.icon ? (
@@ -230,8 +238,8 @@ export function AppSidebar() {
                   href={item.url}
                   className={`flex items-center px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
                     pathname === item.url
-                      ? 'bg-blue-50 text-blue-700 border border-blue-200 shadow-sm'
-                      : 'text-gray-700 hover:bg-blue-25 hover:text-blue-600 hover:shadow-sm'
+                      ? 'bg-blue-50 text-blue-700 border border-blue-200 shadow-sm hover:bg-blue-100 hover:shadow-md'
+                      : 'text-gray-700 hover:bg-blue-100 hover:text-blue-700 hover:shadow-md hover:scale-105'
                   }`}
                 >
                   <item.icon className="h-4 w-4 mr-2" />
