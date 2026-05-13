@@ -10,7 +10,8 @@
     "prepare": "husky",
     "format": "prettier --check .",
     "format:fix": "prettier --write --list-different .",
-    "db:push": "prisma db push"
+    "db:push": "prisma db push",
+    "db:generate": "prisma generate"
   },
   "dependencies": {
     "@ai-sdk/deepseek": "^0.0.6",

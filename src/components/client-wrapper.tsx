@@ -6,11 +6,11 @@ import {
   SidebarTrigger,
   SidebarHeader,
   SidebarProvider,
-  useSidebar,
 } from '@/components/ui/sidebar'
 import { AppSidebar } from '@/components/app-sidebar'
 import { ThemeToggle } from '@/components/theme-toggle'
 import SocialTab from '@/components/social-tab'
+import TopBanner from '@/components/top-banner.client'
 
 const ChildWrapper = ({
   children,
@@ -29,11 +29,12 @@ const ChildWrapper = ({
       onOpenChange={setOpen}
     >
       <AppSidebar />
-      <div className="w-full">
+      {/* min-height 与侧栏占位一致，避免主栏高度短于侧栏时错位 */}
+      <div className="flex min-h-[calc(100svh-var(--top-banner-offset,0px))] min-w-0 flex-1 flex-col">
         <SidebarHeader
-          className={`h-14 flex flex-row items-center ${open ? 'justify-end' : 'justify-between'} `}
+          className={`flex h-14 shrink-0 flex-row items-center ${open ? 'justify-end' : 'justify-between'} `}
         >
-          {!open && <SidebarTrigger className="w-8 h-8" />}
+          {!open && <SidebarTrigger className="h-8 w-8" />}
           <div className="flex items-center">
             <SocialTab theme={theme} />
             <ThemeToggle />
@@ -59,9 +60,13 @@ export default function ClientWrapper({
       pathname.startsWith('/danmu') ||
       pathname.startsWith('/user-info'))
   return !isAdminPage ? (
-    <SidebarProvider>
-      <ChildWrapper defaultOpen={defaultOpen}>{children}</ChildWrapper>
-    </SidebarProvider>
+    /* 通告在最外层：fixed 置顶 + 内置占位条同步 --top-banner-offset，与侧栏 top 对齐 */
+    <div className="flex min-h-svh w-full flex-col">
+      <TopBanner />
+      <SidebarProvider className="min-h-0 flex-1">
+        <ChildWrapper defaultOpen={defaultOpen}>{children}</ChildWrapper>
+      </SidebarProvider>
+    </div>
   ) : (
     <main>{children}</main>
   )

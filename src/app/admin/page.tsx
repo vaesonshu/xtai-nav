@@ -10,6 +10,7 @@ import { getWebsites } from '@/lib/data'
 import { getCategories } from '@/lib/actions'
 import LogManage from '@/components/admin/log-manage'
 import WebManage from '@/components/admin/web-manage'
+import BannerManage from '@/components/admin/banner-manage'
 import PendingWebsitesManage from '@/components/admin/pending-websites-manage'
 import NotAuthorized from '@/components/not-authorized'
 import Link from 'next/link'
@@ -103,6 +104,17 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
           >
             <House className="mr-3 h-5 w-5" />
             网站管理
+          </Link>
+          <Link
+            href="/admin?page=banner"
+            className={`flex items-center px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+              currentPage === 'banner'
+                ? 'bg-blue-50 text-blue-700 border border-blue-200 shadow-sm'
+                : 'text-gray-700 hover:bg-blue-25 hover:text-blue-600 hover:shadow-sm'
+            }`}
+          >
+            <FileText className="mr-3 h-5 w-5" />
+            广告栏配置
           </Link>
           <Link
             href="/admin?page=logs"
@@ -270,6 +282,10 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
               <Suspense fallback={<WebsitesLoading />}>
                 <WebManage searchParams={searchParams} />
               </Suspense>
+            </div>
+          ) : currentPage === 'banner' ? (
+            <div className="space-y-2">
+              <BannerManage />
             </div>
           ) : currentPage === 'pending' ? (
             <div className="space-y-6">

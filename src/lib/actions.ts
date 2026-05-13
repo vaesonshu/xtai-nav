@@ -572,3 +572,64 @@ export async function getUserFavorites() {
     return []
   }
 }
+
+// -------- 网站顶部广告栏配置相关操作 --------
+// 获取广告栏配置（单例）
+export async function getBannerConfig() {
+  try {
+    const config = await (db as any).bannerConfig.findUnique({
+      where: { id: 'singleton' },
+    })
+    return config
+  } catch (error) {
+    console.error('获取广告栏配置失败:', error)
+    return null
+  }
+}
+
+// 新增或更新广告栏配置（upsert）
+export async function upsertBannerConfig(data: {
+  enabled: boolean
+  content?: string
+  link?: string
+  background?: string
+  textColor?: string
+  showCloseButton?: boolean
+  closeButtonText?: string
+  closeButtonLabel?: string
+}) {
+  try {
+    const config = await (db as any).bannerConfig.upsert({
+      where: { id: 'singleton' },
+      update: {
+        enabled: data.enabled,
+        content: data.content ?? '',
+        link: data.link ?? '',
+        background: data.background ?? '',
+        textColor: data.textColor ?? '',
+        showCloseButton: data.showCloseButton !== false,
+        closeButtonText: data.closeButtonText ?? '',
+        closeButtonLabel: data.closeButtonLabel ?? '',
+      },
+      create: {
+        id: 'singleton',
+        enabled: data.enabled,
+        content: data.content ?? '',
+        link: data.link ?? '',
+        background: data.background ?? '',
+        textColor: data.textColor ?? '',
+        showCloseButton: data.showCloseButton !== false,
+        closeButtonText: data.closeButtonText ?? '',
+        closeButtonLabel: data.closeButtonLabel ?? '',
+      },
+    })
+
+    // 更新后重新验证首页和管理员页
+    revalidatePath('/')
+    revalidatePath('/admin')
+    return config
+  } catch (error: any) {
+    console.error('upsertBannerConfig 失败:', error)
+    return { success: false, message: error?.message ?? '服务器错误' }
+  }
+}

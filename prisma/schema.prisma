@@ -184,3 +184,18 @@ model Verification {
 
   @@map("verification")
 }
+
+// 网站顶部广告栏配置（单例）
+model BannerConfig {
+  id        String   @id @default("singleton")
+  enabled   Boolean  @default(false)
+  content   String?            // 可存储 HTML 或 Markdown
+  link      String?
+  background String?           // 背景颜色（CSS 值）
+  textColor  String?           // 文本颜色（CSS 值）
+  // 关闭按钮：是否展示、按钮文案、无障碍名称（空则用前端默认）
+  showCloseButton Boolean       @default(true)
+  closeButtonText String?
+  closeButtonLabel String?
+  updatedAt DateTime @updatedAt
+}
