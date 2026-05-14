@@ -10,7 +10,7 @@
 
 - 登录 [supabase](https://supabase.com) 新建一个项目，获取到 `DATABASE_URL`，赋值给 `.env` 文件中的 `DATABASE_URL`，用于连接线上数据库。
 
-- 访问 [better-auth.com](https://www.better-auth.com/docs/installation#set-environment-variables) 官网，点击 `Generate Secret` 按钮，生成一个 `BETTER_AUTH_SECRET`，赋值给 `.env` 文件中对应的环境变量，其中的 `BETTER_AUTH_URL` 赋值为项目的部署地址，例如 `http://xtainav.cn`，本地开发测试使用 `http://localhost:3000`。
+- 访问 [better-auth.com](https://www.better-auth.com/docs/installation#set-environment-variables) 官网，点击 `Generate Secret` 按钮，生成一个 `BETTER_AUTH_SECRET`，赋值给 `.env` 文件中对应的环境变量，其中的 `BETTER_AUTH_URL` 赋值为项目的部署地址，例如 `http://xtai-nav.cn`，本地开发测试使用 `http://localhost:3000`。
 
 - `pnpm install` 安装依赖
 
@@ -87,29 +87,74 @@
 
 ## 项目部署
 
-### Nginx 配置
+### Linux 安装 Nginx
+
+sudo apt update
+sudo apt install nginx -y
+
+### Nginx 常用配置
+
+sudo systemctl enable nginx --now # 开机自启并启动
+sudo systemctl status nginx # 查看状态
+sudo nginx -t # 测试配置
+sudo systemctl reload nginx # 重载配置
+sudo systemctl restart nginx # 重启
+
+### Nginx 配置（当前仅用 80；443 已注释备后续启用）
+
+1. 在服务器放置证书（路径需与 `docker-compose.yml` 里**宿主机**一侧一致），例如：
+   - 完整链 `/etc/nginx/xtai-nav.cn_bundle.crt`（或你的 CA 签发的 fullchain）
+   - 私钥 `/etc/nginx/xtai-nav.cn.key`
+2. 创建 `/etc/nginx/conf.d/xtainav.conf`（与 Compose 挂载一致），内容示例：
+   - 创建命令并写入内容：`sudo nano /etc/nginx/conf.d/xtainav.conf`
+   - 保存：`Ctrl + O` → 回车确认文件名
+   - 退出：`Ctrl + X`
 
 ```nginx
 server {
     listen 80;
-    server_name xtainav.cn www.xtainav.cn;
-    return 301 https://$host$request_uri;
-}
+    server_name xtai-nav.cn www.xtai-nav.cn;
 
-server {
-    listen 443 ssl;
-    server_name xtainav.cn www.xtainav.cn;
-    ssl_certificate /etc/nginx/certs/xtainav.cn_bundle.crt;
-    ssl_certificate_key /etc/nginx/certs/xtainav.cn.key;
     location / {
         proxy_pass http://xtai-nav-app:3000;
+        proxy_http_version 1.1;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
     }
 }
+
+# --- 上 HTTPS 时：取消下面整段注释，并把上面 80 改为 return 301 https://$host$request_uri; ---
+# server {
+#     listen 80;
+#     server_name xtai-nav.cn www.xtai-nav.cn;
+#     return 301 https://$host$request_uri;
+# }
+#
+# server {
+#     listen 443 ssl;
+#     http2 on;
+#     server_name xtai-nav.cn www.xtai-nav.cn;
+#     ssl_certificate     /etc/nginx/certs/xtai-nav.cn_bundle.crt;
+#     ssl_certificate_key /etc/nginx/certs/xtai-nav.cn.key;
+#     ssl_protocols TLSv1.2 TLSv1.3;
+#     location / {
+#         proxy_pass http://xtai-nav-app:3000;
+#         proxy_http_version 1.1;
+#         proxy_set_header Host $host;
+#         proxy_set_header X-Real-IP $remote_addr;
+#         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+#         proxy_set_header X-Forwarded-Proto $scheme;
+#         proxy_set_header Upgrade $http_upgrade;
+#         proxy_set_header Connection "upgrade";
+#     }
+# }
 ```
+
+云安全组放行 **80** 即可。应用 `.env` 中 `BETTER_AUTH_URL`、`NEXT_PUBLIC_BASE_URL` 请与对外地址一致（当前为 **`http://xtai-nav.cn`**），修改后需 **重新构建** 镜像。启用 HTTPS 时同步改 `docker-compose.yml` 里已注释的 **443 与证书挂载**，并把 `.env` 改为 **`https://...`** 再构建。
 
 ### Docker 部署
 
@@ -141,7 +186,12 @@ server {
 
 > 测试 HTTPS
 
-- `curl -I https://xtainav.cn`
+- `curl -I https://xtai-nav.cn`
+
+### Docker 部署-服务器前置条件
+
+- 示例：安装 Docker
+  sudo apt update && sudo apt install -y docker
 
 ### Github Actions
 
