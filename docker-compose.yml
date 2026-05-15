@@ -1,4 +1,4 @@
-version: '3.8'
+# version: '3.8'
 
 services:
   xtai-nav-app:
@@ -18,7 +18,7 @@ services:
       # 上 HTTPS 时取消下行注释，并恢复下方证书 volumes
       # - '443:443'
     volumes:
-      - /etc/nginx/conf.d/xtainav.conf:/etc/nginx/conf.d/default.conf
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf
       # 当前仅 HTTP，无需证书；启用 HTTPS 时取消注释并确保宿主机文件存在
       # - /etc/nginx/xtai-nav.cn_bundle.crt:/etc/nginx/certs/xtai-nav.cn_bundle.crt:ro
       # - /etc/nginx/xtai-nav.cn.key:/etc/nginx/certs/xtai-nav.cn.key:ro

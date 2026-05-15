@@ -87,28 +87,12 @@
 
 ## 项目部署
 
-### Linux 安装 Nginx
-
-sudo apt update
-sudo apt install nginx -y
-
-### Nginx 常用配置
-
-sudo systemctl enable nginx --now # 开机自启并启动
-sudo systemctl status nginx # 查看状态
-sudo nginx -t # 测试配置
-sudo systemctl reload nginx # 重载配置
-sudo systemctl restart nginx # 重启
-
-### Nginx 配置（当前仅用 80；443 已注释备后续启用）
+### Nginx 配置
 
 1. 在服务器放置证书（路径需与 `docker-compose.yml` 里**宿主机**一侧一致），例如：
    - 完整链 `/etc/nginx/xtai-nav.cn_bundle.crt`（或你的 CA 签发的 fullchain）
    - 私钥 `/etc/nginx/xtai-nav.cn.key`
-2. 创建 `/etc/nginx/conf.d/xtainav.conf`（与 Compose 挂载一致），内容示例：
-   - 创建命令并写入内容：`sudo nano /etc/nginx/conf.d/xtainav.conf`
-   - 保存：`Ctrl + O` → 回车确认文件名
-   - 退出：`Ctrl + X`
+2. 在项目根目录创建 `xtainav.conf` 内容示例：
 
 ```nginx
 server {
@@ -166,14 +150,18 @@ server {
 
 > 构建并运行 Docker 容器
 
-- `docker build -t xtai-nav-app .`
+- `docker compose up -d --build`
 - `docker run -p 3000:3000 xtai-nav-app`
 
 常用命令
 
-> 强制重新构建镜像并在后台运行
+> 重启整个项目（包括项目和容器 nginx等）
 
-- `docker compose up -d --build`
+- `docker compose down && docker compose up -d`
+
+> 重启 Nginx
+
+- `docker compose exec nginx nginx -s reload`
 
 > 检查容器状态
 
