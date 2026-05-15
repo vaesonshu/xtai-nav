@@ -709,3 +709,61 @@ export async function upsertBannerConfig(data: {
     return { success: false, message: error?.message ?? '服务器错误' }
   }
 }
+
+/** 批量入库候选网站（管理员，自动审批通过） */
+export async function batchAdminCreateWebsites(
+  websites: {
+    name: string
+    url: string
+    iconUrl?: string | null
+    description?: string | null
+    tags: string[]
+    categoryIds: string[]
+  }[]
+) {
+  const userId = await getCurrentUserId()
+  if (!userId) {
+    return { success: false, message: '请先登录', results: [] as const }
+  }
+
+  const results: {
+    url: string
+    name: string
+    success: boolean
+    message?: string
+  }[] = []
+
+  for (const site of websites) {
+    const created = await adminCreateWebsite({
+      name: site.name,
+      url: site.url,
+      iconUrl: site.iconUrl ?? null,
+      description: site.description ?? '',
+      tags: site.tags ?? [],
+      categoryIds: site.categoryIds ?? [],
+    })
+
+    if (
+      created &&
+      typeof created === 'object' &&
+      'success' in created &&
+      created.success === false
+    ) {
+      results.push({
+        url: site.url,
+        name: site.name,
+        success: false,
+        message: (created as { message?: string }).message,
+      })
+    } else {
+      results.push({ url: site.url, name: site.name, success: true })
+    }
+  }
+
+  const successCount = results.filter((r) => r.success).length
+  return {
+    success: successCount > 0,
+    message: `成功入库 ${successCount}/${websites.length} 个网站`,
+    results,
+  }
+}

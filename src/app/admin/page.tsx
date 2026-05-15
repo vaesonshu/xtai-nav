@@ -3,7 +3,14 @@ import { redirect } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { WebsitesLoading } from '@/components/websites-loading'
-import { House, Globe, FileText, Users, TrendingUp } from 'lucide-react'
+import {
+  House,
+  Globe,
+  FileText,
+  Users,
+  TrendingUp,
+  Sparkles,
+} from 'lucide-react'
 import { getCurrentUserId } from '@/lib/auth-client'
 import { isAdmin } from '@/lib/utils'
 import { getWebsites } from '@/lib/data'
@@ -12,6 +19,7 @@ import LogManage from '@/components/admin/log-manage'
 import WebManage from '@/components/admin/web-manage'
 import BannerManage from '@/components/admin/banner-manage'
 import PendingWebsitesManage from '@/components/admin/pending-websites-manage'
+import WebsiteCollector from '@/components/admin/website-collector'
 import NotAuthorized from '@/components/not-authorized'
 import Link from 'next/link'
 
@@ -93,6 +101,17 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
           >
             <TrendingUp className="mr-3 h-5 w-5" />
             待审批网站
+          </Link>
+          <Link
+            href="/admin?page=collector"
+            className={`flex items-center px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+              currentPage === 'collector'
+                ? 'bg-indigo-50 text-indigo-700 border border-indigo-200 shadow-sm'
+                : 'text-gray-700 hover:bg-indigo-25 hover:text-indigo-600 hover:shadow-sm'
+            }`}
+          >
+            <Sparkles className="mr-3 h-5 w-5" />
+            AI 网站搜集
           </Link>
           <Link
             href="/admin?page=websites"
@@ -307,6 +326,18 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
               >
                 <PendingWebsitesManage />
               </Suspense>
+            </div>
+          ) : currentPage === 'collector' ? (
+            <div className="space-y-6">
+              <div className="mb-8">
+                <h1 className="text-4xl font-bold tracking-tight text-gray-900">
+                  AI 网站搜集
+                </h1>
+                <p className="text-lg text-muted-foreground mt-2">
+                  使用 AI Agent 按主题搜集网站，筛选后一键入库（自动审批通过）。
+                </p>
+              </div>
+              <WebsiteCollector />
             </div>
           ) : currentPage === 'logs' ? (
             <div className="space-y-2">
