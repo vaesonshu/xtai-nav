@@ -21,9 +21,9 @@ export function CategoryCreateButton() {
         管理分类
       </Button>
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="sm:max-w-[500px]">
+        <DialogContent className="sm:max-w-[800px] max-h-[85vh]">
           <DialogHeader>
-            <DialogTitle>网站分类管理</DialogTitle>
+            <DialogTitle className="text-xl">网站分类管理</DialogTitle>
           </DialogHeader>
           <CategoryForm onSuccess={() => setOpen(false)} />
         </DialogContent>

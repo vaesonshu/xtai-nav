@@ -20,6 +20,7 @@ export interface WebCategory {
   name: string
   slug: string
   icon: string | null
+  sortOrder: number
 }
 
 export interface GetWebsitesParams {

@@ -381,11 +381,11 @@ export async function incrementViews(id: string) {
   return website.views
 }
 
-// 获取分类
+// 获取分类（按 sortOrder 排序，值越小排越前）
 export async function getCategories() {
   return await db.category.findMany({
     orderBy: {
-      name: 'asc',
+      sortOrder: 'asc',
     },
   })
 }
@@ -395,11 +395,19 @@ export async function createCategory(data: any) {
   const { name, slug, icon } = data
 
   try {
+    // 获取当前最大 sortOrder，新分类排在最后
+    const lastCategory = await db.category.findFirst({
+      orderBy: { sortOrder: 'desc' },
+      select: { sortOrder: true },
+    })
+    const nextSortOrder = (lastCategory?.sortOrder ?? -1) + 1
+
     const category = await db.category.create({
       data: {
         name,
         slug,
         icon,
+        sortOrder: nextSortOrder,
       },
     })
 
@@ -427,6 +435,42 @@ export async function createCategory(data: any) {
   }
 }
 
+// 更新分类
+export async function updateCategory(
+  id: string,
+  data: { name?: string; slug?: string; icon?: string }
+) {
+  try {
+    const category = await db.category.update({
+      where: { id },
+      data: {
+        ...(data.name !== undefined && { name: data.name }),
+        ...(data.slug !== undefined && { slug: data.slug }),
+        ...(data.icon !== undefined && { icon: data.icon }),
+      },
+    })
+
+    revalidatePath('/')
+    revalidatePath('/admin')
+    return category
+  } catch (error: any) {
+    if (error.code === 'P2002') {
+      if (error.meta?.target?.includes('name')) {
+        return {
+          success: false,
+          message: `分类名称 "${data.name}" 已存在，请使用不同的名称`,
+        }
+      } else if (error.meta?.target?.includes('slug')) {
+        return {
+          success: false,
+          message: `分类别名 "${data.slug}" 已存在，请使用不同的别名`,
+        }
+      }
+    }
+    return { success: false, message: error.message }
+  }
+}
+
 // 删除分类
 export async function deleteCategory(id: string) {
   await db.category.delete({
@@ -435,6 +479,30 @@ export async function deleteCategory(id: string) {
 
   revalidatePath('/')
   return { success: true }
+}
+
+// 更新分类排序（批量更新 sortOrder）
+export async function updateCategorySort(
+  sortedIds: string[]
+): Promise<{ success: boolean; message?: string }> {
+  try {
+    // 使用事务批量更新 sortOrder
+    await db.$transaction(
+      sortedIds.map((id, index) =>
+        db.category.update({
+          where: { id },
+          data: { sortOrder: index },
+        })
+      )
+    )
+
+    revalidatePath('/')
+    revalidatePath('/admin')
+    return { success: true }
+  } catch (error) {
+    console.error('更新分类排序失败:', error)
+    return { success: false, message: '更新排序失败，请稍后重试' }
+  }
 }
 
 // 点赞网站

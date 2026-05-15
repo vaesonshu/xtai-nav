@@ -7,7 +7,7 @@ export async function GET() {
   try {
     const categories = await db.category.findMany({
       orderBy: {
-        name: 'asc', // 按名称升序排序
+        sortOrder: 'asc', // 按自定义排序权重升序排列
       },
     })
     return NextResponse.json(categories, { status: 200 })
