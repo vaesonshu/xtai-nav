@@ -2,53 +2,70 @@
 
 import type React from 'react'
 
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect, useCallback } from 'react'
 import { Send, Sparkles, Bot } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { cn } from '@/lib/utils'
-import { useChat } from 'ai/react'
+import { useChat } from '@ai-sdk/react'
 
 import avatar from '@/images/logo2.png'
 
 export function AIChat() {
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const [isTyping, setIsTyping] = useState(false)
+  const [inputValue, setInputValue] = useState('')
 
-  // 使用 AI SDK 的 useChat hook 处理聊天功能
-  const { messages, input, handleInputChange, handleSubmit, isLoading, error } =
-    useChat({
-      api: '/api/chat',
-      onResponse: () => {
-        setIsTyping(false)
-      },
-      onError: (error) => {
-        console.error('Chat error:', error)
-      },
-    })
+  // 使用 AI SDK v3 的 useChat hook（新版 API：没有 input/handleInputChange）
+  const { messages, sendMessage, status, error } = useChat({
+    api: '/api/chat',
+    onResponse: () => {
+      setIsTyping(false)
+    },
+    onError: (err: unknown) => {
+      console.error('Chat error:', err)
+    },
+  } as any)
+
+  // 获取消息文本内容（兼容新版 UIMessage 格式）
+  const getMessageText = useCallback((msg: any): string => {
+    if (msg.parts && Array.isArray(msg.parts)) {
+      return msg.parts
+        .filter((p: any) => p.type === 'text')
+        .map((p: any) => p.text)
+        .join('')
+    }
+    return msg.text || msg.content || ''
+  }, [])
 
   // 自动滚动到最新消息
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages])
 
+  const isLoading = status === 'streaming' || isTyping
+
+  // 发送消息
+  const doSendMessage = () => {
+    if (!inputValue.trim() || isLoading) return
+    setIsTyping(true)
+    sendMessage({ text: inputValue })
+    setInputValue('')
+  }
+
   // 处理表单提交
   const handleFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    if (!input.trim()) return
-    setIsTyping(true)
-    handleSubmit(e)
+    doSendMessage()
   }
 
   // 处理键盘事件
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault()
-      if (!input.trim() || isLoading) return
-      setIsTyping(true)
-      handleSubmit(e as unknown as React.FormEvent<HTMLFormElement>)
+      doSendMessage()
     }
   }
 
@@ -77,7 +94,7 @@ export function AIChat() {
             </div>
           )}
 
-          {messages.map((message, index) => (
+          {messages.map((message: any, index: number) => (
             <div
               key={message.id}
               className={cn(
@@ -103,15 +120,8 @@ export function AIChat() {
                       : 'bg-gray-100 dark:bg-gray-800'
                   )}
                 >
-                  {/* {message.reasoning && (
-                    <div className="mb-2 rounded bg-gray-200/50 p-2 text-xs font-mono dark:bg-gray-700/50">
-                      <p className="whitespace-pre-wrap text-gray-700 dark:text-gray-300">
-                        {message.reasoning}
-                      </p>
-                    </div>
-                  )} */}
                   <p className="whitespace-pre-wrap leading-relaxed">
-                    {message.content}
+                    {getMessageText(message)}
                   </p>
                 </div>
                 {message.role === 'user' && (
@@ -159,7 +169,10 @@ export function AIChat() {
             <div className="rounded-md bg-red-50 p-4 dark:bg-red-900/20">
               <div className="flex">
                 <div className="text-sm text-red-700 dark:text-red-400">
-                  <p>出错了：{error.message || '与 AI 服务通信时发生错误'}</p>
+                  <p>
+                    出错了：
+                    {(error as Error).message || '与 AI 服务通信时发生错误'}
+                  </p>
                 </div>
               </div>
             </div>
@@ -173,8 +186,8 @@ export function AIChat() {
         <form onSubmit={handleFormSubmit} className="flex flex-col gap-2">
           <div className="flex items-end gap-2">
             <Textarea
-              value={input}
-              onChange={handleInputChange}
+              value={inputValue}
+              onChange={(e) => setInputValue(e.target.value)}
               onKeyDown={handleKeyDown}
               placeholder="输入您的问题..."
               className="min-h-[80px] resize-none rounded-xl border-gray-200 bg-gray-50 shadow-sm focus-visible:ring-indigo-500 dark:border-gray-700 dark:bg-gray-800"
@@ -182,7 +195,7 @@ export function AIChat() {
             />
             <Button
               type="submit"
-              disabled={!input.trim() || isLoading}
+              disabled={!inputValue.trim() || isLoading}
               className="h-10 w-10 rounded-full bg-gradient-to-r from-indigo-500 to-purple-600 p-0 shadow-md transition-all hover:shadow-lg"
               size="icon"
             >

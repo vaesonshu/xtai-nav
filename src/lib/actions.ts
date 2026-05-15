@@ -167,7 +167,7 @@ export async function rejectWebsite(websiteId: string, rejectReason: string) {
   return website
 }
 
-// 获取待审批的网站
+// 获取待审批的网站（包含提交用户信息）
 export async function getPendingWebsites() {
   return await db.website.findMany({
     where: {
@@ -177,6 +177,14 @@ export async function getPendingWebsites() {
       categories: {
         include: {
           category: true,
+        },
+      },
+      submittedByUser: {
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          image: true,
         },
       },
     },

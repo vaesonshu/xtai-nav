@@ -40,6 +40,12 @@ interface Website {
   tags: string[]
   createdAt: string | Date
   approvalStatus: string
+  submittedByUser?: {
+    id: string
+    name: string | null
+    email: string
+    image: string | null
+  } | null
   categories: {
     categoryId: string
     websiteId: string
@@ -270,10 +276,34 @@ export default function PendingWebsitesManage() {
                 )}
 
                 <div className="flex items-center justify-between pt-4">
-                  <span className="text-sm text-gray-500">
-                    提交时间:{' '}
-                    {new Date(website.createdAt).toLocaleString('zh-CN')}
-                  </span>
+                  <div className="flex items-center gap-4 text-sm text-gray-500">
+                    <span>
+                      提交时间:{' '}
+                      {new Date(website.createdAt).toLocaleString('zh-CN')}
+                    </span>
+                    {website.submittedByUser && (
+                      <span className="flex items-center gap-1.5">
+                        <span className="text-gray-300">|</span>
+                        {website.submittedByUser.image ? (
+                          <img
+                            src={website.submittedByUser.image}
+                            alt=""
+                            className="w-5 h-5 rounded-full"
+                          />
+                        ) : (
+                          <span className="w-5 h-5 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center text-[10px] font-medium">
+                            {(website.submittedByUser.name ||
+                              website.submittedByUser.email)[0].toUpperCase()}
+                          </span>
+                        )}
+                        <span>
+                          提交者:{' '}
+                          {website.submittedByUser.name ||
+                            website.submittedByUser.email.split('@')[0]}
+                        </span>
+                      </span>
+                    )}
+                  </div>
 
                   <div className="flex space-x-2">
                     <Button
@@ -441,9 +471,33 @@ export default function PendingWebsitesManage() {
                 </div>
               )}
 
-              <div className="text-sm text-gray-500">
-                提交时间:{' '}
-                {new Date(selectedWebsite.createdAt).toLocaleString('zh-CN')}
+              <div className="space-y-1 text-sm text-gray-500">
+                <div>
+                  提交时间:{' '}
+                  {new Date(selectedWebsite.createdAt).toLocaleString('zh-CN')}
+                </div>
+                {selectedWebsite.submittedByUser && (
+                  <div className="flex items-center gap-1.5">
+                    提交者:
+                    {selectedWebsite.submittedByUser.image ? (
+                      <img
+                        src={selectedWebsite.submittedByUser.image}
+                        alt=""
+                        className="w-5 h-5 rounded-full"
+                      />
+                    ) : (
+                      <span className="w-5 h-5 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center text-[10px] font-medium">
+                        {(selectedWebsite.submittedByUser.name ||
+                          selectedWebsite.submittedByUser
+                            .email)[0].toUpperCase()}
+                      </span>
+                    )}
+                    <span>
+                      {selectedWebsite.submittedByUser.name ||
+                        selectedWebsite.submittedByUser.email}
+                    </span>
+                  </div>
+                )}
               </div>
             </div>
           )}

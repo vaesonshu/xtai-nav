@@ -344,6 +344,7 @@ export default function UserWebsitesPage() {
       categories: website.categories.map((cat) => ({
         ...cat.category,
         icon: null,
+        sortOrder: 0,
       })),
     }
     setEditingWebsite(websiteProps)

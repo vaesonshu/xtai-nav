@@ -14,8 +14,9 @@
     "db:generate": "prisma generate"
   },
   "dependencies": {
-    "@ai-sdk/deepseek": "^0.0.6",
-    "@ai-sdk/openai": "^1.0.20",
+    "@ai-sdk/deepseek": "^2.0.35",
+    "@ai-sdk/openai": "^3.0.63",
+    "@ai-sdk/react": "^3.0.184",
     "@auth/prisma-adapter": "^2.1.0",
     "@dnd-kit/core": "^6.3.1",
     "@dnd-kit/sortable": "^10.0.0",
@@ -40,7 +41,7 @@
     "@radix-ui/react-tabs": "^1.1.13",
     "@radix-ui/react-tooltip": "^1.1.8",
     "@tailwindcss/typography": "^0.5.13",
-    "ai": "^4.0.39",
+    "ai": "^6.0.182",
     "better-auth": "^1.3.34",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
@@ -58,7 +59,7 @@
     "sonner": "^2.0.1",
     "tailwind-merge": "^2.6.0",
     "tailwindcss-animate": "^1.0.7",
-    "zod": "^3.24.1"
+    "zod": "^4.4.3"
   },
   "devDependencies": {
     "@commitlint/cli": "^19.6.1",

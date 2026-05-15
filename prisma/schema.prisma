@@ -21,6 +21,7 @@ model User {
   likes         Like[]
   accounts      Account[]
   sessions      Session[]
+  submittedWebsites Website[] @relation("SubmittedWebsites")
 
   @@map("user")
 }
@@ -38,6 +39,7 @@ model Website {
   isApproved    Boolean              @default(false)
   approvalStatus String              @default("pending") // pending, approved, rejected
   submittedBy   String?
+  submittedByUser User?              @relation("SubmittedWebsites", fields: [submittedBy], references: [id], onDelete: SetNull)
   rejectReason  String?
   approvedAt    DateTime?
   approvedBy    String?

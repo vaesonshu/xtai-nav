@@ -14,10 +14,8 @@ export async function POST(req: Request) {
       messages,
     })
 
-    // 将结果转换为数据流响应，并包含推理过程
-    return result.toDataStreamResponse({
-      // sendReasoning: true,
-    })
+    // AI SDK v6: 使用 toTextStreamResponse 转换为流式文本响应
+    return result.toTextStreamResponse()
   } catch (error) {
     console.error('Chat API error:', error)
     return new Response(
