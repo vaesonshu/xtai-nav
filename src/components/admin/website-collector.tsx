@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useChat } from '@ai-sdk/react'
 import { DefaultChatTransport } from 'ai'
 import { Bot, Loader2, Send, Sparkles, Globe, Import } from 'lucide-react'
@@ -16,7 +16,40 @@ import type {
   WebsiteCollectorUIMessage,
 } from '@/lib/agents/website-collector-agent'
 import { batchAdminCreateWebsites } from '@/lib/actions'
+import { buildFaviconFallbackUrls } from '@/lib/favicon-resolve'
 import { toast } from 'sonner'
+
+/** 列表中的站点图标：多 URL 回退，全部失败则显示占位 */
+function SiteFavicon({ site }: { site: CollectedWebsite }) {
+  const candidates = useMemo(
+    () => buildFaviconFallbackUrls(site.url, site.iconUrl),
+    [site.url, site.iconUrl]
+  )
+  const [idx, setIdx] = useState(0)
+  const [broke, setBroke] = useState(false)
+
+  useEffect(() => {
+    setIdx(0)
+    setBroke(false)
+  }, [site.url, site.iconUrl])
+
+  if (broke || candidates.length === 0) {
+    return <Globe className="h-5 w-5 shrink-0 text-muted-foreground" />
+  }
+
+  const src = candidates[Math.min(idx, candidates.length - 1)]
+  return (
+    <img
+      src={src}
+      alt=""
+      className="h-5 w-5 shrink-0 rounded"
+      onError={() => {
+        if (idx >= candidates.length - 1) setBroke(true)
+        else setIdx((i) => i + 1)
+      }}
+    />
+  )
+}
 
 // 从 UIMessage parts 解析 reportWebsiteCandidates 结果（AI SDK v6: type 为 tool-{toolName}）
 function extractCandidates(
@@ -92,14 +125,8 @@ export default function WebsiteCollector() {
     try {
       const res = await batchAdminCreateWebsites(
         toImport.map((c) => {
-          let iconUrl = c.iconUrl
-          if (!iconUrl) {
-            try {
-              iconUrl = `https://www.google.com/s2/favicons?domain=${new URL(c.url).hostname}&sz=64`
-            } catch {
-              iconUrl = ''
-            }
-          }
+          const iconUrl =
+            c.iconUrl?.trim() || buildFaviconFallbackUrls(c.url)[0] || ''
           return {
             name: c.name,
             url: c.url,
@@ -139,7 +166,15 @@ export default function WebsiteCollector() {
             AI 搜集对话
           </CardTitle>
           <p className="text-sm text-muted-foreground font-normal">
-            描述主题即可，例如：「搜集 10 个 AI 编程助手网站」
+            描述主题即可。也可在{' '}
+            <a
+              href="/admin?page=mcp-servers"
+              className="text-indigo-600 underline underline-offset-2"
+            >
+              MCP 配置
+            </a>{' '}
+            中接入 stdio / 流式 HTTP·SSE
+            工具增强搜集；最终仍以右侧候选列表入库。
           </p>
         </CardHeader>
         <CardContent className="flex flex-1 flex-col p-4 pt-3 min-h-0">
@@ -270,13 +305,7 @@ export default function WebsiteCollector() {
                     />
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center gap-2">
-                        {site.iconUrl && (
-                          <img
-                            src={site.iconUrl}
-                            alt=""
-                            className="h-5 w-5 rounded"
-                          />
-                        )}
+                        <SiteFavicon site={site} />
                         <span className="font-medium truncate">
                           {site.name}
                         </span>

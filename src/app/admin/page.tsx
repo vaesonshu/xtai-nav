@@ -10,6 +10,8 @@ import {
   Users,
   TrendingUp,
   Sparkles,
+  Search,
+  Plug,
 } from 'lucide-react'
 import { getCurrentUserId } from '@/lib/auth-client'
 import { isAdmin } from '@/lib/utils'
@@ -20,6 +22,8 @@ import WebManage from '@/components/admin/web-manage'
 import BannerManage from '@/components/admin/banner-manage'
 import PendingWebsitesManage from '@/components/admin/pending-websites-manage'
 import WebsiteCollector from '@/components/admin/website-collector'
+import WebsiteSearchAssistant from '@/components/admin/website-search-assistant'
+import McpServerManage from '@/components/admin/mcp-server-manage'
 import NotAuthorized from '@/components/not-authorized'
 import Link from 'next/link'
 
@@ -112,6 +116,28 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
           >
             <Sparkles className="mr-3 h-5 w-5" />
             AI 网站搜集
+          </Link>
+          <Link
+            href="/admin?page=search-agent"
+            className={`flex items-center px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+              currentPage === 'search-agent'
+                ? 'bg-teal-50 text-teal-700 border border-teal-200 shadow-sm'
+                : 'text-gray-700 hover:bg-teal-25 hover:text-teal-600 hover:shadow-sm'
+            }`}
+          >
+            <Search className="mr-3 h-5 w-5" />
+            AI 站内搜索
+          </Link>
+          <Link
+            href="/admin?page=mcp-servers"
+            className={`flex items-center px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+              currentPage === 'mcp-servers'
+                ? 'bg-violet-50 text-violet-700 border border-violet-200 shadow-sm'
+                : 'text-gray-700 hover:bg-violet-25 hover:text-violet-600 hover:shadow-sm'
+            }`}
+          >
+            <Plug className="mr-3 h-5 w-5" />
+            MCP 配置
           </Link>
           <Link
             href="/admin?page=websites"
@@ -338,6 +364,41 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
                 </p>
               </div>
               <WebsiteCollector />
+            </div>
+          ) : currentPage === 'search-agent' ? (
+            <div className="space-y-6">
+              <div className="mb-8">
+                <h1 className="text-4xl font-bold tracking-tight text-gray-900">
+                  AI 站内搜索
+                </h1>
+                <p className="text-lg text-muted-foreground mt-2">
+                  基于{' '}
+                  <a
+                    href="https://ai-sdk.dev/docs/agents/building-agents"
+                    className="text-teal-600 underline underline-offset-2"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    AI SDK ToolLoopAgent
+                  </a>
+                  ，用自然语言检索已收录站点（可选含待审批）。
+                </p>
+              </div>
+              <WebsiteSearchAssistant />
+            </div>
+          ) : currentPage === 'mcp-servers' ? (
+            <div className="space-y-6">
+              <div className="mb-8">
+                <h1 className="text-4xl font-bold tracking-tight text-gray-900">
+                  MCP 配置
+                </h1>
+                <p className="text-lg text-muted-foreground mt-2">
+                  管理员可添加 stdio / HTTP / SSE 方式的 MCP 服务，或通过 JSON
+                  批量导入。启用项会接入「AI
+                  网站搜集」Agent（多路工具按排序合并）。
+                </p>
+              </div>
+              <McpServerManage />
             </div>
           ) : currentPage === 'logs' ? (
             <div className="space-y-2">

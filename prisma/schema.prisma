@@ -202,3 +202,30 @@ model BannerConfig {
   closeButtonLabel String?
   updatedAt DateTime @updatedAt
 }
+
+/// 管理员配置的 MCP 服务（网站搜集 Agent 可加载多个；流式含 HTTP 与 SSE）
+model McpServerConfig {
+  id        String   @id @default(cuid())
+  name      String
+  enabled   Boolean  @default(true)
+  /// stdio | http | sse （http 为 AI SDK 的 Streamable HTTP MCP 传输）
+  transport String
+  sortOrder Int      @default(0)
+
+  stdioCommand String?
+  /// JSON 数组，如 ["dist/server.js"]
+  stdioArgs    Json?
+  stdioCwd     String?
+
+  /// http / sse 的服务地址
+  streamUrl   String?
+  headersJson Json?
+
+  elicitationEnabled Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([enabled, sortOrder])
+  @@map("mcp_server_config")
+}
