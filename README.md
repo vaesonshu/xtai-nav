@@ -1,5 +1,7 @@
 # Next.js入门全栈实战项目 — 星途AI导航
 
+<image src="https://github.com/vaesonshu/xtai-nav/blob/main/public/home.png?raw=true"></image>
+
 ## 概述
 
 这是一个使用最新 Next.js 版本构建的一个 AI 导航类项目，主要是收集国内外的一些 AI 技术和应用，希望在使用 AI 应用和开发方面能起到一个导航的作用，在众多的 AI 应用中，快速找到自己需要的应用。
@@ -8,7 +10,11 @@
 
 > 内置 AI Agent，只需要使用自然语言，Agent 就能帮你搜索你需要的网站，然后根据您的选择是否入库此网站，简化自己搜索添加网站繁琐的步骤。
 
+<image src="https://github.com/vaesonshu/xtai-nav/blob/main/public/ai-search.png?raw=true"></image>
+
 > 内置 MCP 管理，您可以根据您的需求，自定义设置您需要的 MCP，AI Agent 会自动识别已开启的 MCP。
+
+<image src="https://github.com/vaesonshu/xtai-nav/blob/main/public/mcp.png?raw=true"></image>
 
 ## 快速开始
 
