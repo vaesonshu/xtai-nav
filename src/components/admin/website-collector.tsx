@@ -18,6 +18,7 @@ import type {
 import { batchAdminCreateWebsites } from '@/lib/actions'
 import { buildFaviconFallbackUrls } from '@/lib/favicon-resolve'
 import { toast } from 'sonner'
+import MarkdownContent from '@/components/message-board/markdown-content'
 
 /** 列表中的站点图标：多 URL 回退，全部失败则显示占位 */
 function SiteFavicon({ site }: { site: CollectedWebsite }) {
@@ -188,32 +189,43 @@ export default function WebsiteCollector() {
                   </p>
                 </div>
               )}
-              {messages.map((message) => (
-                <div
-                  key={message.id}
-                  className={cn(
-                    'flex gap-2 text-sm',
-                    message.role === 'user' ? 'justify-end' : 'justify-start'
-                  )}
-                >
-                  {message.role === 'assistant' && (
-                    <Bot className="h-6 w-6 shrink-0 text-indigo-500 mt-0.5" />
-                  )}
+              {messages.map((message) => {
+                const text =
+                  message.parts
+                    ?.filter((p) => p.type === 'text')
+                    .map((p) => (p.type === 'text' ? p.text : ''))
+                    .join('') ?? ''
+                return (
                   <div
+                    key={message.id}
                     className={cn(
-                      'rounded-xl px-3 py-2 max-w-[90%] whitespace-pre-wrap',
-                      message.role === 'user'
-                        ? 'bg-indigo-600 text-white'
-                        : 'bg-gray-100 text-gray-900'
+                      'flex gap-2 text-sm',
+                      message.role === 'user' ? 'justify-end' : 'justify-start'
                     )}
                   >
-                    {message.parts
-                      ?.filter((p) => p.type === 'text')
-                      .map((p) => (p.type === 'text' ? p.text : ''))
-                      .join('')}
+                    {message.role === 'assistant' && (
+                      <Bot className="h-6 w-6 shrink-0 text-indigo-500 mt-0.5" />
+                    )}
+                    <div
+                      className={cn(
+                        'rounded-xl px-3 py-2 max-w-[90%]',
+                        message.role === 'user'
+                          ? 'bg-indigo-600 text-white whitespace-pre-wrap'
+                          : 'bg-gray-100 text-gray-900 dark:bg-muted dark:text-foreground'
+                      )}
+                    >
+                      {message.role === 'assistant' ? (
+                        <MarkdownContent
+                          content={text}
+                          className="prose-neutral dark:prose-invert prose-p:my-1 prose-headings:my-2 prose-ul:my-1 prose-ol:my-1 prose-pre:my-2"
+                        />
+                      ) : (
+                        text
+                      )}
+                    </div>
                   </div>
-                </div>
-              ))}
+                )
+              })}
               {isLoading && (
                 <div className="flex items-center gap-2 text-sm text-muted-foreground">
                   <Loader2 className="h-4 w-4 animate-spin" />

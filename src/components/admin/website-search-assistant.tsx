@@ -10,6 +10,7 @@ import { ScrollArea } from '@/components/ui/scroll-area'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { cn } from '@/lib/utils'
 import type { WebsiteSearchUIMessage } from '@/lib/agents/website-search-agent'
+import MarkdownContent from '@/components/message-board/markdown-content'
 
 /**
  * 管理端「AI 站内搜索」对话区（与搜集助手相同采用 AI SDK v6：useChat + DefaultChatTransport）
@@ -60,32 +61,43 @@ export default function WebsiteSearchAssistant() {
                 </p>
               </div>
             )}
-            {messages.map((message) => (
-              <div
-                key={message.id}
-                className={cn(
-                  'flex gap-2 text-sm',
-                  message.role === 'user' ? 'justify-end' : 'justify-start'
-                )}
-              >
-                {message.role === 'assistant' && (
-                  <Bot className="h-6 w-6 shrink-0 text-teal-500 mt-0.5" />
-                )}
+            {messages.map((message) => {
+              const text =
+                message.parts
+                  ?.filter((p) => p.type === 'text')
+                  .map((p) => (p.type === 'text' ? p.text : ''))
+                  .join('') ?? ''
+              return (
                 <div
+                  key={message.id}
                   className={cn(
-                    'rounded-xl px-3 py-2 max-w-[90%] whitespace-pre-wrap',
-                    message.role === 'user'
-                      ? 'bg-teal-600 text-white'
-                      : 'bg-gray-100 text-gray-900'
+                    'flex gap-2 text-sm',
+                    message.role === 'user' ? 'justify-end' : 'justify-start'
                   )}
                 >
-                  {message.parts
-                    ?.filter((p) => p.type === 'text')
-                    .map((p) => (p.type === 'text' ? p.text : ''))
-                    .join('')}
+                  {message.role === 'assistant' && (
+                    <Bot className="h-6 w-6 shrink-0 text-teal-500 mt-0.5" />
+                  )}
+                  <div
+                    className={cn(
+                      'rounded-xl px-3 py-2 max-w-[90%]',
+                      message.role === 'user'
+                        ? 'bg-teal-600 text-white whitespace-pre-wrap'
+                        : 'bg-gray-100 text-gray-900 dark:bg-muted dark:text-foreground'
+                    )}
+                  >
+                    {message.role === 'assistant' ? (
+                      <MarkdownContent
+                        content={text}
+                        className="prose-neutral dark:prose-invert prose-p:my-1 prose-headings:my-2 prose-ul:my-1 prose-ol:my-1 prose-pre:my-2"
+                      />
+                    ) : (
+                      text
+                    )}
+                  </div>
                 </div>
-              </div>
-            ))}
+              )
+            })}
             {isLoading && (
               <div className="flex items-center gap-2 text-sm text-muted-foreground">
                 <Loader2 className="h-4 w-4 animate-spin" />
