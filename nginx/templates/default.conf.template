@@ -1,0 +1,15 @@
+# HTTP：ACME 验证 + 跳转 HTTPS（单项目部署）
+# 仅 ${NGINX_*} 由 envsubst 注入；$host / $request_uri 用单个 $
+
+server {
+    listen 80;
+    server_name ${NGINX_DOMAIN} www.${NGINX_DOMAIN};
+
+    location /.well-known/acme-challenge/ {
+        root /var/www/certbot;
+    }
+
+    location / {
+        return 301 https://$host$request_uri;
+    }
+}

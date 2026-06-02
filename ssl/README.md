@@ -7,7 +7,10 @@
 | `xtai-nav.cn.pem` | 证书（含证书链） |
 | `xtai-nav.cn.key` | 私钥             |
 
-同机部署时由 **xtai-notion** 的 `xtai-nginx` 挂载（默认 `../xtai-nav/ssl/`）。
+| 部署方式                  | 谁挂载本目录                                                            |
+| ------------------------- | ----------------------------------------------------------------------- |
+| 与 xtai-notion 同机       | xtai-notion 的 `xtai-nginx`（默认 `../xtai-nav/ssl`）                   |
+| 仅 xtai-nav（standalone） | 本仓库 `xtai-nav-nginx`（`docker-compose.standalone.yml` 默认 `./ssl`） |
 
 **自检（在 xtai-nav 目录）：**
 
@@ -21,9 +24,21 @@ openssl x509 -in ssl/xtai-nav.cn.pem -noout -subject
 
 ## 更新证书后（服务器）
 
+**同机 xtai-notion：**
+
 ```bash
 cd /path/to/xtai-notion
 docker compose --env-file apps/web/.env restart nginx
+```
+
+**仅 xtai-nav（standalone）：**
+
+```bash
+cd /path/to/xtai-nav
+docker compose -f docker-compose.standalone.yml --env-file .env restart nginx
+```
+
+```bash
 curl -Ik https://xtai-nav.cn
 ```
 

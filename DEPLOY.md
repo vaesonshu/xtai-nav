@@ -1,5 +1,7 @@
 # xtai-nav 服务器部署（与 xtai-notion 同机）
 
+> **只部署 xtai-nav、不装 xtai-notion？** 见 [DEPLOY-STANDALONE.md](./DEPLOY-STANDALONE.md)，使用 `docker-compose.standalone.yml`。
+
 公网 **80/443** 由 [xtai-notion](../xtai-notion/README.md) 的 **`xtai-nginx`** 统一处理，按域名分流：
 
 | 域名          | 反代目标            |

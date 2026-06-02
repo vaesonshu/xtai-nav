@@ -1,10 +1,9 @@
-# xtai-nav 服务器部署：仅 web（Next.js）
-# 公网 80/443 由 xtai-notion 的 xtai-nginx 按域名 xtai-nav.cn 反代本容器
+# xtai-nav 服务器部署（模式 A：与 xtai-notion 同机）
+# 公网 80/443 由 xtai-notion 的 xtai-nginx 反代本容器，须先启动 xtai-notion（xtai-shared 网络）
 #
-# 须先启动 xtai-notion（创建 xtai-shared 网络），再启动本 compose
-#
-# 启动：
 #   docker compose --env-file .env up -d --build
+#
+# 模式 B：仅部署本仓库（自带 nginx）→ 见 docker-compose.standalone.yml、DEPLOY-STANDALONE.md
 
 services:
   web:

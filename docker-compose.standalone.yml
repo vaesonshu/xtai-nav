@@ -1,0 +1,60 @@
+# xtai-nav 单项目部署：nginx + web（不依赖 xtai-notion）
+#
+# 适用：服务器只部署本仓库，自行暴露 80/443
+#
+# 启动：
+#   docker compose -f docker-compose.standalone.yml --env-file .env up -d --build
+#
+# 与默认 docker-compose.yml（同机 xtai-notion 反代）二选一，勿混用
+
+services:
+  nginx:
+    image: nginx:1.27-alpine
+    container_name: xtai-nav-nginx
+    restart: unless-stopped
+    ports:
+      - '${NGINX_HTTP_PORT:-80}:80'
+      - '${NGINX_HTTPS_PORT:-443}:443'
+    environment:
+      # 模板变量经 envsubst 注入；nginx 内置 $host 等用单个 $
+      NGINX_DOMAIN: ${DOMAIN:-localhost}
+      NGINX_APP_PORT: ${PORT:-3000}
+    volumes:
+      - ./nginx/templates:/etc/nginx/templates:ro
+      - ./nginx/certbot-www:/var/www/certbot:ro
+      # 证书默认本仓库 ssl/（整目录挂载，避免缺文件时 Docker 误建同名目录）
+      - ${SSL_DIR:-./ssl}:/etc/nginx/ssl:ro
+    depends_on:
+      web:
+        condition: service_healthy
+
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        NODE_IMAGE: ${NODE_IMAGE:-docker.m.daocloud.io/library/node:22-alpine}
+        DATABASE_URL: ${DATABASE_URL}
+        NEXT_PUBLIC_BASE_URL: ${NEXT_PUBLIC_BASE_URL}
+    container_name: xtai-nav-web
+    restart: unless-stopped
+    expose:
+      - '3000'
+    env_file:
+      - .env
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      HOSTNAME: 0.0.0.0
+    healthcheck:
+      test:
+        [
+          'CMD',
+          'node',
+          '-e',
+          "fetch('http://127.0.0.1:3000').then(r=>process.exit(r.status<500?0:1)).catch(()=>process.exit(1))",
+        ]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 60s

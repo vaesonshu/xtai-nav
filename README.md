@@ -99,29 +99,116 @@
 
 ## 项目部署
 
-与 **xtai-notion** 同机时，由 **`xtai-nginx`** 按域名反代（`fenoteai.cn` / `xtai-nav.cn`），本仓库只启动 **`xtai-nav-web`**。完整步骤见 **[DEPLOY.md](./DEPLOY.md)**。
+生产环境提供 **两种 Docker 部署方式**，按场景二选一（同一台机器不要同时占用 80/443）。
+
+|                | 模式 A：与 xtai-notion 同机                                             | 模式 B：仅部署 xtai-nav                                                         |
+| -------------- | ----------------------------------------------------------------------- | ------------------------------------------------------------------------------- |
+| **适用**       | 同一 ECS 上同时跑 notion + nav                                          | 服务器只跑导航站                                                                |
+| **Compose**    | `docker-compose.yml`                                                    | `docker-compose.standalone.yml`                                                 |
+| **公网入口**   | [xtai-notion](https://github.com/vaesonshu/xtai-notion) 的 `xtai-nginx` | 本仓库 `xtai-nav-nginx`                                                         |
+| **本仓库启动** | 仅 `xtai-nav-web`                                                       | `xtai-nav-nginx` + `xtai-nav-web`                                               |
+| **本仓库命令** | `docker compose --env-file .env up -d --build`                          | `docker compose -f docker-compose.standalone.yml --env-file .env up -d --build` |
+| **详细文档**   | [DEPLOY.md](./DEPLOY.md)                                                | [DEPLOY-STANDALONE.md](./DEPLOY-STANDALONE.md)                                  |
+
+### 公共前置
+
+1. 安装 Docker：`sudo apt update && sudo apt install -y docker.io docker-compose-plugin`
+2. 复制环境变量：`cp .env.example .env`，填写 `DATABASE_URL`、`BETTER_AUTH_SECRET` 等
+3. 域名与 HTTPS 地址保持一致（无端口）：
+
+   ```env
+   DOMAIN=xtai-nav.cn
+   NEXT_PUBLIC_BASE_URL=https://xtai-nav.cn
+   BETTER_AUTH_URL=https://xtai-nav.cn
+   ```
+
+4. 证书放在 [`ssl/`](./ssl/README.md)：`xtai-nav.cn.pem`、`xtai-nav.cn.key`（须为**文件**，勿在证书缺失时启动 nginx，否则 Docker 可能误建同名目录）
+
+修改 `NEXT_PUBLIC_BASE_URL` 后需 **重新构建** 应用镜像。
+
+---
+
+### 模式 A：与 xtai-notion 同机（默认）
+
+由 **xtai-notion** 的 `xtai-nginx` 按域名分流：`fenoteai.cn` → notion，`xtai-nav.cn` → 本项目的 `xtai-nav-web`。
+
+**顺序：先 notion，后 nav。**
 
 ```bash
-# 须先启动 xtai-notion
+# 1. 在 xtai-notion 目录（创建 xtai-shared 网络并启动 notion + nginx）
+cd /path/to/xtai-notion
+cp apps/web/.env.example apps/web/.env
+# apps/web/.env 中设置 NAV_DOMAIN=xtai-nav.cn
+docker compose --env-file apps/web/.env up -d --build
+
+# 2. 在本仓库目录
+cd /path/to/xtai-nav
 cp .env.example .env
 docker compose --env-file .env up -d --build
 ```
 
-访问：**`https://xtai-nav.cn`**（需先启动 xtai-notion；证书放在本仓库 [`ssl/`](./ssl/README.md)）。
-
-### Docker 常用命令
+**常用命令：**
 
 ```bash
 docker compose --env-file .env ps
-docker compose --env-file .env logs -f
+docker compose --env-file .env logs -f web
 docker compose --env-file .env up -d --build
 ```
 
-### 服务器前置条件
+更新 nav 证书后，在 **xtai-notion** 目录执行：`docker compose --env-file apps/web/.env restart nginx`
+
+---
+
+### 模式 B：仅部署 xtai-nav（standalone）
+
+不依赖 xtai-notion，由本仓库的 `xtai-nav-nginx` + `xtai-nav-web` 直接对外提供 80/443。更完整的说明见 [DEPLOY-STANDALONE.md](./DEPLOY-STANDALONE.md)。
+
+**单项目额外前置：**
+
+1. DNS：`DOMAIN`（如 `xtai-nav.cn`）的 **A 记录** 指向服务器 IP
+2. 安全组 / 防火墙放行 **80、443**
+3. 证书放入 [`ssl/`](./ssl/README.md)：`xtai-nav.cn.pem`、`xtai-nav.cn.key`
+
+**部署命令（在仓库根目录执行）：**
 
 ```bash
-sudo apt update && sudo apt install -y docker.io docker-compose-plugin
+cd /path/to/xtai-nav
+cp .env.example .env
+# 编辑 .env：DATABASE_URL、BETTER_AUTH_SECRET、DOMAIN、NEXT_PUBLIC_BASE_URL、BETTER_AUTH_URL 等
+
+docker compose -f docker-compose.standalone.yml --env-file .env up -d --build
 ```
+
+**常用命令（均需带 `-f docker-compose.standalone.yml`）：**
+
+```bash
+docker compose -f docker-compose.standalone.yml --env-file .env ps
+docker compose -f docker-compose.standalone.yml --env-file .env logs -f web
+docker compose -f docker-compose.standalone.yml --env-file .env logs nginx --tail 10
+docker compose -f docker-compose.standalone.yml --env-file .env up -d --build   # 更新代码后重建
+docker compose -f docker-compose.standalone.yml --env-file .env restart nginx     # 仅更新证书后重载 nginx
+docker compose -f docker-compose.standalone.yml --env-file .env down              # 停止并移除容器
+```
+
+**可选环境变量**（见 `.env.example` 注释）：
+
+| 变量               | 默认    | 说明                             |
+| ------------------ | ------- | -------------------------------- |
+| `NGINX_HTTP_PORT`  | `80`    | 对外 HTTP 端口                   |
+| `NGINX_HTTPS_PORT` | `443`   | 对外 HTTPS 端口                  |
+| `SSL_DIR`          | `./ssl` | 证书目录                         |
+| `PORT`             | `3000`  | 应用容器内端口（nginx 反代目标） |
+
+---
+
+### 验证
+
+```bash
+curl -I http://xtai-nav.cn      # 应 301 → https
+curl -Ik https://xtai-nav.cn    # 应 HTTP/2 200
+```
+
+浏览器访问 **https://xtai-nav.cn**，确认证书与页面正常。
 
 ### Github Actions
 
