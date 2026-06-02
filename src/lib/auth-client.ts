@@ -22,22 +22,12 @@ export function useIsAuthenticated() {
 // Import auth from lib/auth and provide session validation utilities
 export async function getServerSession() {
   const { headers } = await import('next/headers')
-  const readonlyHeaders = await headers()
-  const authHeaders = new Headers(readonlyHeaders)
+  const { auth } = await import('@/lib/auth')
 
-  const response = await fetch(
-    process.env.NEXT_PUBLIC_BASE_URL + '/api/auth/get-session',
-    {
-      headers: Object.fromEntries(authHeaders.entries()),
-    }
-  )
-
-  if (response.ok) {
-    const session = await response.json()
-    return session
-  }
-
-  return null
+  // 服务端直接调用 better-auth，避免容器内回调公网域名导致 500。
+  return auth.api.getSession({
+    headers: await headers(),
+  })
 }
 
 export async function getCurrentUserId(): Promise<string | null> {
