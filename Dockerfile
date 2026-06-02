@@ -1,70 +1,52 @@
-FROM node:18-alpine AS base
+# xtai-nav 生产镜像（Next.js standalone + Prisma）
+# 用法见 docker-compose.yml
 
-# Install dependencies only when needed
-FROM base AS deps
-# Check https://github.com/nodejs/docker-node/tree/b4117f9333da4138b03a546ec926ef50a31506c3#nodealpine to understand why libc6-compat might be needed.
-RUN apk add --no-cache libc6-compat
+ARG NODE_IMAGE=docker.m.daocloud.io/library/node:22-alpine
+# ARG NODE_IMAGE=node:22-alpine
+FROM ${NODE_IMAGE} AS base
+RUN corepack enable
 WORKDIR /app
 
-# Install dependencies based on the preferred package manager
-COPY .npmrc package.json yarn.lock* package-lock.json* pnpm-lock.yaml* ./
-RUN \
-  if [ -f yarn.lock ]; then yarn --frozen-lockfile; \
-  elif [ -f package-lock.json ]; then npm ci; \
-  elif [ -f pnpm-lock.yaml ]; then corepack enable pnpm && pnpm i --frozen-lockfile; \
-  else echo "Lockfile not found." && exit 1; \
-  fi
+# ---------- 安装依赖 ----------
+FROM base AS deps
+RUN apk add --no-cache libc6-compat
+COPY package.json pnpm-lock.yaml* ./
+RUN corepack prepare pnpm@10.18.3 --activate \
+  && pnpm install --frozen-lockfile
 
-
-# Rebuild the source code only when needed
+# ---------- 构建 ----------
 FROM base AS builder
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
-# Next.js collects completely anonymous telemetry data about general usage.
-# Learn more here: https://nextjs.org/telemetry
-# Uncomment the following line in case you want to disable telemetry during the build.
-# ENV NEXT_TELEMETRY_DISABLED 1
+# 构建期环境变量（NEXT_PUBLIC_* 会打进前端包）
+ARG DATABASE_URL=postgresql://build:build@localhost:5432/build
+ARG NEXT_PUBLIC_BASE_URL=http://localhost:3000
+ENV DATABASE_URL=$DATABASE_URL
+ENV NEXT_PUBLIC_BASE_URL=$NEXT_PUBLIC_BASE_URL
 
-## 参考这里本地运行的报错信息截图 https://github.com/huashui-ai/project-wiki/issues/16
-RUN npx prisma generate
+RUN pnpm exec prisma generate
+RUN pnpm run build
 
-RUN \
-  if [ -f yarn.lock ]; then yarn run build; \
-  elif [ -f package-lock.json ]; then npm run build; \
-  elif [ -f pnpm-lock.yaml ]; then corepack enable pnpm && pnpm run build; \
-  else echo "Lockfile not found." && exit 1; \
-  fi
-
-# Production image, copy all the files and run next
-FROM base AS runner
+# ---------- 生产镜像 ----------
+FROM ${NODE_IMAGE} AS runner
 WORKDIR /app
 
-ENV NODE_ENV production
-# Uncomment the following line in case you want to disable telemetry during runtime.
-# ENV NEXT_TELEMETRY_DISABLED 1
+ENV NODE_ENV=production
 
-RUN addgroup --system --gid 1001 nodejs
-RUN adduser --system --uid 1001 nextjs
+RUN addgroup --system --gid 1001 nodejs \
+  && adduser --system --uid 1001 nextjs
 
 COPY --from=builder /app/public ./public
+RUN mkdir .next && chown nextjs:nodejs .next
 
-# Set the correct permission for prerender cache
-RUN mkdir .next
-RUN chown nextjs:nodejs .next
-
-# Automatically leverage output traces to reduce image size
-# https://nextjs.org/docs/advanced-features/output-file-tracing
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 
 USER nextjs
-
 EXPOSE 3000
+ENV PORT=3000
+ENV HOSTNAME=0.0.0.0
 
-ENV PORT 3000
-
-# server.js is created by next build from the standalone output
-# https://nextjs.org/docs/pages/api-reference/next-config-js/output
-CMD HOSTNAME="0.0.0.0" node server.js
+CMD ["node", "server.js"]

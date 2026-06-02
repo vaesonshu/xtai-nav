@@ -1,27 +1,46 @@
-# version: '3.8'
+# xtai-nav 服务器部署：仅 web（Next.js）
+# 公网 80/443 由 xtai-notion 的 xtai-nginx 按域名 xtai-nav.cn 反代本容器
+#
+# 须先启动 xtai-notion（创建 xtai-shared 网络），再启动本 compose
+#
+# 启动：
+#   docker compose --env-file .env up -d --build
 
 services:
-  xtai-nav-app:
+  web:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: xtai-nav-app
+      args:
+        NODE_IMAGE: ${NODE_IMAGE:-docker.m.daocloud.io/library/node:22-alpine}
+        DATABASE_URL: ${DATABASE_URL}
+        NEXT_PUBLIC_BASE_URL: ${NEXT_PUBLIC_BASE_URL}
+    container_name: xtai-nav-web
     restart: unless-stopped
     expose:
-      - '3000' # 仅暴露给 Nginx，不映射到主机
+      - '3000'
+    env_file:
+      - .env
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      HOSTNAME: 0.0.0.0
+    networks:
+      - xtai-shared
+    healthcheck:
+      test:
+        [
+          'CMD',
+          'node',
+          '-e',
+          "fetch('http://127.0.0.1:3000').then(r=>process.exit(r.status<500?0:1)).catch(()=>process.exit(1))",
+        ]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 60s
 
-  nginx:
-    image: nginx:alpine
-    container_name: nginx
-    ports:
-      - '80:80'
-      # 上 HTTPS 时取消下行注释，并恢复下方证书 volumes
-      # - '443:443'
-    volumes:
-      - ./nginx.conf:/etc/nginx/conf.d/default.conf
-      # 当前仅 HTTP，无需证书；启用 HTTPS 时取消注释并确保宿主机文件存在
-      # - /etc/nginx/xtai-nav.cn_bundle.crt:/etc/nginx/certs/xtai-nav.cn_bundle.crt:ro
-      # - /etc/nginx/xtai-nav.cn.key:/etc/nginx/certs/xtai-nav.cn.key:ro
-    depends_on:
-      - xtai-nav-app
-    restart: unless-stopped
+networks:
+  xtai-shared:
+    name: xtai-shared
+    external: true

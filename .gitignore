@@ -18,7 +18,9 @@
 
 # misc
 .DS_Store
-*.pem
+ssl/*.pem
+ssl/*.key
+# 证书与私钥仅放本地/服务器，勿提交
 
 # debug
 npm-debug.log*

@@ -18,16 +18,14 @@ const nextConfig = {
       },
     ],
   },
-  experimental: {
-    turbo: {
-      // ...
-    },
-  },
   output: 'standalone',
 }
 
+// 仅在 ANALYZE=true 时挂载 analyzer，避免向默认 Turbopack 构建注入 webpack 配置
 const withBundleAnalyzer = bundleAnalyzer({
   enabled: process.env.ANALYZE === 'true',
 })
 
-export default withBundleAnalyzer(nextConfig)
+export default process.env.ANALYZE === 'true'
+  ? withBundleAnalyzer(nextConfig)
+  : nextConfig

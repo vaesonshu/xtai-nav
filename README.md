@@ -99,99 +99,29 @@
 
 ## 项目部署
 
-### Nginx 配置
+与 **xtai-notion** 同机时，由 **`xtai-nginx`** 按域名反代（`fenoteai.cn` / `xtai-nav.cn`），本仓库只启动 **`xtai-nav-web`**。完整步骤见 **[DEPLOY.md](./DEPLOY.md)**。
 
-1. 在服务器放置证书（路径需与 `docker-compose.yml` 里**宿主机**一侧一致），例如：
-   - 完整链 `/etc/nginx/xtai-nav.cn_bundle.crt`（或你的 CA 签发的 fullchain）
-   - 私钥 `/etc/nginx/xtai-nav.cn.key`
-2. 在项目根目录创建 `xtainav.conf` 内容示例：
-
-```nginx
-server {
-    listen 80;
-    server_name xtai-nav.cn www.xtai-nav.cn;
-
-    location / {
-        proxy_pass http://xtai-nav-app:3000;
-        proxy_http_version 1.1;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
-        proxy_set_header Upgrade $http_upgrade;
-        proxy_set_header Connection "upgrade";
-    }
-}
-
-# --- 上 HTTPS 时：取消下面整段注释，并把上面 80 改为 return 301 https://$host$request_uri; ---
-# server {
-#     listen 80;
-#     server_name xtai-nav.cn www.xtai-nav.cn;
-#     return 301 https://$host$request_uri;
-# }
-#
-# server {
-#     listen 443 ssl;
-#     http2 on;
-#     server_name xtai-nav.cn www.xtai-nav.cn;
-#     ssl_certificate     /etc/nginx/certs/xtai-nav.cn_bundle.crt;
-#     ssl_certificate_key /etc/nginx/certs/xtai-nav.cn.key;
-#     ssl_protocols TLSv1.2 TLSv1.3;
-#     location / {
-#         proxy_pass http://xtai-nav-app:3000;
-#         proxy_http_version 1.1;
-#         proxy_set_header Host $host;
-#         proxy_set_header X-Real-IP $remote_addr;
-#         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-#         proxy_set_header X-Forwarded-Proto $scheme;
-#         proxy_set_header Upgrade $http_upgrade;
-#         proxy_set_header Connection "upgrade";
-#     }
-# }
+```bash
+# 须先启动 xtai-notion
+cp .env.example .env
+docker compose --env-file .env up -d --build
 ```
 
-云安全组放行 **80** 即可。应用 `.env` 中 `BETTER_AUTH_URL`、`NEXT_PUBLIC_BASE_URL` 请与对外地址一致（当前为 **`http://xtai-nav.cn`**），修改后需 **重新构建** 镜像。启用 HTTPS 时同步改 `docker-compose.yml` 里已注释的 **443 与证书挂载**，并把 `.env` 改为 **`https://...`** 再构建。
+访问：**`https://xtai-nav.cn`**（需先启动 xtai-notion；证书放在本仓库 [`ssl/`](./ssl/README.md)）。
 
-### Docker 部署
+### Docker 常用命令
 
-> 停止现有容器
+```bash
+docker compose --env-file .env ps
+docker compose --env-file .env logs -f
+docker compose --env-file .env up -d --build
+```
 
-- `docker stop xtai-nav-app`
-- `docker rm xtai-nav-app`
-- `docker rmi -f xtai-nav-app`
+### 服务器前置条件
 
-> 构建并运行 Docker 容器
-
-- `docker compose up -d --build`
-- `docker run -p 3000:3000 xtai-nav-app`
-
-常用命令
-
-> 重启整个项目（包括项目和容器 nginx等）
-
-- `docker compose down && docker compose up -d`
-
-> 重启 Nginx
-
-- `docker compose exec nginx nginx -s reload`
-
-> 检查容器状态
-
-- `docker compose ps`
-
-> 检查日志
-
-- `docker logs xtai-nav-app`
-- `docker logs nginx`
-
-> 测试 HTTPS
-
-- `curl -I https://xtai-nav.cn`
-
-### Docker 部署-服务器前置条件
-
-- 示例：安装 Docker
-  sudo apt update && sudo apt install -y docker
+```bash
+sudo apt update && sudo apt install -y docker.io docker-compose-plugin
+```
 
 ### Github Actions
 
